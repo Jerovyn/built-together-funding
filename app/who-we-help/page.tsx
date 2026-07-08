@@ -32,7 +32,7 @@ export default function WhoWeHelpPage() {
         description="Operators already winning — who need more trucks, machines, crews, or inventory."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <div className="grid items-stretch gap-8 lg:grid-cols-2">
           <ul className="space-y-2">
             {IDEAL_FIT.map((item) => (
@@ -51,7 +51,7 @@ export default function WhoWeHelpPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border py-12 md:py-14">
         <h2 className="mb-4 text-lg font-bold text-btf-text">Not a fit yet</h2>
         <ul className="max-w-lg space-y-2">
           {NOT_FIT.map((item) => (
@@ -60,7 +60,7 @@ export default function WhoWeHelpPage() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="bg-btf-secondary pb-24 md:pb-28">
+      <SectionShell className="bg-white/40 pb-24 backdrop-blur-[2px] md:pb-28">
         <CtaBlock label="Check your fit" trackLocation="who_we_help" primaryOnly />
       </SectionShell>
     </>

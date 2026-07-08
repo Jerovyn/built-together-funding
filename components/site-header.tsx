@@ -47,7 +47,7 @@ export function SiteHeader() {
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-btf-border bg-btf-bg/95 backdrop-blur supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-50 border-b border-btf-border bg-white/80 backdrop-blur-md supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
       <div className="container flex max-w-6xl items-center justify-between gap-2 py-2 sm:gap-4 sm:py-2.5 md:py-3">
         <Link
           href={ROUTES.home}
@@ -121,7 +121,7 @@ export function SiteHeader() {
       </div>
 
       {menuOpen ? (
-        <div className="border-t border-btf-border bg-btf-bg lg:hidden">
+        <div className="border-t border-btf-border bg-white/95 backdrop-blur-md lg:hidden">
           <nav className="container max-w-6xl py-4" aria-label="Mobile">
             <ul className="space-y-1">
               {NAV_LINKS.map((item) => (

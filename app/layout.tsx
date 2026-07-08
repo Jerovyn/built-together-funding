@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Inter_Tight } from "next/font/google";
+import { BrandAmbientBackground } from "@/components/brand/brand-ambient-background";
 import { BoltAssistant } from "@/components/mascot/bolt-assistant";
 import { PixelScripts } from "@/components/tracking/pixel-scripts";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
@@ -97,20 +98,23 @@ export default function RootLayout({
       <body
         suppressHydrationWarning
         className={cn(
-          "flex min-h-screen flex-col bg-btf-bg font-sans antialiased",
+          "relative flex min-h-screen flex-col bg-[#F5F9FC] font-sans antialiased",
         )}
       >
+        <BrandAmbientBackground />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <PixelScripts />
         <TrackingProvider>
-          <SiteHeader />
-          <main className="min-w-0 flex-1 overflow-x-clip">{children}</main>
-          <SiteFooter />
-          <BoltAssistant />
-          <StickyMobileCta />
+          <div className="relative z-10 flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="min-w-0 flex-1 overflow-x-clip">{children}</main>
+            <SiteFooter />
+            <BoltAssistant />
+            <StickyMobileCta />
+          </div>
         </TrackingProvider>
       </body>
     </html>

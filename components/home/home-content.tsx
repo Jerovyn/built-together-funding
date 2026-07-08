@@ -62,7 +62,7 @@ export function HomeContent() {
       {/* HERO */}
       <SectionShell
         contained
-        className="relative border-b border-btf-border bg-btf-bg py-10 sm:py-12 md:py-16"
+        className="relative border-b border-btf-border py-10 sm:py-12 md:py-16"
       >
         <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="min-w-0 space-y-4 sm:space-y-5">
@@ -145,7 +145,7 @@ export function HomeContent() {
       </section>
 
       {/* CALCULATOR */}
-      <SectionShell className="border-b border-btf-border bg-btf-bg py-10 sm:py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border py-10 sm:py-12 md:py-14">
         <h2 className="max-w-xl text-balance text-xl font-extrabold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
           Run the math on what you&apos;d buy.
         </h2>
@@ -155,7 +155,7 @@ export function HomeContent() {
       </SectionShell>
 
       {/* MIN REQUIREMENTS */}
-      <SectionShell className="border-b border-btf-border bg-btf-bg py-10 sm:py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border py-10 sm:py-12 md:py-14">
         <h2 className="text-balance text-xl font-extrabold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
           Minimum requirements
         </h2>
@@ -177,7 +177,7 @@ export function HomeContent() {
       </SectionShell>
 
       {/* FIT SIGNALS */}
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 py-12 backdrop-blur-[2px] md:py-14">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-md">
             <h2 className="text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
@@ -208,7 +208,7 @@ export function HomeContent() {
       </SectionShell>
 
       {/* FAQ */}
-      <SectionShell className="border-b border-btf-border bg-btf-bg py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border py-12 md:py-14">
         <h2 className="text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
           Quick answers
         </h2>

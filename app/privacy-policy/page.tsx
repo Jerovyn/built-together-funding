@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
         description={`How ${SITE_NAME} handles information you share with us through this site and the pre-screen process. Last updated: May 7, 2026.`}
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="mx-auto max-w-3xl space-y-8">
           <Card className="bg-btf-card">
             <CardContent className="p-6 md:p-8">
@@ -45,7 +45,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px]">
         <div className="mx-auto max-w-3xl space-y-14">
           <section className="space-y-6">
             <SectionHeading title="Introduction" />
@@ -133,7 +133,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="mx-auto max-w-3xl space-y-14">
           <section className="space-y-6">
             <SectionHeading title="How we use information" />
@@ -211,7 +211,7 @@ export default function PrivacyPolicyPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px]">
         <div className="mx-auto max-w-3xl space-y-14">
           <section className="space-y-6">
             <SectionHeading title="Cookies / analytics" />

@@ -5,7 +5,7 @@ import { ROUTES } from "@/lib/constants";
 
 export default function NotFound() {
   return (
-    <SectionShell className="flex min-h-[60vh] items-center bg-btf-bg">
+    <SectionShell className="flex min-h-[60vh] items-center">
       <div className="mx-auto max-w-xl text-center">
         <p className="text-xs font-bold uppercase tracking-wider text-btf-accent">
           404

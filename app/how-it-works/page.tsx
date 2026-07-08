@@ -26,7 +26,7 @@ export default function HowItWorksPage() {
         description="Real numbers. Human review. No runaround."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <ol className="grid gap-4 md:grid-cols-2">
           {STEPS.map((step, i) => (
             <li
@@ -44,7 +44,7 @@ export default function HowItWorksPage() {
         </ol>
       </SectionShell>
 
-      <SectionShell className="bg-btf-bg pb-24 md:pb-28">
+      <SectionShell className="pb-24 md:pb-28">
         <CtaBlock label="Start pre-qual" trackLocation="how_it_works" primaryOnly />
       </SectionShell>
     </>

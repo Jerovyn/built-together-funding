@@ -29,7 +29,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <>
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="mx-auto max-w-3xl">
           <Link
             href={ROUTES.resources}
@@ -49,7 +49,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px]">
         <div className="mx-auto max-w-3xl space-y-12">
           {article.sections.map((section) => (
             <section key={section.heading}>
@@ -93,7 +93,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
       </SectionShell>
 
-      <SectionShell className="bg-btf-bg pb-20 md:pb-28">
+      <SectionShell className="pb-20 md:pb-28">
         <div className="mx-auto max-w-3xl space-y-6">
           <h2 className="text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
             Sound like your situation?

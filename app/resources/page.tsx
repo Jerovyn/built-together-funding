@@ -20,7 +20,7 @@ export default function ResourcesPage() {
         description="Five-minute reads. No pitch."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <ul className="grid gap-4 md:grid-cols-3">
           {ARTICLES.map((article) => (
             <li key={article.slug}>
@@ -50,7 +50,7 @@ export default function ResourcesPage() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="bg-btf-bg pb-24 md:pb-28">
+      <SectionShell className="pb-24 md:pb-28">
         <CtaBlock label="Check your fit" trackLocation="resources" primaryOnly />
       </SectionShell>
     </>

@@ -24,7 +24,7 @@ export default function ContactPage() {
         description="Fastest path to an answer: start the pre-qual."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="space-y-4">
             <TrackedButtonLink
@@ -71,7 +71,7 @@ export default function ContactPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="bg-btf-bg pb-24 md:pb-28">
+      <SectionShell className="pb-24 md:pb-28">
         <CtaBlock label="Check your fit" trackLocation="contact_footer" primaryOnly />
       </SectionShell>
     </>

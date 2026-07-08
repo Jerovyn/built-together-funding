@@ -77,6 +77,18 @@ const config: Config = {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.04)" },
         },
+        "btf-ripple-1": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(-12px, 8px, 0) scale(1.015)" },
+        },
+        "btf-ripple-2": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(10px, -6px, 0) scale(1.02)" },
+        },
+        "btf-ripple-3": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
+          "50%": { transform: "translate3d(-6px, 10px, 0) scale(1.01)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out both",
@@ -84,6 +96,9 @@ const config: Config = {
         "bolt-wiggle": "bolt-wiggle 0.55s ease-in-out both",
         "bolt-breathe": "bolt-breathe 2.8s ease-in-out infinite",
         "marquee-x": "marquee-x 28s linear infinite",
+        "btf-ripple-1": "btf-ripple-1 14s ease-in-out infinite",
+        "btf-ripple-2": "btf-ripple-2 17s ease-in-out infinite",
+        "btf-ripple-3": "btf-ripple-3 12s ease-in-out infinite",
       },
     },
   },

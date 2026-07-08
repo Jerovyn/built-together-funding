@@ -19,7 +19,7 @@ export default function AboutPage() {
         description="For people who live in trucks, crews, and schedules — not bank lobby talk."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 py-12 backdrop-blur-[2px] md:py-14">
         <Card className="mx-auto max-w-2xl">
           <CardContent className="space-y-4 p-6 md:p-8">
             <p className="text-base leading-relaxed text-btf-text md:text-lg">

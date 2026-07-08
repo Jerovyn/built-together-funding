@@ -50,7 +50,7 @@ export function StickyMobileCta({
   return (
     <div
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-btf-border bg-btf-bg/95 p-3 backdrop-blur-sm",
+        "fixed inset-x-0 bottom-0 z-40 border-t border-btf-border bg-white/90 p-3 backdrop-blur-sm",
         "pb-[max(0.75rem,env(safe-area-inset-bottom))]",
         "md:hidden motion-safe:animate-fade-up",
       )}

@@ -34,7 +34,7 @@ export default function FundingUsesPage() {
         description="Funding earns its keep when it buys capacity for work that's already there."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <div className="grid items-stretch gap-6 lg:grid-cols-2">
           <ul className="space-y-3">
             {GOOD_USES.map((item) => (
@@ -53,14 +53,14 @@ export default function FundingUsesPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border py-12 md:py-14">
         <h2 className="mb-8 text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
           Run your numbers
         </h2>
         <GrowthCalculator />
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <h2 className="mb-6 text-lg font-bold text-btf-text">
           Where we&apos;ll say no
         </h2>
@@ -71,7 +71,7 @@ export default function FundingUsesPage() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="bg-btf-bg pb-24 md:pb-28">
+      <SectionShell className="pb-24 md:pb-28">
         <CtaBlock label="Run my file" trackLocation="funding_uses" primaryOnly />
       </SectionShell>
     </>

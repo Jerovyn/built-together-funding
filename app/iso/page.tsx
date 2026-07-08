@@ -19,7 +19,7 @@ export default function IsoSignupPage() {  return (
         description="A simple signup for ISOs and referral partners. We will follow up with next steps."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-5">
             <SectionHeading

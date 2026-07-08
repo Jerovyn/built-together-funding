@@ -30,7 +30,7 @@ export default function TermsPage() {
         description={`Rules for using this website and submitting information to ${SITE_NAME}. Last updated: May 7, 2026.`}
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="mx-auto max-w-3xl space-y-8">
           <Card className="bg-btf-card">
             <CardContent className="space-y-3 p-6 md:p-8">
@@ -47,7 +47,7 @@ export default function TermsPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary">
+      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px]">
         <div className="mx-auto max-w-3xl space-y-14">
           <section className="space-y-6">
             <SectionHeading title="Acceptance of terms" />
@@ -100,7 +100,7 @@ export default function TermsPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-bg">
+      <SectionShell className="border-b border-btf-border">
         <div className="mx-auto max-w-3xl space-y-14">
           <section className="space-y-6">
             <SectionHeading title="User-submitted information" />
