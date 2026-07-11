@@ -16,7 +16,7 @@ import {
 } from "@/lib/constants";
 
 const TRUST_CHIPS = [
-  "Real bank statements, not forms",
+  "Underwritten on bank statements",
   CREDIT_CHECK_SHORT,
   "Review within 1 business day",
 ];
