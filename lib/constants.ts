@@ -78,6 +78,48 @@ export const HOME_MIN_REQUIREMENTS = [
   "Owner can provide EIN and last 3 months of statements",
 ] as const;
 
+/** Homepage trades marquee — add any U.S. service/trade vertical. */
+export const HOME_TRADES_MARQUEE = [
+  "Roofing",
+  "Landscaping",
+  "Pressure washing",
+  "Exterior cleaning",
+  "Window cleaning",
+  "HVAC",
+  "Plumbing",
+  "Electrical",
+  "Construction",
+  "General contractors",
+  "Concrete & masonry",
+  "Painting",
+  "Flooring",
+  "Fencing",
+  "Tree service",
+  "Pool service",
+  "Pest control",
+  "Junk removal",
+  "Mobile detailing",
+  "Auto repair",
+  "Towing & recovery",
+  "Commercial cleaning",
+  "Janitorial",
+  "Catering & events",
+  "Food trucks",
+  "Salons & barbers",
+  "Fitness studios",
+  "Property maintenance",
+  "Restoration",
+  "Solar installation",
+  "Garage doors",
+  "Irrigation",
+  "Paving & asphalt",
+  "Demolition",
+  "Welding & fabrication",
+  "Sign installation",
+  "Security systems",
+  "Moving & logistics",
+] as const;
+
 export const HOME_FAQS = [
   {
     q: "Is this approval?",

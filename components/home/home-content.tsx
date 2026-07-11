@@ -11,18 +11,9 @@ import {
   HERO_BRAND_LINE,
   HOME_FAQS,
   HOME_MIN_REQUIREMENTS,
+  HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
-
-const TRADES = [
-  "Roofing",
-  "Landscaping",
-  "Pressure washing",
-  "Exterior cleaning",
-  "Construction",
-  "Builders",
-  "General trades",
-];
 
 const TRUST_CHIPS = [
   "Real bank statements, not forms",
@@ -119,9 +110,9 @@ export function HomeContent() {
         </div>
       </SectionShell>
 
-      {/* TRADES STRIP */}
+      {/* TRADES MARQUEE */}
       <section
-        className="overflow-hidden border-b border-btf-ink-border bg-btf-ink py-3"
+        className="overflow-hidden border-y border-white/60 bg-white/25 py-4 backdrop-blur-md"
         aria-label="Industries we serve"
       >
         <div
@@ -129,19 +120,22 @@ export function HomeContent() {
           aria-hidden="true"
         >
           {[0, 1].map((copy) => (
-            <div key={copy} className="flex shrink-0 items-center">
-              {TRADES.map((trade) => (
+            <div key={copy} className="flex shrink-0 items-center gap-3 pr-3">
+              {HOME_TRADES_MARQUEE.map((trade) => (
                 <span
                   key={`${copy}-${trade}`}
-                  className="flex items-center gap-5 px-5 text-sm font-bold uppercase tracking-wide text-btf-on-ink-muted"
+                  className="shrink-0 rounded-full border border-white/80 bg-white/35 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#007ABE] shadow-[0_0_18px_rgba(54,216,246,0.14)] backdrop-blur-sm sm:px-5 sm:py-2 sm:text-xs"
                 >
                   {trade}
-                  <span className="text-btf-accent-soft">•</span>
                 </span>
               ))}
             </div>
           ))}
         </div>
+        <p className="sr-only">
+          Industries we serve include{" "}
+          {HOME_TRADES_MARQUEE.join(", ")}.
+        </p>
       </section>
 
       {/* CALCULATOR */}

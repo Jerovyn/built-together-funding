@@ -95,7 +95,7 @@ const config: Config = {
         "glow-soft": "glow-soft 3.5s ease-in-out infinite",
         "bolt-wiggle": "bolt-wiggle 0.55s ease-in-out both",
         "bolt-breathe": "bolt-breathe 2.8s ease-in-out infinite",
-        "marquee-x": "marquee-x 28s linear infinite",
+        "marquee-x": "marquee-x 55s linear infinite",
         "btf-ripple-1": "btf-ripple-1 14s ease-in-out infinite",
         "btf-ripple-2": "btf-ripple-2 17s ease-in-out infinite",
         "btf-ripple-3": "btf-ripple-3 12s ease-in-out infinite",
