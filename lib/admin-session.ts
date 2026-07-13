@@ -7,6 +7,10 @@ function getSecret(): string | null {
   return process.env.ADMIN_DASHBOARD_SECRET?.trim() || null;
 }
 
+export function isAdminConfigured(): boolean {
+  return Boolean(getSecret());
+}
+
 async function hmacSign(message: string, secret: string): Promise<string> {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey(

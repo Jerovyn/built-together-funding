@@ -15,7 +15,13 @@ export default function AdminLoginPage() {
         <CardContent className="space-y-6 p-6 sm:p-8">
           <div className="space-y-1 text-center">
             <h1 className="text-xl font-semibold text-btf-text">Built Together Funding</h1>
-            <p className="text-sm text-btf-text-muted">Admin CRM sign in</p>
+            <p className="text-sm text-btf-text-muted">
+              Admin CRM — leads &amp; appointments
+            </p>
+            <p className="text-xs text-btf-text-muted">
+              Submission alerts go to{" "}
+              <span className="font-medium">subs@builttogetherfunding.com</span>
+            </p>
           </div>
           <Suspense fallback={<p className="text-center text-sm text-btf-text-muted">Loading…</p>}>
             <AdminLoginForm />

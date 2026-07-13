@@ -1,7 +1,7 @@
 import { DISCLAIMER_PREQUAL_LINE, SITE_NAME } from "@/lib/constants";
 import type { ApplyFormValues, ApplySubmissionMeta } from "@/lib/apply-schema";
 import { ownerFullName } from "@/lib/apply-schema";
-import { createResendClient, getResendFromEmail, isResendConfigured } from "@/lib/resend";
+import { createResendClient, getResendFromEmail, getInternalNotifyEmail, isResendConfigured, withReplyTo } from "@/lib/resend";
 import {
   createTwilioClient,
   getTwilioFromNumber,
@@ -132,7 +132,7 @@ function applicantConfirmationSmsBody(
 }
 
 async function sendInternalEmail(ctx: ApplyNotificationContext): Promise<void> {
-  const to = process.env.INTERNAL_NOTIFY_EMAIL?.trim();
+  const to = getInternalNotifyEmail();
   if (!to || !isResendConfigured()) {
     if (process.env.NODE_ENV === "development" && !isResendConfigured()) {
       console.warn("[apply] Resend not fully configured; skipping internal email.");
@@ -145,12 +145,17 @@ async function sendInternalEmail(ctx: ApplyNotificationContext): Promise<void> {
 
   const subject = `New BTF application - ${ctx.form.businessName} - Score ${ctx.leadScore}`;
   const text = buildInternalEmailText(ctx);
-  const { error } = await resend.emails.send({
-    from,
-    to: [to],
-    subject,
-    text,
-  });
+  const { error } = await resend.emails.send(
+    withReplyTo(
+      {
+        from,
+        to: [to],
+        subject,
+        text,
+      },
+      ctx.form.email.trim(),
+    ),
+  );
   if (error && process.env.NODE_ENV === "development") {
     console.warn("[apply] Resend internal email error (dev only):", error.message);
   }
@@ -167,12 +172,14 @@ async function sendApplicantEmail(ctx: ApplyNotificationContext): Promise<void> 
   const from = getResendFromEmail();
   if (!resend || !from) return;
 
-  const { error } = await resend.emails.send({
-    from,
-    to: [ctx.form.email.trim()],
-    subject: `We received your pre-screen - ${SITE_NAME}`,
-    text: applicantConfirmationEmailBody(ctx.tier, ctx.uploadUrl),
-  });
+  const { error } = await resend.emails.send(
+    withReplyTo({
+      from,
+      to: [ctx.form.email.trim()],
+      subject: `We received your pre-screen - ${SITE_NAME}`,
+      text: applicantConfirmationEmailBody(ctx.tier, ctx.uploadUrl),
+    }),
+  );
   if (error && process.env.NODE_ENV === "development") {
     console.warn("[apply] Resend applicant email error (dev only):", error.message);
   }
@@ -263,27 +270,34 @@ export async function sendBookingNotifications(
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
 
-      await resend.emails.send({
-        from,
-        to: [email],
-        subject: `Funding review call booked — ${SITE_NAME}`,
-        text: applicantText,
-      });
-
-      const internalTo = process.env.INTERNAL_NOTIFY_EMAIL?.trim();
-      if (internalTo) {
-        await resend.emails.send({
+      await resend.emails.send(
+        withReplyTo({
           from,
-          to: [internalTo],
-          subject: `CALL BOOKED — ${businessName}`,
-          text: [
-            `Funding review call booked.`,
-            `Business: ${businessName}`,
-            `When: ${slotLabel}`,
-            `Email: ${email}`,
-            `Phone: ${phone}`,
-          ].join("\n"),
-        });
+          to: [email],
+          subject: `Funding review call booked — ${SITE_NAME}`,
+          text: applicantText,
+        }),
+      );
+
+      const internalTo = getInternalNotifyEmail();
+      if (internalTo) {
+        await resend.emails.send(
+          withReplyTo(
+            {
+              from,
+              to: [internalTo],
+              subject: `CALL BOOKED — ${businessName}`,
+              text: [
+                `Funding review call booked.`,
+                `Business: ${businessName}`,
+                `When: ${slotLabel}`,
+                `Email: ${email}`,
+                `Phone: ${phone}`,
+              ].join("\n"),
+            },
+            email,
+          ),
+        );
       }
     }
   }

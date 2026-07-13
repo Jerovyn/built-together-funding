@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   adminSessionCookieOptions,
   createAdminSessionToken,
+  isAdminConfigured,
   verifyAdminPassword,
 } from "@/lib/admin-session";
 
@@ -16,6 +17,18 @@ export async function POST(req: Request) {
   }
 
   const password = body.password?.trim() ?? "";
+
+  if (!isAdminConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Admin CRM is not configured. Set ADMIN_DASHBOARD_SECRET in Vercel, redeploy, then try again.",
+      },
+      { status: 503 },
+    );
+  }
+
   if (!(await verifyAdminPassword(password))) {
     return NextResponse.json({ ok: false, message: "Invalid password." }, { status: 401 });
   }

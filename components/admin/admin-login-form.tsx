@@ -42,6 +42,13 @@ export function AdminLoginForm() {
         <label htmlFor="admin-password" className="block text-sm font-medium text-btf-text">
           Admin password
         </label>
+        <p className="mt-1 text-xs leading-relaxed text-btf-text-muted">
+          Password only — not your Google email. Use the same value as{" "}
+          <code className="rounded bg-btf-secondary px-1 py-0.5 text-[10px]">
+            ADMIN_DASHBOARD_SECRET
+          </code>{" "}
+          in Vercel.
+        </p>
         <input
           id="admin-password"
           type="password"
