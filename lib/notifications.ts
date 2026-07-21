@@ -4,6 +4,7 @@ import { ownerFullName } from "@/lib/apply-schema";
 import { createResendClient, getResendFromEmail, getInternalNotifyEmail, isResendConfigured, withReplyTo } from "@/lib/resend";
 import {
   createTwilioClient,
+  getInternalNotifyPhones,
   getTwilioFromNumber,
   isTwilioConfigured,
 } from "@/lib/twilio";
@@ -186,8 +187,8 @@ async function sendApplicantEmail(ctx: ApplyNotificationContext): Promise<void> 
 }
 
 async function sendInternalSms(ctx: ApplyNotificationContext): Promise<void> {
-  const to = process.env.INTERNAL_NOTIFY_PHONE?.trim();
-  if (!to || !isTwilioConfigured()) {
+  const phones = getInternalNotifyPhones();
+  if (!phones.length || !isTwilioConfigured()) {
     if (process.env.NODE_ENV === "development" && !isTwilioConfigured()) {
       console.warn("[apply] Twilio not configured; skipping SMS.");
     }
@@ -198,13 +199,17 @@ async function sendInternalSms(ctx: ApplyNotificationContext): Promise<void> {
   if (!client || !from) return;
 
   const body = `New BTF lead: ${ctx.form.businessName}. Pre-screen score ${ctx.leadScore}. Status ${ctx.leadStatus}. Check email for full details.`;
-  try {
-    await client.messages.create({ from, to, body });
-  } catch {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("[apply] Twilio internal SMS error (dev only)");
-    }
-  }
+  await Promise.allSettled(
+    phones.map(async (to) => {
+      try {
+        await client.messages.create({ from, to, body });
+      } catch {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[apply] Twilio internal SMS error (dev only)");
+        }
+      }
+    }),
+  );
 }
 
 async function sendApplicantSms(ctx: ApplyNotificationContext): Promise<void> {
@@ -325,17 +330,18 @@ export async function sendBookingNotifications(
   if (isTwilioConfigured()) {
     const client = createTwilioClient();
     const from = getTwilioFromNumber();
-    const internalPhone = process.env.INTERNAL_NOTIFY_PHONE?.trim();
-    if (client && from && internalPhone) {
-      try {
-        await client.messages.create({
-          from,
-          to: internalPhone,
-          body: `BTF call booked: ${businessName} — ${slotLabel}${meetLink ? ` Meet: ${meetLink}` : ""}`,
-        });
-      } catch {
-        /* silent */
-      }
+    const phones = getInternalNotifyPhones();
+    if (client && from && phones.length) {
+      const body = `BTF call booked: ${businessName} — ${slotLabel}${meetLink ? ` Meet: ${meetLink}` : ""}`;
+      await Promise.allSettled(
+        phones.map(async (to) => {
+          try {
+            await client.messages.create({ from, to, body });
+          } catch {
+            /* silent */
+          }
+        }),
+      );
     }
   }
 }
