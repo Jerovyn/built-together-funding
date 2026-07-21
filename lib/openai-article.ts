@@ -26,20 +26,29 @@ function mimeForImage(fileName: string): string {
   return "image/jpeg";
 }
 
-const SYSTEM = `You write short educational articles for Built Together Funding, a capacity-first funding brand for US trades/service businesses.
+const SYSTEM = `You write short educational articles for Built Together Funding, a capacity-first funding brand for US trades/service businesses (home base: Staten Island / NYC metro; serves trades nationwide).
 
-Voice: operator-led, direct, practical, human. No hype. No fake stats or testimonials.
+Voice: operator-led, direct, practical, human. No hype. No fake stats, fake testimonials, or fake approval rates.
+
+Length: Target a ~4 minute read (~700–900 words total across intro + sections + takeaway). Prefer readMinutes: 4. Use 3 only if the graphic is very simple; 5 only if dense. Never pad.
+
+SEO (natural, not stuffed):
+- Clear title and meta description that match the article.
+- Useful H2-style section headings.
+- About 1 in 3 drafts may lightly mention Staten Island, NYC, or local trades context when it fits the topic (e.g. local contractors, seasonal demand, borough jobs). Most drafts should stay evergreen nationwide.
+- Never force "Staten Island" into every title. No keyword spam like "best funding Staten Island 2026".
+- Do not invent local stats, reviews, or "serving all of SI" claims.
 
 Compliance — NEVER say: approved, guaranteed, you are funded, instant approval, no docs, bad credit OK, get cash fast.
-Prefer: may be a fit for a funding review; pre-qualification is not funding approval; subject to review/underwriting/partner availability.
+Prefer: may be a fit for a funding review; pre-qualification is not funding approval; subject to review, underwriting, and partner availability.
 
-Write from the infographic image. Expand into a clear article; do not invent numbers not on the image. If the image is sparse, write a useful related piece still grounded in capacity-first funding philosophy.
+Write from the infographic image. Expand into a clear article; do not invent numbers not on the image. If the image is sparse, write a useful related piece still grounded in capacity-first funding philosophy. The human will only proofread — write finished draft quality.
 
 Return ONLY valid JSON with this shape:
 {
   "title": string,
   "description": string (1-2 sentences for SEO card),
-  "readMinutes": number (3-6),
+  "readMinutes": 4,
   "intro": string,
   "sections": [
     {
@@ -112,10 +121,13 @@ function parseDraft(raw: string, imageName: string): GeneratedArticleDraft {
       description: String(
         parsed.description || fallbackDraft(imageName).description,
       ).slice(0, 300),
-      readMinutes:
-        typeof parsed.readMinutes === "number" && parsed.readMinutes > 0
-          ? Math.min(12, Math.round(parsed.readMinutes))
-          : 4,
+      readMinutes: (() => {
+        const n =
+          typeof parsed.readMinutes === "number" && parsed.readMinutes > 0
+            ? Math.round(parsed.readMinutes)
+            : 4;
+        return Math.min(5, Math.max(3, n));
+      })(),
       intro: String(parsed.intro || fallbackDraft(imageName).intro),
       sections: sections.length ? sections : fallbackDraft(imageName).sections,
       takeaway: String(
@@ -184,7 +196,7 @@ export async function generateArticleFromImage(
                 type: "image_url",
                 image_url: {
                   url: `data:${mime};base64,${b64}`,
-                  detail: "high",
+                  detail: "low",
                 },
               },
             ],
@@ -196,12 +208,33 @@ export async function generateArticleFromImage(
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
       console.error("[openai-article]", res.status, errText.slice(0, 400));
+      let detail = "";
+      try {
+        const parsed = JSON.parse(errText) as {
+          error?: { message?: string; code?: string };
+        };
+        detail = parsed.error?.message || parsed.error?.code || "";
+      } catch {
+        /* ignore */
+      }
+      if (res.status === 401) {
+        return {
+          ok: false,
+          message: "OpenAI rejected the API key. Check OPENAI_API_KEY in Vercel.",
+        };
+      }
+      if (res.status === 429 || /quota|billing|insufficient/i.test(detail)) {
+        return {
+          ok: false,
+          message:
+            "OpenAI billing/quota issue. Add credits at platform.openai.com, then try again.",
+        };
+      }
       return {
         ok: false,
-        message:
-          res.status === 401
-            ? "OpenAI rejected the API key. Check OPENAI_API_KEY in Vercel."
-            : "OpenAI could not generate from this image. Try again or pick another image.",
+        message: detail
+          ? `OpenAI error: ${detail.slice(0, 160)}`
+          : "OpenAI could not generate from this image. Try again or pick another image.",
       };
     }
 

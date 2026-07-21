@@ -115,22 +115,6 @@ export async function buildApplicationPdf(
     font: fontBold,
     color: ACCENT,
   });
-  y -= 16;
-  page.drawText(`Generated: ${new Date().toISOString()}`, {
-    x: margin,
-    y,
-    size: 8,
-    font,
-    color: MUTED,
-  });
-  y -= 16;
-  page.drawText(`Lead ID: ${lead.id}`, {
-    x: margin,
-    y,
-    size: 8,
-    font,
-    color: MUTED,
-  });
   y -= 28;
 
   const owner =
@@ -150,15 +134,15 @@ export async function buildApplicationPdf(
     .join(", ");
 
   type Row = [string, string];
+  // Omit email/phone, lead id, timestamps, pre-screen, and attribution
+  // so packages can be shared with lenders without exposing contact for lead theft.
   const sections: { title: string; rows: Row[] }[] = [
     {
       title: "Owner",
       rows: [
         ["Name", owner],
-        ["Email", lead.email ?? "—"],
-        ["Phone", lead.phone ?? "—"],
         ["Date of birth", lead.dob ?? "—"],
-        ["SSN", lead.ssn ?? maskSsn(lead.ssn)],
+        ["SSN", lead.ssn?.trim() ? lead.ssn : maskSsn(lead.ssn)],
         ["Home address", home || "—"],
       ],
     },
@@ -177,30 +161,6 @@ export async function buildApplicationPdf(
       rows: [
         ["Amount requested", lead.funding_amount ?? "—"],
         ["Use of funds", formatUseOfFunds(lead.use_of_funds)],
-      ],
-    },
-    {
-      title: "Pre-screen (not an approval)",
-      rows: [
-        ["Lead score", String(lead.lead_score ?? "—")],
-        ["Lead status", lead.lead_status ?? "—"],
-        ["Statements status", lead.statements_status ?? "—"],
-        [
-          "Statement files",
-          String((lead.statement_paths ?? []).length),
-        ],
-        ["Email consent", lead.email_consent ? "Yes" : "No"],
-        ["SMS consent", lead.sms_consent ? "Yes" : "No"],
-        ["Submitted", lead.created_at],
-      ],
-    },
-    {
-      title: "Attribution",
-      rows: [
-        ["Source", lead.source ?? "—"],
-        ["Landing page", lead.landing_page ?? "—"],
-        ["UTM source", lead.utm_source ?? "—"],
-        ["UTM campaign", lead.utm_campaign ?? "—"],
       ],
     },
   ];
