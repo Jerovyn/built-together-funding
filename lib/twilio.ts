@@ -8,15 +8,34 @@ export function isTwilioConfigured(): boolean {
   );
 }
 
+/**
+ * Twilio Account SIDs always start with AC. Bad values throw inside the SDK
+ * constructor — catch so API routes return JSON instead of a hard 500.
+ */
 export function createTwilioClient(): ReturnType<typeof twilio> | null {
   const sid = process.env.TWILIO_ACCOUNT_SID?.trim();
   const token = process.env.TWILIO_AUTH_TOKEN?.trim();
   if (!sid || !token) return null;
-  return twilio(sid, token);
+  if (!sid.startsWith("AC")) {
+    console.error(
+      "[twilio] TWILIO_ACCOUNT_SID must start with AC (got length",
+      sid.length,
+      ")",
+    );
+    return null;
+  }
+  try {
+    return twilio(sid, token);
+  } catch (err) {
+    console.error("[twilio] client create failed:", err);
+    return null;
+  }
 }
 
 export function getTwilioFromNumber(): string | null {
-  return process.env.TWILIO_PHONE_NUMBER?.trim() || null;
+  const raw = process.env.TWILIO_PHONE_NUMBER?.trim() || null;
+  if (!raw) return null;
+  return toE164Phone(raw) || raw;
 }
 
 /**

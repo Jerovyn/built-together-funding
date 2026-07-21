@@ -23,7 +23,7 @@ If Calendar API is off, Admin Settings may still show **Connected**, but booking
 |------|--------|
 | `GOOGLE_OAUTH_CLIENT_ID` | Client ID you copied |
 | `GOOGLE_OAUTH_CLIENT_SECRET` | Client secret you copied |
-| `GOOGLE_CALENDAR_ID` | `primary` (optional) |
+| `GOOGLE_CALENDAR_ID` | `primary` (optional; **all lowercase** — `Primary` returns 404) |
 
 Redeploy after saving.
 

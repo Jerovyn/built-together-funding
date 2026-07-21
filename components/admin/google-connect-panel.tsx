@@ -55,16 +55,26 @@ export function GoogleConnectPanel({
     }
   };
 
+  const readApiMessage = async (
+    res: Response,
+    fallback: string,
+  ): Promise<string> => {
+    try {
+      const data = (await res.json()) as { ok?: boolean; message?: string };
+      if (data.message?.trim()) return data.message.trim();
+    } catch {
+      /* non-JSON body */
+    }
+    return `${fallback} (HTTP ${res.status}).`;
+  };
+
   const testMeet = async () => {
     setBusy("meet");
     setMeetResult(null);
     try {
       const res = await fetch("/api/admin/google/test/", { method: "POST" });
-      const data = (await res.json()) as { ok?: boolean; message?: string };
-      setMeetResult({
-        ok: Boolean(data.ok),
-        message: data.message || (res.ok ? "OK" : "Test failed."),
-      });
+      const message = await readApiMessage(res, "Meet test failed");
+      setMeetResult({ ok: res.ok, message });
     } catch {
       setMeetResult({ ok: false, message: "Could not reach test endpoint." });
     } finally {
@@ -77,11 +87,8 @@ export function GoogleConnectPanel({
     setSmsResult(null);
     try {
       const res = await fetch("/api/admin/sms-test/", { method: "POST" });
-      const data = (await res.json()) as { ok?: boolean; message?: string };
-      setSmsResult({
-        ok: Boolean(data.ok),
-        message: data.message || (res.ok ? "OK" : "SMS test failed."),
-      });
+      const message = await readApiMessage(res, "SMS test failed");
+      setSmsResult({ ok: res.ok, message });
     } catch {
       setSmsResult({ ok: false, message: "Could not reach SMS test endpoint." });
     } finally {

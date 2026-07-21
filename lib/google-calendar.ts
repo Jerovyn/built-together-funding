@@ -34,6 +34,14 @@ function getSiteUrl(): string {
   );
 }
 
+/** Google’s special ID is lowercase `primary`. Env typos like `Primary` → 404 Not Found. */
+export function getGoogleCalendarId(): string {
+  const raw = process.env.GOOGLE_CALENDAR_ID?.trim();
+  if (!raw) return "primary";
+  if (raw.toLowerCase() === "primary") return "primary";
+  return raw;
+}
+
 export function isGoogleOAuthConfigured(): boolean {
   return Boolean(getClientId() && getClientSecret());
 }
@@ -211,6 +219,14 @@ export function formatGoogleApiError(err: unknown): string {
   if (lower.includes("insufficient") || lower.includes("permission")) {
     return "Google OAuth lacks Calendar permission. Disconnect and reconnect, then allow Calendar access.";
   }
+  if (
+    lower === "not found" ||
+    lower.includes("notfound") ||
+    anyErr.code === 404 ||
+    anyErr.code === "404"
+  ) {
+    return "Calendar not found. Set GOOGLE_CALENDAR_ID=primary (all lowercase) on Vercel, Redeploy, then Test again.";
+  }
   if (status) return `${base} (${status})`;
   return base.length > 220 ? `${base.slice(0, 217)}…` : base;
 }
@@ -245,8 +261,7 @@ export async function createFundingReviewMeetEvent(
       };
     }
 
-    const calendarId =
-      process.env.GOOGLE_CALENDAR_ID?.trim() || "primary";
+    const calendarId = getGoogleCalendarId();
     const times = buildEventDateTimes(
       input.appointmentDate,
       input.startTimeHms,
@@ -339,7 +354,7 @@ export async function testGoogleCalendarMeet(
     };
   }
 
-  const calendarId = process.env.GOOGLE_CALENDAR_ID?.trim() || "primary";
+  const calendarId = getGoogleCalendarId();
   const start = new Date(Date.now() + 60 * 60 * 1000);
   const end = new Date(start.getTime() + REVIEW_DURATION_MINUTES * 60 * 1000);
 
