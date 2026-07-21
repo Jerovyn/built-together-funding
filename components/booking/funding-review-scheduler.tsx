@@ -204,11 +204,22 @@ export function FundingReviewScheduler({
           startTime: slot.startTimeHms,
         }),
       });
-      const json = (await res.json()) as {
-        ok?: boolean;
-        message?: string;
-        slotLabel?: string;
-      };
+      let json: { ok?: boolean; message?: string; slotLabel?: string } = {};
+      try {
+        json = (await res.json()) as {
+          ok?: boolean;
+          message?: string;
+          slotLabel?: string;
+        };
+      } catch {
+        setError(
+          res.ok
+            ? "Booked, but the confirmation screen failed to load. Check your email."
+            : "Could not book that time. Please try again.",
+        );
+        if (selectedDate) void loadSlots(selectedDate);
+        return;
+      }
       if (!res.ok || !json.ok) {
         setError(json.message ?? "Could not book that time.");
         if (selectedDate) void loadSlots(selectedDate);
@@ -225,7 +236,7 @@ export function FundingReviewScheduler({
       }
       onBooked?.(label);
     } catch {
-      setError("Booking failed. Please try again.");
+      setError("Could not reach the server. Check your connection and try again.");
     } finally {
       setBooking(false);
     }

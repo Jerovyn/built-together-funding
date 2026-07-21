@@ -289,40 +289,52 @@ export async function sendBookingNotifications(
         ...meetLines,
         ...calendarLines,
         "",
-        "You'll also receive a Google Calendar invite if Meet was attached. If you need to reschedule, reply to this email.",
+        meetLink
+          ? "You'll also receive a Google Calendar invite. If you need to reschedule, reply to this email."
+          : "If you need to reschedule, reply to this email.",
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
 
-      await resend.emails.send(
-        withReplyTo({
-          from,
-          to: [email],
-          subject: `Funding review call booked — ${SITE_NAME}`,
-          text: applicantText,
-        }),
-      );
+      try {
+        await resend.emails.send(
+          withReplyTo({
+            from,
+            to: [email],
+            subject: `Funding review call booked — ${SITE_NAME}`,
+            text: applicantText,
+          }),
+        );
+      } catch (err) {
+        console.error("[booking] applicant email failed:", err);
+      }
 
       const internalTo = getInternalNotifyEmail();
       if (internalTo) {
-        await resend.emails.send(
-          withReplyTo(
-            {
-              from,
-              to: [internalTo],
-              subject: `CALL BOOKED — ${businessName}`,
-              text: [
-                `Funding review call booked.`,
-                `Business: ${businessName}`,
-                `When: ${slotLabel}`,
-                `Email: ${email}`,
-                `Phone: ${phone}`,
-                meetLink ? `Meet: ${meetLink}` : "Meet: not created (connect Google in admin)",
-              ].join("\n"),
-            },
-            email,
-          ),
-        );
+        try {
+          await resend.emails.send(
+            withReplyTo(
+              {
+                from,
+                to: [internalTo],
+                subject: `CALL BOOKED — ${businessName}`,
+                text: [
+                  `Funding review call booked.`,
+                  `Business: ${businessName}`,
+                  `When: ${slotLabel}`,
+                  `Email: ${email}`,
+                  `Phone: ${phone}`,
+                  meetLink
+                    ? `Meet: ${meetLink}`
+                    : "Meet: not created (connect Google in admin)",
+                ].join("\n"),
+              },
+              email,
+            ),
+          );
+        } catch (err) {
+          console.error("[booking] internal email failed:", err);
+        }
       }
     }
   }

@@ -43,6 +43,11 @@
 }
 
 @layer utilities {
+  /* Google Places dropdown above apply funnel / modals */
+  .pac-container {
+    z-index: 10000 !important;
+  }
+
   .text-balance {
     text-wrap: balance;
   }

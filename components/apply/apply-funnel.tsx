@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
 import { Controller, type FieldPath, type Resolver, useForm } from "react-hook-form";
+import { AddressSuggestInput } from "@/components/apply/address-suggest-input";
 import { ApplyField } from "@/components/apply/apply-field";
 import { ApplyLoadingState } from "@/components/apply/apply-loading-state";
 import { ApplyOptionCard } from "@/components/apply/apply-option-card";
@@ -19,6 +20,7 @@ import {
   APPLY_STEP_COUNT,
   APPLY_STEP_FIELDS,
   LEGAL_ENTITY_VALUES,
+  US_STATE_CODES,
   applyFormSchema,
   FUNDING_AMOUNT_VALUES,
   TIME_IN_BUSINESS_VALUES,
@@ -55,7 +57,6 @@ import {
   formatSsnInput,
   formatZipInput,
 } from "@/lib/input-formatters";
-import { US_STATE_CODES } from "@/lib/apply-schema";
 import { cn } from "@/lib/utils";
 
 const inputClass = cn(
@@ -736,14 +737,43 @@ export function ApplyFunnel() {
                 label="Home address"
                 htmlFor="homeAddress"
                 required
+                hint="Start typing for address suggestions"
                 error={errors.homeAddress?.message}
               >
-                <input
-                  id="homeAddress"
-                  autoComplete="street-address"
-                  placeholder="Street address"
-                  className={inputClass}
-                  {...register("homeAddress")}
+                <Controller
+                  name="homeAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <AddressSuggestInput
+                      id="homeAddress"
+                      className={inputClass}
+                      placeholder="Street address"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      aria-invalid={Boolean(errors.homeAddress)}
+                      onAddressParsed={(parsed) => {
+                        if (parsed.street) {
+                          setValue("homeAddress", parsed.street, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (parsed.state && US_STATE_CODES.includes(parsed.state as (typeof US_STATE_CODES)[number])) {
+                          setValue("homeState", parsed.state as (typeof US_STATE_CODES)[number], {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (parsed.zip) {
+                          setValue("homeZip", parsed.zip, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                      }}
+                    />
+                  )}
                 />
               </ApplyField>
 
@@ -894,18 +924,86 @@ export function ApplyFunnel() {
                 </select>
               </ApplyField>
 
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs font-medium text-btf-text-muted">
+                  Company address
+                </p>
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-btf-accent hover:underline"
+                  onClick={() => {
+                    const home = watch();
+                    if (home.homeAddress) {
+                      setValue("businessAddress", home.homeAddress, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }
+                    if (home.homeState) {
+                      setValue("businessState", home.homeState, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }
+                    if (home.homeZip) {
+                      setValue("businessZip", home.homeZip, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }
+                  }}
+                >
+                  Same as home address
+                </button>
+              </div>
+
               <ApplyField
                 label="Company address"
                 htmlFor="businessAddress"
                 required
+                hint="Start typing for address suggestions"
                 error={errors.businessAddress?.message}
               >
-                <input
-                  id="businessAddress"
-                  autoComplete="street-address"
-                  placeholder="Street address"
-                  className={inputClass}
-                  {...register("businessAddress")}
+                <Controller
+                  name="businessAddress"
+                  control={control}
+                  render={({ field }) => (
+                    <AddressSuggestInput
+                      id="businessAddress"
+                      className={inputClass}
+                      placeholder="Street address"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      aria-invalid={Boolean(errors.businessAddress)}
+                      onAddressParsed={(parsed) => {
+                        if (parsed.street) {
+                          setValue("businessAddress", parsed.street, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (parsed.city) {
+                          setValue("businessCity", parsed.city, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (parsed.state && US_STATE_CODES.includes(parsed.state as (typeof US_STATE_CODES)[number])) {
+                          setValue("businessState", parsed.state as (typeof US_STATE_CODES)[number], {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                        if (parsed.zip) {
+                          setValue("businessZip", parsed.zip, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
+                        }
+                      }}
+                    />
+                  )}
                 />
               </ApplyField>
 
