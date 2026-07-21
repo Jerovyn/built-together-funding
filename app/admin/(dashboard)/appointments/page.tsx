@@ -27,6 +27,7 @@ type BookingRow = {
   duration_minutes: number;
   status: string;
   created_at: string;
+  meet_link: string | null;
   leads: LeadSummary | null;
 };
 
@@ -48,6 +49,7 @@ function normalizeBookings(data: unknown): BookingRow[] {
       duration_minutes: Number(r.duration_minutes ?? 0),
       status: String(r.status ?? ""),
       created_at: String(r.created_at ?? ""),
+      meet_link: r.meet_link ? String(r.meet_link) : null,
       leads: normalizeLead(r.leads as LeadSummary | LeadSummary[] | null),
     };
   });
@@ -78,7 +80,7 @@ export default async function AdminAppointmentsPage() {
   const { data, error } = await supabase
     .from("bookings")
     .select(
-      "id, appointment_date, start_time, duration_minutes, status, created_at, leads ( business_name, name, phone, email )",
+      "id, appointment_date, start_time, duration_minutes, status, created_at, meet_link, leads ( business_name, name, phone, email )",
     )
     .order("appointment_date", { ascending: true })
     .order("start_time", { ascending: true })
@@ -111,13 +113,14 @@ export default async function AdminAppointmentsPage() {
                 <th className="px-4 py-3 font-medium">Business</th>
                 <th className="px-4 py-3 font-medium">Owner</th>
                 <th className="px-4 py-3 font-medium">Contact</th>
+                <th className="px-4 py-3 font-medium">Meet</th>
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-btf-text-muted">
+                  <td colSpan={6} className="px-4 py-8 text-center text-btf-text-muted">
                     No calls booked yet.
                   </td>
                 </tr>
@@ -135,6 +138,20 @@ export default async function AdminAppointmentsPage() {
                     <td className="px-4 py-3 text-xs">
                       <div>{row.leads?.email}</div>
                       <div className="text-btf-text-muted">{row.leads?.phone}</div>
+                    </td>
+                    <td className="px-4 py-3 text-xs">
+                      {row.meet_link ? (
+                        <a
+                          href={row.meet_link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium text-btf-accent hover:underline"
+                        >
+                          Join Meet
+                        </a>
+                      ) : (
+                        <span className="text-btf-text-muted">—</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-btf-accent">{row.status}</td>
                   </tr>

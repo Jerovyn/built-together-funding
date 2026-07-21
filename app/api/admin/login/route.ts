@@ -20,23 +20,22 @@ export async function POST(req: Request) {
 
   if (!isAdminConfigured()) {
     return NextResponse.json(
-      {
-        ok: false,
-        message:
-          "Admin CRM is not configured. Set ADMIN_DASHBOARD_SECRET in Vercel, redeploy, then try again.",
-      },
+      { ok: false, message: "Sign in is unavailable." },
       { status: 503 },
     );
   }
 
   if (!(await verifyAdminPassword(password))) {
-    return NextResponse.json({ ok: false, message: "Invalid password." }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, message: "Incorrect password." },
+      { status: 401 },
+    );
   }
 
   const token = await createAdminSessionToken();
   if (!token) {
     return NextResponse.json(
-      { ok: false, message: "Admin login is not configured." },
+      { ok: false, message: "Sign in is unavailable." },
       { status: 503 },
     );
   }

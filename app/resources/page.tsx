@@ -4,14 +4,18 @@ import { CtaBlock } from "@/components/cta-block";
 import { MarketingPageHero } from "@/components/marketing/marketing-page-hero";
 import { SectionShell } from "@/components/section-shell";
 import { Card, CardContent } from "@/components/ui/card";
-import { ARTICLES } from "@/lib/articles";
+import { listPublishedArticles } from "@/lib/articles-db";
 
 export const metadata: Metadata = {
   title: "Resources",
   description: "Short reads on using capital well in a trades business.",
 };
 
-export default function ResourcesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ResourcesPage() {
+  const articles = await listPublishedArticles();
+
   return (
     <>
       <MarketingPageHero
@@ -22,7 +26,7 @@ export default function ResourcesPage() {
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <ul className="grid gap-4 md:grid-cols-3">
-          {ARTICLES.map((article) => (
+          {articles.map((article) => (
             <li key={article.slug}>
               <Link
                 href={`/resources/${article.slug}/`}
@@ -30,6 +34,14 @@ export default function ResourcesPage() {
               >
                 <Card className="h-full bg-btf-card transition-all group-hover:-translate-y-0.5 group-hover:border-btf-accent/40 group-hover:shadow-btf-card">
                   <CardContent className="flex h-full flex-col gap-2 p-5">
+                    {article.featuredImagePath ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={`/api/content-images/${encodeURIComponent(article.featuredImagePath)}/`}
+                        alt=""
+                        className="mb-2 aspect-[16/10] w-full rounded-lg object-cover"
+                      />
+                    ) : null}
                     <p className="text-xs font-semibold text-btf-accent">
                       {article.readMinutes} min
                     </p>

@@ -19,6 +19,13 @@ This app writes apply-funnel leads to Postgres and bank-statement files to Stora
 
 Confirm **Table Editor** shows `public.leads` and **Storage** shows a private `statements` bucket.
 
+### Later migrations (run in order if upgrading)
+
+1. [`docs/supabase-leads-v3-migration.sql`](./supabase-leads-v3-migration.sql) — owner/business fields  
+2. [`docs/supabase-bookings-v4-migration.sql`](./supabase-bookings-v4-migration.sql) — bookings + booking tokens  
+3. [`docs/supabase-v5-crm-calendar-articles.sql`](./supabase-v5-crm-calendar-articles.sql) — Meet fields, integrations, articles CMS  
+4. [`docs/supabase-v5-seed-articles.sql`](./supabase-v5-seed-articles.sql) — seed the 3 existing resources  
+
 > Upgrading from the 12-question funnel? Run the commented `MIGRATION from v1`
 > block at the bottom of the SQL file instead of recreating the table.
 

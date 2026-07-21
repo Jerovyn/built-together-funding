@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/admin/leads/", label: "Leads" },
   { href: "/admin/appointments/", label: "Calls" },
+  { href: "/admin/content/", label: "Content" },
+  { href: "/admin/settings/", label: "Settings" },
 ] as const;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

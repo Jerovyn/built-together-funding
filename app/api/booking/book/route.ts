@@ -7,6 +7,7 @@ import {
   REVIEW_DURATION_MINUTES,
 } from "@/lib/booking/availability";
 import { isDevBookingToken } from "@/lib/booking/dev";
+import { createFundingReviewMeetEvent } from "@/lib/google-calendar";
 import { sendBookingNotifications } from "@/lib/notifications";
 import {
   createServiceRoleClient,
@@ -99,12 +100,32 @@ export async function POST(req: Request) {
 
   if (!slot?.available) {
     return NextResponse.json(
-      { ok: false, message: slot ? "That time is no longer available." : "Invalid time slot." },
+      {
+        ok: false,
+        message: slot ? "That time is no longer available." : "Invalid time slot.",
+      },
       { status: 409 },
     );
   }
 
-  const { data: booking, error: bookError } = await supabase
+  const meet = await createFundingReviewMeetEvent(supabase, {
+    appointmentDate,
+    startTimeHms,
+    applicantEmail: String(lead.email ?? ""),
+    applicantName:
+      [lead.first_name, lead.last_name].filter(Boolean).join(" ") ||
+      String(lead.business_name ?? ""),
+    businessName: String(lead.business_name ?? ""),
+  });
+
+  let booking: {
+    id: string;
+    appointment_date: string;
+    start_time: string;
+    meet_link?: string | null;
+  } | null = null;
+
+  const withMeet = await supabase
     .from("bookings")
     .insert({
       lead_id: lead.id,
@@ -112,18 +133,44 @@ export async function POST(req: Request) {
       start_time: startTimeHms,
       duration_minutes: REVIEW_DURATION_MINUTES,
       status: "scheduled",
+      meet_link: meet.meetLink,
+      google_event_id: meet.eventId,
+      calendar_html_link: meet.htmlLink,
     })
-    .select("id, appointment_date, start_time")
+    .select("id, appointment_date, start_time, meet_link")
     .single();
 
-  if (bookError || !booking) {
-    if (bookError?.code === "23505") {
+  if (withMeet.data) {
+    booking = withMeet.data;
+  } else if (withMeet.error?.code === "23505") {
+    return NextResponse.json(
+      { ok: false, message: "That time was just booked. Pick another slot." },
+      { status: 409 },
+    );
+  } else {
+    // v5 Meet columns may be missing — book without them
+    const fallback = await supabase
+      .from("bookings")
+      .insert({
+        lead_id: lead.id,
+        appointment_date: appointmentDate,
+        start_time: startTimeHms,
+        duration_minutes: REVIEW_DURATION_MINUTES,
+        status: "scheduled",
+      })
+      .select("id, appointment_date, start_time")
+      .single();
+
+    if (fallback.error?.code === "23505") {
       return NextResponse.json(
         { ok: false, message: "That time was just booked. Pick another slot." },
         { status: 409 },
       );
     }
-    return NextResponse.json({ ok: false, message: "Could not book call." }, { status: 500 });
+    if (fallback.error || !fallback.data) {
+      return NextResponse.json({ ok: false, message: "Could not book call." }, { status: 500 });
+    }
+    booking = { ...fallback.data, meet_link: meet.meetLink };
   }
 
   await supabase
@@ -142,6 +189,8 @@ export async function POST(req: Request) {
     email: String(lead.email ?? ""),
     phone: String(lead.phone ?? ""),
     slotLabel,
+    meetLink: meet.meetLink ?? booking.meet_link,
+    calendarHtmlLink: meet.htmlLink,
   });
 
   return NextResponse.json({
@@ -149,5 +198,6 @@ export async function POST(req: Request) {
     message: "Call booked.",
     slotLabel,
     bookingId: booking.id,
+    meetLink: meet.meetLink ?? booking.meet_link,
   });
 }

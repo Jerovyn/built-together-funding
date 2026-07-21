@@ -1,11 +1,11 @@
 import type { MetadataRoute } from "next";
-import { ARTICLES } from "@/lib/articles";
+import { listPublishedArticles } from "@/lib/articles-db";
 
 const BASE =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
   "https://builttogetherfunding.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const pages = [
@@ -23,7 +23,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/disclosures/", priority: 0.3 },
   ];
 
-  const articles = ARTICLES.map((a) => ({
+  const published = await listPublishedArticles();
+  const articles = published.map((a) => ({
     path: `/resources/${a.slug}/`,
     priority: 0.6,
   }));

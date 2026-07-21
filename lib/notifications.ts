@@ -248,24 +248,43 @@ export type BookingNotificationContext = {
   email: string;
   phone: string;
   slotLabel: string;
+  meetLink?: string | null;
+  calendarHtmlLink?: string | null;
 };
 
 export async function sendBookingNotifications(
   ctx: BookingNotificationContext,
 ): Promise<void> {
-  const { firstName, businessName, email, phone, slotLabel } = ctx;
+  const {
+    firstName,
+    businessName,
+    email,
+    phone,
+    slotLabel,
+    meetLink,
+    calendarHtmlLink,
+  } = ctx;
 
   if (isResendConfigured()) {
     const resend = createResendClient();
     const from = getResendFromEmail();
     if (resend && from) {
+      const meetLines = meetLink
+        ? ["", `Join with Google Meet:`, meetLink]
+        : [];
+      const calendarLines = calendarHtmlLink
+        ? ["", `Add / open in Google Calendar:`, calendarHtmlLink]
+        : [];
+
       const applicantText = [
         `Hi ${firstName || "there"},`,
         "",
         `Your funding review call with ${SITE_NAME} is booked:`,
         slotLabel,
+        ...meetLines,
+        ...calendarLines,
         "",
-        "We'll call you at the number on your file. If you need to reschedule, reply to our email or call us.",
+        "You'll also receive a Google Calendar invite if Meet was attached. If you need to reschedule, reply to this email.",
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
@@ -293,6 +312,7 @@ export async function sendBookingNotifications(
                 `When: ${slotLabel}`,
                 `Email: ${email}`,
                 `Phone: ${phone}`,
+                meetLink ? `Meet: ${meetLink}` : "Meet: not created (connect Google in admin)",
               ].join("\n"),
             },
             email,
@@ -311,7 +331,7 @@ export async function sendBookingNotifications(
         await client.messages.create({
           from,
           to: internalPhone,
-          body: `BTF call booked: ${businessName} — ${slotLabel}`,
+          body: `BTF call booked: ${businessName} — ${slotLabel}${meetLink ? ` Meet: ${meetLink}` : ""}`,
         });
       } catch {
         /* silent */

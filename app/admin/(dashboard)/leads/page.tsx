@@ -108,8 +108,22 @@ export default async function AdminLeadsPage() {
                     <td className="whitespace-nowrap px-4 py-3 text-btf-text-muted">
                       {new Date(row.created_at).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3">{row.name}</td>
-                    <td className="px-4 py-3">{row.business_name}</td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/admin/leads/${row.id}/`}
+                        className="font-medium text-btf-accent hover:underline"
+                      >
+                        {row.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/admin/leads/${row.id}/`}
+                        className="hover:underline"
+                      >
+                        {row.business_name}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-xs">
                       <div>{row.email}</div>
                       <div className="text-btf-text-muted">{row.phone}</div>
@@ -128,8 +142,7 @@ export default async function AdminLeadsPage() {
       )}
 
       <p className="text-xs text-btf-text-muted">
-        Need statement files? Use upload links from internal notification emails or query{" "}
-        <code>upload_token</code> in Supabase.{" "}
+        Open a lead to view statements and download the underwriting package.{" "}
         <Link href="/admin/appointments/" className="text-btf-accent hover:underline">
           View scheduled calls →
         </Link>

@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  // Include blog infographics for Content desk + /api/content-images on Vercel
+  outputFileTracingIncludes: {
+    "/api/content-images/**/*": ["./content/blog-images/**/*"],
+    "/api/admin/blog-images/**/*": ["./content/blog-images/**/*"],
+    "/admin/content/**/*": ["./content/blog-images/**/*"],
+  },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

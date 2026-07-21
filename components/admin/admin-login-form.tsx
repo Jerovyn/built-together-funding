@@ -24,7 +24,7 @@ export function AdminLoginForm() {
       });
       const json = (await res.json()) as { ok?: boolean; message?: string };
       if (!res.ok || !json.ok) {
-        setError(json.message ?? "Login failed.");
+        setError(json.message ?? "Sign in failed.");
         return;
       }
       router.replace(next);
@@ -39,16 +39,12 @@ export function AdminLoginForm() {
   return (
     <form onSubmit={onSubmit} className="mx-auto max-w-sm space-y-4">
       <div>
-        <label htmlFor="admin-password" className="block text-sm font-medium text-btf-text">
-          Admin password
+        <label
+          htmlFor="admin-password"
+          className="block text-sm font-medium text-btf-text"
+        >
+          Password
         </label>
-        <p className="mt-1 text-xs leading-relaxed text-btf-text-muted">
-          Password only — not your Google email. Use the same value as{" "}
-          <code className="rounded bg-btf-secondary px-1 py-0.5 text-[10px]">
-            ADMIN_DASHBOARD_SECRET
-          </code>{" "}
-          in Vercel.
-        </p>
         <input
           id="admin-password"
           type="password"
@@ -63,7 +59,12 @@ export function AdminLoginForm() {
           {error}
         </p>
       ) : null}
-      <Button type="submit" variant="primary" className="w-full justify-center" disabled={loading}>
+      <Button
+        type="submit"
+        variant="primary"
+        className="w-full justify-center"
+        disabled={loading}
+      >
         {loading ? "Signing in…" : "Sign in"}
       </Button>
     </form>

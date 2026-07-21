@@ -4,27 +4,25 @@ import { notFound } from "next/navigation";
 import { CtaBlock } from "@/components/cta-block";
 import { DisclaimerNote } from "@/components/disclaimer-note";
 import { SectionShell } from "@/components/section-shell";
-import { ARTICLES, getArticle } from "@/lib/articles";
+import { getPublishedArticleBySlug } from "@/lib/articles-db";
 import { DISCLAIMER_PREQUAL_LINE, ROUTES } from "@/lib/constants";
 
 type ArticlePageProps = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
 }: ArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getPublishedArticleBySlug(slug);
   if (!article) return {};
   return { title: article.title, description: article.description };
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const article = getArticle(slug);
+  const article = await getPublishedArticleBySlug(slug);
   if (!article) notFound();
 
   return (
@@ -43,6 +41,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <p className="mt-3 text-sm font-medium text-btf-text-muted">
             {article.readMinutes} minute read
           </p>
+          {article.featuredImagePath ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`/api/content-images/${encodeURIComponent(article.featuredImagePath)}/`}
+              alt=""
+              className="mt-6 w-full rounded-xl object-cover"
+            />
+          ) : null}
           <p className="mt-6 text-lg leading-relaxed text-btf-text-muted">
             {article.intro}
           </p>
