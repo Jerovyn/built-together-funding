@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import JSZip from "jszip";
 import { requireAdminApi } from "@/lib/admin-api";
 import {
-  buildApplicationText,
   downloadStatementBytes,
   fetchLeadById,
   safePackageBaseName,
@@ -11,8 +10,13 @@ import {
   createServiceRoleClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/server";
+import {
+  buildApplicationPdf,
+  toStatementPdfFile,
+} from "@/lib/underwriting-pdf";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function GET(
   _req: Request,
@@ -38,18 +42,21 @@ export async function GET(
 
   const zip = new JSZip();
   const base = safePackageBaseName(lead);
-  zip.file(
-    `${base}-application.txt`,
-    buildApplicationText(lead, { revealSsn: true }),
-  );
+
+  const applicationPdf = await buildApplicationPdf(lead);
+  zip.file(`${base}-application.pdf`, applicationPdf);
 
   const paths = lead.statement_paths ?? [];
   for (let i = 0; i < paths.length; i++) {
     const downloaded = await downloadStatementBytes(supabase, paths[i]);
     if (!downloaded) continue;
-    zip.file(
-      `statements/${String(i + 1).padStart(2, "0")}-${downloaded.fileName}`,
+    const asPdf = await toStatementPdfFile(
       downloaded.bytes,
+      downloaded.fileName,
+    );
+    zip.file(
+      `statements/${String(i + 1).padStart(2, "0")}-${asPdf.fileName}`,
+      asPdf.bytes,
     );
   }
 

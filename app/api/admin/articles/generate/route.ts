@@ -1,22 +1,22 @@
 import { NextResponse } from "next/server";
 import { requireAdminApi } from "@/lib/admin-api";
 import { slugifyTitle } from "@/lib/articles-db";
+import { generateArticleFromImage, isOpenAiConfigured } from "@/lib/openai-article";
 import {
   createServiceRoleClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/server";
-import { DISCLAIMER_PREQUAL_LINE, LEGAL_NO_GUARANTEE_LINE } from "@/lib/constants";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 type Body = {
   featuredImagePath?: string;
-  titleHint?: string;
 };
 
 /**
- * Creates a human-editable draft from an infographic path.
- * Does not auto-publish. Copy is a scaffold — always proofread before Post.
+ * Reads one infographic with OpenAI vision and creates a draft for proofreading.
+ * Does not publish.
  */
 export async function POST(req: Request) {
   const denied = await requireAdminApi();
@@ -24,6 +24,17 @@ export async function POST(req: Request) {
 
   if (!isSupabaseServiceConfigured()) {
     return NextResponse.json({ ok: false, message: "Unavailable." }, { status: 503 });
+  }
+
+  if (!isOpenAiConfigured()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        message:
+          "Add OPENAI_API_KEY in Vercel (Production), redeploy, then generate again.",
+      },
+      { status: 503 },
+    );
   }
 
   const supabase = createServiceRoleClient();
@@ -38,51 +49,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, message: "Invalid request." }, { status: 400 });
   }
 
-  const image = body.featuredImagePath?.trim() || null;
-  const hint =
-    body.titleHint?.trim() ||
-    (image
-      ? image
-          .replace(/\.[^.]+$/, "")
-          .replace(/^Photo\s+/i, "")
-          .slice(0, 80)
-      : "New resource draft");
+  const image = body.featuredImagePath?.trim();
+  if (!image || image.includes("..") || image.includes("/") || image.includes("\\")) {
+    return NextResponse.json(
+      { ok: false, message: "Pick an infographic image first." },
+      { status: 400 },
+    );
+  }
 
-  const title = hint.length > 8 ? `Draft: ${hint}` : "New resource draft";
-  const slugBase = slugifyTitle(hint) || `draft-${Date.now()}`;
+  const generated = await generateArticleFromImage(image);
+  if (!generated.ok) {
+    return NextResponse.json(
+      { ok: false, message: generated.message },
+      { status: 502 },
+    );
+  }
+
+  const { draft } = generated;
+  const slugBase = slugifyTitle(draft.title) || `draft-${Date.now()}`;
   const slug = `${slugBase}-${Date.now().toString(36)}`;
 
   const row = {
-    title,
+    title: draft.title,
     slug,
-    description:
-      "Edit this summary before publishing. Keep it accurate and free of approval promises.",
-    read_minutes: 4,
-    intro:
-      "Rewrite this intro in your voice. Lead with the operator takeaway — what the reader should do differently after reading.",
-    sections: [
-      {
-        heading: "The main point",
-        paragraphs: [
-          "Replace this with the idea from your infographic. Stay practical. Avoid hype.",
-          "If you mention funding, remind readers this is education — not an approval or guarantee.",
-        ],
-      },
-      {
-        heading: "What to do next",
-        paragraphs: [
-          "Give one clear action a trades owner can take this week.",
-        ],
-        bullets: [
-          "Name the capacity bottleneck",
-          "Check whether demand already exists on the books",
-          "Only then consider capital that buys that capacity",
-        ],
-      },
-    ],
-    takeaway: `${DISCLAIMER_PREQUAL_LINE} ${LEGAL_NO_GUARANTEE_LINE}`,
+    description: draft.description,
+    read_minutes: draft.readMinutes,
+    intro: draft.intro,
+    sections: draft.sections,
+    takeaway: draft.takeaway,
     featured_image_path: image,
-    status: "draft",
+    status: "draft" as const,
     published_at: null,
   };
 
@@ -94,7 +90,7 @@ export async function POST(req: Request) {
 
   if (error || !data) {
     return NextResponse.json(
-      { ok: false, message: "Could not create draft." },
+      { ok: false, message: "Could not save draft." },
       { status: 500 },
     );
   }

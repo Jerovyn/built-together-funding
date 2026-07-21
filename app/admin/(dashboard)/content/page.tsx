@@ -47,17 +47,23 @@ export default async function AdminContentPage() {
       <div>
         <h1 className="text-2xl font-semibold text-btf-text">Content</h1>
         <p className="text-sm text-btf-text-muted">
-          Generate a draft, proofread, then Post — live on Resources immediately.
+          Pick an infographic → AI drafts the article → you proofread → Post.
         </p>
       </div>
 
-      <ContentGeneratePanel images={images} />
+      <ContentGeneratePanel
+        images={images}
+        usedImages={articles
+          .map((a) => a.featured_image_path)
+          .filter((p): p is string => Boolean(p))}
+      />
 
       <div className="overflow-x-auto rounded-xl border border-btf-border bg-btf-card">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-btf-border text-xs uppercase tracking-wider text-btf-text-muted">
               <th className="px-4 py-3 font-medium">Title</th>
+              <th className="px-4 py-3 font-medium">Image</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Updated</th>
             </tr>
@@ -66,14 +72,10 @@ export default async function AdminContentPage() {
             {articles.length === 0 ? (
               <tr>
                 <td
-                  colSpan={3}
+                  colSpan={4}
                   className="px-4 py-8 text-center text-btf-text-muted"
                 >
-                  No articles yet. Generate a draft or run{" "}
-                  <code className="text-btf-accent">
-                    docs/supabase-v5-seed-articles.sql
-                  </code>
-                  .
+                  No articles yet. Generate a draft from an image above.
                 </td>
               </tr>
             ) : (
@@ -87,6 +89,23 @@ export default async function AdminContentPage() {
                       {row.title}
                     </Link>
                     <div className="text-xs text-btf-text-muted">/{row.slug}/</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {row.featured_image_path ? (
+                      <div className="flex items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={`/api/content-images/${encodeURIComponent(row.featured_image_path)}/`}
+                          alt=""
+                          className="h-10 w-14 rounded object-cover"
+                        />
+                        <span className="max-w-[140px] truncate text-xs text-btf-text-muted">
+                          {row.featured_image_path}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-btf-text-muted">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 capitalize text-btf-text-muted">
                     {row.status}

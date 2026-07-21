@@ -5,6 +5,8 @@ const nextConfig = {
   outputFileTracingIncludes: {
     "/api/content-images/**/*": ["./content/blog-images/**/*"],
     "/api/admin/blog-images/**/*": ["./content/blog-images/**/*"],
+    "/api/admin/articles/generate/**/*": ["./content/blog-images/**/*"],
+    "/api/admin/leads/**/*": ["./public/brand/**/*"],
     "/admin/content/**/*": ["./content/blog-images/**/*"],
   },
   env: {

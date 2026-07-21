@@ -249,6 +249,19 @@ export function ArticleEditor({ id, initial, images }: Props) {
         <span className="text-xs font-medium uppercase text-btf-text-muted">
           Featured image
         </span>
+        {featuredImagePath ? (
+          <div className="mb-2 overflow-hidden rounded-lg border border-btf-border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/api/content-images/${encodeURIComponent(featuredImagePath)}/`}
+              alt=""
+              className="max-h-48 w-full object-contain bg-white"
+            />
+            <p className="truncate border-t border-btf-border bg-btf-secondary px-3 py-1.5 text-xs text-btf-text-muted">
+              {featuredImagePath}
+            </p>
+          </div>
+        ) : null}
         <select
           className="w-full rounded-lg border border-btf-border bg-btf-bg px-3 py-2 text-sm"
           value={featuredImagePath}
