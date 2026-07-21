@@ -255,6 +255,8 @@ export type BookingNotificationContext = {
   slotLabel: string;
   meetLink?: string | null;
   calendarHtmlLink?: string | null;
+  /** Internal-only reason when Meet was not attached (never shown to applicant). */
+  meetError?: string | null;
   /** Only text the applicant when they opted in on the apply form. */
   smsConsent?: boolean;
 };
@@ -270,6 +272,7 @@ export async function sendBookingNotifications(
     slotLabel,
     meetLink,
     calendarHtmlLink,
+    meetError,
     smsConsent,
   } = ctx;
 
@@ -329,7 +332,9 @@ export async function sendBookingNotifications(
                   `Phone: ${phone}`,
                   meetLink
                     ? `Meet: ${meetLink}`
-                    : "Meet: not created (connect Google in admin)",
+                    : meetError
+                      ? `Meet: not created — ${meetError}`
+                      : "Meet: not created (connect Google in admin Settings, then run Test Meet)",
                 ].join("\n"),
               },
               email,

@@ -180,7 +180,40 @@ export type CreateMeetResult = {
   meetLink: string | null;
   eventId: string | null;
   htmlLink: string | null;
+  /** Short reason when Meet was not created (safe for internal email / admin UI). */
+  error?: string | null;
 };
+
+/** Extract a short, actionable message from googleapis / OAuth errors. */
+export function formatGoogleApiError(err: unknown): string {
+  if (!err || typeof err !== "object") return "Unknown Google Calendar error.";
+  const anyErr = err as {
+    message?: string;
+    code?: number | string;
+    response?: { data?: { error?: { message?: string; status?: string } } };
+  };
+  const apiMsg = anyErr.response?.data?.error?.message?.trim();
+  const status = anyErr.response?.data?.error?.status?.trim();
+  const base = apiMsg || anyErr.message?.trim() || "Google Calendar request failed.";
+  const lower = base.toLowerCase();
+
+  if (
+    lower.includes("access not configured") ||
+    lower.includes("has not been used") ||
+    lower.includes("is disabled") ||
+    lower.includes("calendar api")
+  ) {
+    return "Google Calendar API is not enabled on this Google Cloud project. Enable it, wait a minute, then Test again.";
+  }
+  if (lower.includes("invalid_grant") || lower.includes("token has been expired")) {
+    return "Google refresh token expired or revoked. Disconnect, reconnect, then Test again. Publish the OAuth app if still in Testing.";
+  }
+  if (lower.includes("insufficient") || lower.includes("permission")) {
+    return "Google OAuth lacks Calendar permission. Disconnect and reconnect, then allow Calendar access.";
+  }
+  if (status) return `${base} (${status})`;
+  return base.length > 220 ? `${base.slice(0, 217)}…` : base;
+}
 
 /**
  * Creates a Calendar event with Google Meet and invites the applicant.
@@ -200,11 +233,17 @@ export async function createFundingReviewMeetEvent(
     meetLink: null,
     eventId: null,
     htmlLink: null,
+    error: null,
   };
 
   try {
     const calendar = await getAuthedCalendar(supabase);
-    if (!calendar) return empty;
+    if (!calendar) {
+      return {
+        ...empty,
+        error: "Google Calendar not connected in admin Settings.",
+      };
+    }
 
     const calendarId =
       process.env.GOOGLE_CALENDAR_ID?.trim() || "primary";
@@ -250,13 +289,158 @@ export async function createFundingReviewMeetEvent(
         ?.uri ||
       null;
 
+    if (!meetLink && event.id) {
+      console.error(
+        "[google-calendar] event created without Meet link; conferenceData:",
+        JSON.stringify(event.conferenceData ?? null),
+      );
+      return {
+        meetLink: null,
+        eventId: event.id,
+        htmlLink: event.htmlLink ?? null,
+        error:
+          "Calendar event created but no Meet link returned. Confirm Google Meet is available on this Workspace account.",
+      };
+    }
+
     return {
       meetLink,
       eventId: event.id ?? null,
       htmlLink: event.htmlLink ?? null,
+      error: null,
     };
   } catch (err) {
-    console.error("[google-calendar] create event failed:", err);
-    return empty;
+    const message = formatGoogleApiError(err);
+    console.error("[google-calendar] create event failed:", message, err);
+    return { ...empty, error: message };
+  }
+}
+
+export type GoogleCalendarTestResult = {
+  ok: boolean;
+  message: string;
+  meetLink?: string | null;
+  htmlLink?: string | null;
+  eventId?: string | null;
+};
+
+/**
+ * Creates a short throwaway Meet event to verify OAuth + Calendar API + Meet,
+ * then deletes it. Safe for admin Settings “Test” button.
+ */
+export async function testGoogleCalendarMeet(
+  supabase: SupabaseClient,
+): Promise<GoogleCalendarTestResult> {
+  const calendar = await getAuthedCalendar(supabase);
+  if (!calendar) {
+    return {
+      ok: false,
+      message: "Not connected. Connect Google Calendar first.",
+    };
+  }
+
+  const calendarId = process.env.GOOGLE_CALENDAR_ID?.trim() || "primary";
+  const start = new Date(Date.now() + 60 * 60 * 1000);
+  const end = new Date(start.getTime() + REVIEW_DURATION_MINUTES * 60 * 1000);
+
+  const toLocalParts = (d: Date) => {
+    // Format in REVIEW_TIMEZONE via Intl so Test matches booking timezone.
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone: REVIEW_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+    const parts = Object.fromEntries(
+      fmt.formatToParts(d).map((p) => [p.type, p.value]),
+    );
+    const hour = parts.hour === "24" ? "00" : parts.hour;
+    return {
+      date: `${parts.year}-${parts.month}-${parts.day}`,
+      time: `${hour}:${parts.minute}:${parts.second}`,
+    };
+  };
+
+  const startParts = toLocalParts(start);
+  const endParts = toLocalParts(end);
+
+  let eventId: string | null = null;
+
+  try {
+    const res = await calendar.events.insert({
+      calendarId,
+      conferenceDataVersion: 1,
+      sendUpdates: "none",
+      requestBody: {
+        summary: `[BTF test] Meet check — delete me`,
+        description: `Temporary ${SITE_NAME} admin test. Safe to delete.`,
+        start: {
+          dateTime: `${startParts.date}T${startParts.time}`,
+          timeZone: REVIEW_TIMEZONE,
+        },
+        end: {
+          dateTime: `${endParts.date}T${endParts.time}`,
+          timeZone: REVIEW_TIMEZONE,
+        },
+        conferenceData: {
+          createRequest: {
+            requestId: `btf-test-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+            conferenceSolutionKey: { type: "hangoutsMeet" },
+          },
+        },
+      },
+    });
+
+    eventId = res.data.id ?? null;
+    const meetLink =
+      res.data.hangoutLink ||
+      res.data.conferenceData?.entryPoints?.find(
+        (e) => e.entryPointType === "video",
+      )?.uri ||
+      null;
+
+    if (eventId) {
+      try {
+        await calendar.events.delete({ calendarId, eventId });
+      } catch (delErr) {
+        console.warn(
+          "[google-calendar] test event cleanup failed:",
+          formatGoogleApiError(delErr),
+        );
+      }
+    }
+
+    if (!meetLink) {
+      return {
+        ok: false,
+        message:
+          "Calendar API worked, but no Meet link came back. Check that this Google account can create Meet links (Workspace / Meet enabled).",
+        eventId,
+        htmlLink: res.data.htmlLink ?? null,
+      };
+    }
+
+    return {
+      ok: true,
+      message: "Calendar + Meet OK. Test event was created and removed.",
+      meetLink,
+      eventId,
+      htmlLink: res.data.htmlLink ?? null,
+    };
+  } catch (err) {
+    const message = formatGoogleApiError(err);
+    console.error("[google-calendar] test failed:", message, err);
+    if (eventId) {
+      try {
+        await calendar.events.delete({ calendarId, eventId });
+      } catch {
+        /* ignore */
+      }
+    }
+    return { ok: false, message };
   }
 }

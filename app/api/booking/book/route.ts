@@ -161,6 +161,7 @@ export async function POST(req: Request) {
     // Soft-fail Meet: booking already saved.
     let meetLink: string | null = null;
     let calendarHtmlLink: string | null = null;
+    let meetError: string | null = null;
     try {
       const meet = await createFundingReviewMeetEvent(supabase, {
         appointmentDate,
@@ -173,6 +174,7 @@ export async function POST(req: Request) {
       });
       meetLink = meet.meetLink;
       calendarHtmlLink = meet.htmlLink;
+      meetError = meet.error ?? null;
       if (meet.meetLink || meet.eventId || meet.htmlLink) {
         await supabase
           .from("bookings")
@@ -185,6 +187,8 @@ export async function POST(req: Request) {
       }
     } catch (err) {
       console.error("[booking] Meet attach failed:", err);
+      meetError =
+        err instanceof Error ? err.message : "Meet attach failed unexpectedly.";
     }
 
     const slotLabel = formatReviewSlotLabel(
@@ -201,6 +205,7 @@ export async function POST(req: Request) {
         slotLabel,
         meetLink,
         calendarHtmlLink,
+        meetError,
         smsConsent: Boolean(lead.sms_consent),
       });
     } catch (err) {

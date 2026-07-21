@@ -7,6 +7,10 @@ import {
   createServiceRoleClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/server";
+import {
+  getInternalNotifyPhones,
+  isTwilioConfigured,
+} from "@/lib/twilio";
 
 export const metadata: Metadata = {
   title: "Admin — Settings",
@@ -30,6 +34,9 @@ export default async function AdminSettingsPage() {
     }
   }
 
+  const twilioConfigured = isTwilioConfigured();
+  const notifyPhoneCount = getInternalNotifyPhones().length;
+
   return (
     <div className="space-y-6">
       <div>
@@ -49,6 +56,8 @@ export default async function AdminSettingsPage() {
               configured={configured}
               connected={connected}
               email={email}
+              twilioConfigured={twilioConfigured}
+              notifyPhoneCount={notifyPhoneCount}
             />
           </Suspense>
         </CardContent>
