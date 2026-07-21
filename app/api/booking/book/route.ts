@@ -80,7 +80,7 @@ export async function POST(req: Request) {
     const { data: lead, error: leadError } = await supabase
       .from("leads")
       .select(
-        "id, first_name, last_name, business_name, email, phone, lead_status, booking_token",
+        "id, first_name, last_name, business_name, email, phone, lead_status, booking_token, sms_consent",
       )
       .eq("booking_token", bookingToken)
       .maybeSingle();
@@ -201,6 +201,7 @@ export async function POST(req: Request) {
         slotLabel,
         meetLink,
         calendarHtmlLink,
+        smsConsent: Boolean(lead.sms_consent),
       });
     } catch (err) {
       console.error("[booking] notifications failed:", err);

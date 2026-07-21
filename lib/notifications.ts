@@ -7,6 +7,7 @@ import {
   getInternalNotifyPhones,
   getTwilioFromNumber,
   isTwilioConfigured,
+  toE164Phone,
 } from "@/lib/twilio";
 import type { ApplyResultTier } from "@/types/apply";
 import type { LeadDbStatus } from "@/types/apply";
@@ -203,10 +204,8 @@ async function sendInternalSms(ctx: ApplyNotificationContext): Promise<void> {
     phones.map(async (to) => {
       try {
         await client.messages.create({ from, to, body });
-      } catch {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[apply] Twilio internal SMS error (dev only)");
-        }
+      } catch (err) {
+        console.error("[apply] Twilio internal SMS failed:", to, err);
       }
     }),
   );
@@ -217,18 +216,19 @@ async function sendApplicantSms(ctx: ApplyNotificationContext): Promise<void> {
   if (!form.smsConsent || !isTwilioConfigured()) return;
   const client = createTwilioClient();
   const from = getTwilioFromNumber();
-  const to = form.phone.trim();
-  if (!client || !from || !to) return;
+  const to = toE164Phone(form.phone);
+  if (!client || !from || !to) {
+    if (!to) console.error("[apply] Applicant phone not E.164-compatible:", form.phone);
+    return;
+  }
   try {
     await client.messages.create({
       from,
       to,
       body: applicantConfirmationSmsBody(tier, uploadUrl),
     });
-  } catch {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("[apply] Twilio applicant SMS error (dev only)");
-    }
+  } catch (err) {
+    console.error("[apply] Twilio applicant SMS failed:", err);
   }
 }
 
@@ -255,6 +255,8 @@ export type BookingNotificationContext = {
   slotLabel: string;
   meetLink?: string | null;
   calendarHtmlLink?: string | null;
+  /** Only text the applicant when they opted in on the apply form. */
+  smsConsent?: boolean;
 };
 
 export async function sendBookingNotifications(
@@ -268,6 +270,7 @@ export async function sendBookingNotifications(
     slotLabel,
     meetLink,
     calendarHtmlLink,
+    smsConsent,
   } = ctx;
 
   if (isResendConfigured()) {
@@ -339,21 +342,38 @@ export async function sendBookingNotifications(
     }
   }
 
-  if (isTwilioConfigured()) {
-    const client = createTwilioClient();
-    const from = getTwilioFromNumber();
-    const phones = getInternalNotifyPhones();
-    if (client && from && phones.length) {
-      const body = `BTF call booked: ${businessName} — ${slotLabel}${meetLink ? ` Meet: ${meetLink}` : ""}`;
-      await Promise.allSettled(
-        phones.map(async (to) => {
-          try {
-            await client.messages.create({ from, to, body });
-          } catch {
-            /* silent */
-          }
-        }),
-      );
+  if (!isTwilioConfigured()) return;
+
+  const client = createTwilioClient();
+  const from = getTwilioFromNumber();
+  if (!client || !from) return;
+
+  const phones = getInternalNotifyPhones();
+  if (phones.length) {
+    const body = `BTF call booked: ${businessName} — ${slotLabel}${meetLink ? ` Meet: ${meetLink}` : ""}`;
+    await Promise.allSettled(
+      phones.map(async (to) => {
+        try {
+          await client.messages.create({ from, to, body });
+        } catch (err) {
+          console.error("[booking] Twilio internal SMS failed:", to, err);
+        }
+      }),
+    );
+  }
+
+  if (smsConsent) {
+    const to = toE164Phone(phone);
+    if (!to) {
+      console.error("[booking] Applicant phone not E.164-compatible:", phone);
+      return;
+    }
+    const meetPart = meetLink ? ` Join: ${meetLink}` : "";
+    const body = `${SITE_NAME}: Funding review call booked — ${slotLabel}.${meetPart} Reply STOP to opt out.`;
+    try {
+      await client.messages.create({ from, to, body });
+    } catch (err) {
+      console.error("[booking] Twilio applicant SMS failed:", err);
     }
   }
 }
