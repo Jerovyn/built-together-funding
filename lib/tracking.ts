@@ -1,3 +1,4 @@
+import { track as vercelTrack } from "@vercel/analytics";
 import type { ApplyResultTier } from "@/types/apply";
 
 export type TrackEventName =
@@ -60,6 +61,18 @@ function toGtagParams(props: TrackEventProps): Record<string, unknown> {
   return out;
 }
 
+/** Vercel Analytics only accepts flat string/number/boolean/null values. */
+function toVercelParams(
+  props: TrackEventProps,
+): Record<string, string | number | boolean | null> {
+  const out: Record<string, string | number | boolean | null> = {};
+  for (const [k, v] of Object.entries(props)) {
+    if (v === undefined) continue;
+    out[k] = Array.isArray(v) ? v.join(",") : v;
+  }
+  return out;
+}
+
 function getGoogleAdsSendTo(): string | null {
   const id = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID?.trim();
   const label = process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL?.trim();
@@ -88,6 +101,9 @@ export function trackEvent(
     if (typeof window.fbq === "function") {
       window.fbq("trackCustom", event, payload);
     }
+
+    // Vercel Web Analytics custom events (no-op if the plan doesn't include them).
+    vercelTrack(event, toVercelParams(props));
   } catch {
     /* fail silently */
   }

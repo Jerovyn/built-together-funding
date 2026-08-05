@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { Inter_Tight } from "next/font/google";
 import { BrandAmbientBackground } from "@/components/brand/brand-ambient-background";
 import { BoltAssistant } from "@/components/mascot/bolt-assistant";
@@ -129,6 +130,7 @@ export default function RootLayout({
             <StickyMobileCta />
           </div>
         </TrackingProvider>
+        <Analytics />
       </body>
     </html>
   );
