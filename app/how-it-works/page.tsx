@@ -6,13 +6,15 @@ import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "How It Works",
-  description: `The ${SITE_NAME} process: five steps, bank statements, human review, straight answer.`,
+  description: `The ${SITE_NAME} process: seven quick steps, bank statements, human review, straight answer.`,
 };
 
 const STEPS = [
-  "Three funding questions — time in business, amount, use of funds",
+  "What you're looking for — funding type, amount, and use of funds",
+  "Business basics — time in business and your industry",
+  "Contact — where your options go, with your communication preferences",
   "Last 3 months of bank statements — upload now or secure link later",
-  "Owner details — contact info, DOB, and SSN for identity verification",
+  "Owner details — DOB, home address, and SSN for identity verification",
   "Business details — company name, EIN, and address",
   "Confirm and submit — then book a funding review call or hear from us within one business day",
 ] as const;

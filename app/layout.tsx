@@ -8,7 +8,12 @@ import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { StickyMobileCta } from "@/components/sticky-mobile-cta";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { SITE_DESCRIPTION, SITE_NAME, HOME_FAQS } from "@/lib/constants";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TAGLINE,
+  HOME_FAQS,
+} from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -24,18 +29,26 @@ export const metadata: Metadata = {
     ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
     : undefined,
   title: {
-    default: `${SITE_NAME} | Capacity capital for service businesses`,
+    default: `${SITE_NAME} | ${SITE_TAGLINE}`,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   icons: {
     icon: "/brand/btf-logo-icon-mark.png",
     apple: "/brand/btf-logo-icon-mark.png",
   },
   openGraph: {
-    title: SITE_NAME,
+    // Descriptor-forward so link previews read like a category, not a name.
+    title: SITE_TAGLINE,
+    siteName: SITE_NAME,
     description: SITE_DESCRIPTION,
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
   },
 };
 

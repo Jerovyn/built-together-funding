@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { CtaBlock } from "@/components/cta-block";
-import { GrowthCalculator } from "@/components/growth-calculator";
+import { FundingCalculator } from "@/components/calculator/funding-calculator";
 import { ListCheck } from "@/components/list-check";
 import { MarketingPageHero } from "@/components/marketing/marketing-page-hero";
 import { SectionShell } from "@/components/section-shell";
@@ -57,7 +57,7 @@ export default function FundingUsesPage() {
         <h2 className="mb-8 text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
           Run your numbers
         </h2>
-        <GrowthCalculator />
+        <FundingCalculator embedded />
       </SectionShell>
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">

@@ -3,13 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+  BROKER_DISCLOSURE,
   DISCLAIMER_SHORT,
   FOOTER_LINKS,
-  NAV_LINKS,
   ROUTES,
+  SITE_TAGLINE,
 } from "@/lib/constants";
+import { PRODUCTS } from "@/lib/products";
 import { TrackedLink } from "@/components/tracking/tracked-link";
 import { TrackedPhoneLink } from "@/components/tracking/tracked-phone-link";
+
+const EXPLORE_LINKS = [
+  { href: ROUTES.calculator, label: "Funding Calculator" },
+  { href: ROUTES.howItWorks, label: "How It Works" },
+  { href: ROUTES.whoWeHelp, label: "Who We Help" },
+  { href: ROUTES.fundingUses, label: "Funding Uses" },
+  { href: ROUTES.resources, label: "Resources" },
+  { href: ROUTES.about, label: "About" },
+  { href: ROUTES.contact, label: "Contact" },
+] as const;
 
 export function SiteFooter() {
   const phoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY;
@@ -26,8 +38,8 @@ export function SiteFooter() {
           <span className="text-btf-accent-soft">to growth.</span>
         </p>
 
-        <div className="mt-10 flex flex-col gap-8 border-t border-btf-ink-border pt-8 sm:mt-12 sm:gap-10 sm:pt-10 md:flex-row md:justify-between">
-          <div className="max-w-md space-y-4">
+        <div className="mt-10 flex flex-col gap-8 border-t border-btf-ink-border pt-8 sm:mt-12 sm:gap-10 sm:pt-10 lg:flex-row lg:justify-between">
+          <div className="max-w-sm space-y-4">
             <Link href={ROUTES.home} className="inline-flex items-center gap-3">
               <Image
                 src="/brand/btf-logo-tools.png"
@@ -45,19 +57,37 @@ export function SiteFooter() {
                 </span>
               </span>
             </Link>
+            <p className="text-sm font-semibold text-btf-on-ink">{SITE_TAGLINE}</p>
             <p className="text-sm leading-relaxed text-btf-on-ink-muted">
               Money to grow your service business when the work is already
               there. Not a bailout — a build.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-10">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
+                Financing
+              </p>
+              <ul className="mt-3 space-y-2">
+                {PRODUCTS.map((p) => (
+                  <li key={p.slug}>
+                    <Link
+                      href={`${ROUTES.products}${p.slug}/`}
+                      className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
+                    >
+                      {p.shortName}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
                 Explore
               </p>
               <ul className="mt-3 space-y-2">
-                {NAV_LINKS.map((item) => (
+                {EXPLORE_LINKS.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
@@ -135,8 +165,11 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 space-y-4 border-t border-btf-ink-border pt-8">
-          <p className="max-w-3xl text-xs leading-relaxed text-btf-on-ink-muted">
-            {DISCLAIMER_SHORT}
+          <p className="max-w-4xl text-xs leading-relaxed text-btf-on-ink-muted">
+            <span className="font-semibold text-btf-on-ink">
+              Important disclosure:
+            </span>{" "}
+            {BROKER_DISCLOSURE} {DISCLAIMER_SHORT}
           </p>
           <p className="text-xs text-btf-on-ink-muted">
             &copy; {year} Built Together Funding Corp. All rights reserved.

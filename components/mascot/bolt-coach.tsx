@@ -5,7 +5,9 @@ import { BoltMascot } from "@/components/mascot/bolt";
 import { cn } from "@/lib/utils";
 
 const COACH_TIPS = [
-  "Tap your three answers.",
+  "Tap what you're looking for.",
+  "Two quick basics.",
+  "Where your options go.",
   "Statements now or later - your call.",
   "Owner info for your review.",
   "Business details next.",

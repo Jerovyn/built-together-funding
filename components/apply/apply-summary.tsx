@@ -6,6 +6,7 @@ import {
   TIB_LABELS,
   USE_LABELS,
 } from "@/lib/input-formatters";
+import { PRODUCT_INTEREST_LABELS } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
 type ApplySummaryProps = {
@@ -74,9 +75,11 @@ export function ApplySummary({
         Your file summary
       </p>
       <Row
-        label="Funding fit"
+        label="Funding"
         value={[
-          values.timeInBusiness ? TIB_LABELS[values.timeInBusiness] : "",
+          values.productInterest
+            ? PRODUCT_INTEREST_LABELS[values.productInterest] ?? values.productInterest
+            : "",
           values.fundingAmount ? FUNDING_AMOUNT_LABELS[values.fundingAmount] : "",
           uses,
         ]
@@ -84,12 +87,22 @@ export function ApplySummary({
           .join(" · ")}
         onEdit={() => onEditStep(0)}
       />
-      <Row label="Statements" value={statements} onEdit={() => onEditStep(1)} />
       <Row
-        label="Owner"
+        label="Business basics"
+        value={[
+          values.timeInBusiness ? TIB_LABELS[values.timeInBusiness] : "",
+          values.industry || "",
+        ]
+          .filter(Boolean)
+          .join(" · ")}
+        onEdit={() => onEditStep(1)}
+      />
+      <Row
+        label="Contact"
         value={[name, values.email, values.phone].filter(Boolean).join(" · ")}
         onEdit={() => onEditStep(2)}
       />
+      <Row label="Statements" value={statements} onEdit={() => onEditStep(3)} />
       <Row
         label="Business"
         value={[
@@ -98,10 +111,14 @@ export function ApplySummary({
         ]
           .filter(Boolean)
           .join(" · ")}
-        onEdit={() => onEditStep(3)}
+        onEdit={() => onEditStep(5)}
       />
       {values.dob ? (
-        <Row label="DOB on file" value={formatDobDisplay(values.dob)} />
+        <Row
+          label="DOB on file"
+          value={formatDobDisplay(values.dob)}
+          onEdit={() => onEditStep(4)}
+        />
       ) : null}
     </div>
   );

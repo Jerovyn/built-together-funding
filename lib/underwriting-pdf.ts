@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import type { LeadPackageRow } from "@/lib/admin-leads";
-import { formatUseOfFunds } from "@/lib/admin-leads";
+import { formatProductInterest, formatUseOfFunds } from "@/lib/admin-leads";
 import { maskSsn } from "@/lib/ssn-mask";
 import {
   DISCLAIMER_PREQUAL_LINE,
@@ -159,6 +159,8 @@ export async function buildApplicationPdf(
     {
       title: "Funding request",
       rows: [
+        ["Product interest", formatProductInterest(lead.product_interest)],
+        ["Industry", lead.industry ?? "—"],
         ["Amount requested", lead.funding_amount ?? "—"],
         ["Use of funds", formatUseOfFunds(lead.use_of_funds)],
       ],

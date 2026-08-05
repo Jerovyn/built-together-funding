@@ -22,9 +22,12 @@ function buildPartialRow(body: ApplyPartialBody, meta: ApplySubmissionMeta) {
     email: body.email.trim().toLowerCase(),
     first_name: body.firstName.trim(),
     last_name: body.lastName.trim(),
+    product_interest: body.productInterest,
+    industry: body.industry?.trim() || null,
     time_in_business: body.timeInBusiness,
     funding_amount: body.fundingAmount,
     use_of_funds: body.useOfFunds,
+    calculator_snapshot: body.calculator ?? null,
     statement_paths: body.statementPaths,
     statements_status:
       body.statementPaths.length > 0
@@ -32,8 +35,9 @@ function buildPartialRow(body: ApplyPartialBody, meta: ApplySubmissionMeta) {
         : body.statementsSkipped
           ? "pending"
           : "skipped",
-    email_consent: false,
-    sms_consent: false,
+    // Consent is now captured on the contact step, so partial leads carry it.
+    email_consent: body.emailConsent === true,
+    sms_consent: body.smsConsent === true,
     lead_score: 0,
     lead_status: "partial",
     source: m.source ?? null,

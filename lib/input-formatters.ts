@@ -53,6 +53,10 @@ export const FUNDING_AMOUNT_LABELS: Record<string, string> = {
   "25k_75k": "$25k–$75k",
   "75k_150k": "$75k–$150k",
   "150k_300k": "$150k–$300k",
+  "300k_750k": "$300k–$750k",
+  "750k_2m": "$750k–$2M",
+  "2m_plus": "$2M+",
+  // Legacy tier from the 5-bucket funnel; kept so old leads render correctly.
   "300k_plus": "$300k+",
 };
 
@@ -69,6 +73,9 @@ export const USE_LABELS: Record<string, string> = {
   hiring_crews: "Hiring / crews",
   marketing_ads: "Marketing",
   wc_growth: "Working capital",
+  debt_consolidation: "Consolidating debt",
+  acquisition_expansion: "Acquisition / expansion",
+  property_project: "Property / major project",
   other: "Other",
 };
 

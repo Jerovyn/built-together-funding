@@ -13,7 +13,22 @@ export const FUNDING_AMOUNT_VALUES = [
   "25k_75k",
   "75k_150k",
   "150k_300k",
-  "300k_plus",
+  "300k_750k",
+  "750k_2m",
+  "2m_plus",
+] as const;
+
+/** Financing product the applicant is interested in (see lib/products.ts). */
+export const PRODUCT_INTEREST_VALUES = [
+  "working_capital",
+  "term_loan",
+  "line_of_credit",
+  "equipment_financing",
+  "sba_loan",
+  "mca_consolidation",
+  "acquisition",
+  "commercial_real_estate",
+  "not_sure",
 ] as const;
 
 export const USE_OF_FUND_VALUES = [
@@ -22,6 +37,9 @@ export const USE_OF_FUND_VALUES = [
   "hiring_crews",
   "marketing_ads",
   "wc_growth",
+  "debt_consolidation",
+  "acquisition_expansion",
+  "property_project",
   "other",
 ] as const;
 
@@ -155,9 +173,13 @@ const dobSchema = z
   .transform(dobToIso);
 
 /**
- * Apply funnel: funding fit, statements, contact + owner info, business info, consent.
+ * Apply funnel: product + funding fit, business basics, contact + consent,
+ * statements, owner identity, business info, confirm.
  */
 const applyFormObject = z.object({
+  productInterest: z.enum(PRODUCT_INTEREST_VALUES, {
+    message: "Select a funding type (or \u201cNot sure yet\u201d)",
+  }),
   timeInBusiness: z.enum(TIME_IN_BUSINESS_VALUES, {
     message: "Select time in business",
   }),
@@ -167,6 +189,8 @@ const applyFormObject = z.object({
   useOfFunds: z
     .array(z.enum(USE_OF_FUND_VALUES))
     .min(1, "Select at least one use of funds"),
+  /** Optional trade/industry — helps routing and the review call. */
+  industry: z.string().trim().max(80).optional().default(""),
 
   statementPaths: z
     .array(z.string().min(1).max(600))
@@ -227,6 +251,23 @@ export function ownerFullName(
   return `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
 }
 
+/**
+ * Snapshot of the funding calculator state when the applicant clicked through.
+ * Stored on the lead so the review call starts from what they modeled.
+ */
+export const calcSnapshotSchema = z.object({
+  product: z.enum(PRODUCT_INTEREST_VALUES),
+  amount: z.number().min(0).max(50_000_000),
+  termMonths: z.number().min(1).max(600),
+  frequency: z.enum(["daily", "weekly", "monthly"]),
+  rateType: z.enum(["factor", "apr"]),
+  rate: z.number().min(0).max(100),
+  estPayment: z.number().min(0).max(50_000_000),
+  totalRepayment: z.number().min(0).max(100_000_000),
+});
+
+export type CalcSnapshot = z.infer<typeof calcSnapshotSchema>;
+
 /** Optional attribution fields accepted by POST /api/apply. */
 export const applySubmissionMetaFields = z.object({
   utm_source: z.string().max(500).optional(),
@@ -247,6 +288,8 @@ export const applyApiBodySchema = applyFormObject
   .extend({
     /** Set when a partial lead row was created mid-funnel; server finalizes it. */
     partialLeadId: z.string().uuid().optional(),
+    /** Calculator state carried into the funnel, when the visitor used it. */
+    calculator: calcSnapshotSchema.optional(),
   })
   .superRefine(statementsChosen);
 
@@ -256,6 +299,7 @@ export function splitApplyApiPayload(data: ApplyApiBody): {
   form: ApplyFormValues;
   meta: ApplySubmissionMeta;
   partialLeadId: string | null;
+  calculator: CalcSnapshot | null;
 } {
   const {
     utm_source,
@@ -268,6 +312,7 @@ export function splitApplyApiPayload(data: ApplyApiBody): {
     landing_page,
     source,
     partialLeadId,
+    calculator,
     ...form
   } = data;
   return {
@@ -284,48 +329,48 @@ export function splitApplyApiPayload(data: ApplyApiBody): {
       source,
     },
     partialLeadId: partialLeadId ?? null,
+    calculator: calculator ?? null,
   };
 }
 
 /**
- * Partial lead capture (fires after the contact step so mid-funnel
- * abandonment is recoverable). Contact fields only — never SSN/EIN.
+ * Partial lead capture (fires right after the contact + consent step so
+ * mid-funnel abandonment is recoverable). Never SSN/EIN.
  */
 export const applyPartialBodySchema = z
   .object({
+    productInterest: z.enum(PRODUCT_INTEREST_VALUES),
     timeInBusiness: z.enum(TIME_IN_BUSINESS_VALUES),
     fundingAmount: z.enum(FUNDING_AMOUNT_VALUES),
     useOfFunds: z.array(z.enum(USE_OF_FUND_VALUES)).min(1),
+    industry: z.string().trim().max(80).optional().default(""),
     statementPaths: z.array(z.string().min(1).max(600)).max(STATEMENT_MAX_FILES),
     statementsSkipped: z.boolean(),
     firstName: z.string().trim().min(1),
     lastName: z.string().trim().min(1),
     email: z.string().trim().email(),
     phone: phoneSchema,
+    emailConsent: z.boolean().optional(),
+    smsConsent: z.boolean().optional(),
     partialLeadId: z.string().uuid().optional(),
+    calculator: calcSnapshotSchema.optional(),
   })
   .merge(applySubmissionMetaFields);
 
 export type ApplyPartialBody = z.infer<typeof applyPartialBodySchema>;
 
 /**
- * Step map (5 steps). Contact info lives in step 2 *above* SSN so an
- * abandoned funnel still leaves a recoverable lead, per CRO best practice.
+ * Step map (7 quick steps, VersaFi-style micro-steps). Contact + consent land
+ * at step 3 of 7 — early enough that abandonment leaves a recoverable,
+ * contactable lead; sensitive identity fields (DOB/SSN) come later, after
+ * commitment is built.
  */
 export const APPLY_STEP_FIELDS = [
-  ["timeInBusiness", "fundingAmount", "useOfFunds"] as const,
+  ["productInterest", "fundingAmount", "useOfFunds"] as const,
+  ["timeInBusiness", "industry"] as const,
+  ["firstName", "lastName", "email", "phone", "emailConsent", "smsConsent"] as const,
   ["statementPaths", "statementsSkipped"] as const,
-  [
-    "firstName",
-    "lastName",
-    "email",
-    "phone",
-    "dob",
-    "homeAddress",
-    "homeState",
-    "homeZip",
-    "ssn",
-  ] as const,
+  ["dob", "homeAddress", "homeState", "homeZip", "ssn"] as const,
   [
     "businessName",
     "federalId",
@@ -335,13 +380,15 @@ export const APPLY_STEP_FIELDS = [
     "businessState",
     "businessZip",
   ] as const,
-  ["emailConsent", "smsConsent"] as const,
+  [] as const,
 ] as const;
 
 export const APPLY_STEP_COUNT = APPLY_STEP_FIELDS.length;
 
 export const APPLY_STEP_LABELS = [
-  "Your answers",
+  "Your funding",
+  "Business basics",
+  "Contact",
   "Bank statements",
   "About you",
   "Your business",

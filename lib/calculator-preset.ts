@@ -1,44 +1,52 @@
-import type { USE_OF_FUND_VALUES } from "@/lib/apply-schema";
-
-export type CalcPresetKey =
-  | "equipment"
-  | "truck"
-  | "crew"
-  | "marketing"
-  | "inventory";
-
-export const CALC_PRESET_STORAGE_KEY = "btf_calc_use";
+import {
+  calcSnapshotSchema,
+  type CalcSnapshot,
+  type USE_OF_FUND_VALUES,
+} from "@/lib/apply-schema";
+import { getProductByInterestKey } from "@/lib/products";
 
 type UseOfFund = (typeof USE_OF_FUND_VALUES)[number];
 
-const PRESET_TO_USE: Record<CalcPresetKey, UseOfFund[]> = {
-  equipment: ["equipment"],
-  truck: ["trucks"],
-  crew: ["hiring_crews"],
-  marketing: ["marketing_ads"],
-  inventory: ["wc_growth"],
-};
+/**
+ * Calculator → funnel handoff. The funding calculator saves a snapshot of what
+ * the visitor modeled; the apply funnel seeds product / amount / use of funds
+ * from it and the snapshot rides along to the lead record so the review call
+ * starts from their numbers.
+ */
+export const CALC_SNAPSHOT_STORAGE_KEY = "btf_calc_snapshot_v2";
 
-export function saveCalcPresetToSession(key: CalcPresetKey): void {
+export function saveCalcSnapshotToSession(snapshot: CalcSnapshot): void {
   if (typeof window === "undefined") return;
   try {
-    sessionStorage.setItem(CALC_PRESET_STORAGE_KEY, key);
+    sessionStorage.setItem(CALC_SNAPSHOT_STORAGE_KEY, JSON.stringify(snapshot));
   } catch {
     /* private mode */
   }
 }
 
-export function readCalcPresetFromSession(): CalcPresetKey | null {
+export function readCalcSnapshotFromSession(): CalcSnapshot | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = sessionStorage.getItem(CALC_PRESET_STORAGE_KEY);
-    if (raw && raw in PRESET_TO_USE) return raw as CalcPresetKey;
+    const raw = sessionStorage.getItem(CALC_SNAPSHOT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = calcSnapshotSchema.safeParse(JSON.parse(raw));
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearCalcSnapshotFromSession(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(CALC_SNAPSHOT_STORAGE_KEY);
   } catch {
     /* private mode */
   }
-  return null;
 }
 
-export function fundsForCalcPreset(key: CalcPresetKey): UseOfFund[] {
-  return PRESET_TO_USE[key];
+/** Use-of-funds chips to pre-select for a product coming from the calculator. */
+export function usesForProductInterest(key: string): UseOfFund[] {
+  const product = getProductByInterestKey(key);
+  return product ? [...product.useOfFundsSeed] : [];
 }

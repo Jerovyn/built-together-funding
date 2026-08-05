@@ -5,6 +5,7 @@ import {
   splitApplyApiPayload,
   type ApplyFormValues,
   type ApplySubmissionMeta,
+  type CalcSnapshot,
 } from "@/lib/apply-schema";
 import {
   computeApplyScore,
@@ -44,6 +45,7 @@ function buildLeadInsert(
   meta: ApplySubmissionMeta,
   leadScore: number,
   leadStatus: LeadDbStatus,
+  calculator: CalcSnapshot | null,
 ) {
   const m = compactSubmissionMeta(meta);
 
@@ -65,9 +67,12 @@ function buildLeadInsert(
     business_city: form.businessCity.trim(),
     business_state: form.businessState,
     business_zip: form.businessZip.trim(),
+    product_interest: form.productInterest,
+    industry: form.industry?.trim() || null,
     time_in_business: form.timeInBusiness,
     funding_amount: form.fundingAmount,
     use_of_funds: form.useOfFunds,
+    calculator_snapshot: calculator,
     statement_paths: form.statementPaths,
     statements_status: statementsStatusFor(form),
     sms_consent: form.smsConsent,
@@ -83,7 +88,7 @@ function buildLeadInsert(
     utm_term: m.utm_term ?? null,
     gclid: m.gclid ?? null,
     fbclid: m.fbclid ?? null,
-    raw_answers: { form, meta: m },
+    raw_answers: { form, meta: m, calculator },
     notes: null,
   };
 }
@@ -118,7 +123,9 @@ export async function POST(req: Request) {
     );
   }
 
-  const { form, meta, partialLeadId } = splitApplyApiPayload(parsed.data);
+  const { form, meta, partialLeadId, calculator } = splitApplyApiPayload(
+    parsed.data,
+  );
 
   // Only accept storage paths issued by POST /api/statements for this flow.
   if (form.statementPaths.some((p) => !p.startsWith(PRESUBMIT_PREFIX))) {
@@ -148,7 +155,7 @@ export async function POST(req: Request) {
     if (!supabase) {
       return NextResponse.json({ ok: false, message: CONFIG_FAIL }, { status: 503 });
     }
-    const row = buildLeadInsert(form, meta, leadScore, leadStatus);
+    const row = buildLeadInsert(form, meta, leadScore, leadStatus, calculator);
 
     if (partialLeadId) {
       const { data, error } = await supabase
@@ -199,6 +206,7 @@ export async function POST(req: Request) {
     leadStatus,
     tier,
     uploadUrl: wantsUploadLink ? buildUploadUrl(uploadToken) : null,
+    calculator,
   });
 
   const devBookingToken =

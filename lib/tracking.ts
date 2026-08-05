@@ -14,9 +14,8 @@ export type TrackEventName =
   | "booking_view"
   | "booking_confirmed"
   | "calc_interacted"
-  | "splash_skip"
-  | "splash_complete"
-  | "splash_sound_on"
+  | "calc_product_change"
+  | "calc_tab_change"
   | "guide_open";
 
 /** Only non-PII primitives for vendor callbacks. */
@@ -24,6 +23,7 @@ export type TrackEventProps = Partial<{
   step: number;
   field: string;
   result_tier: ApplyResultTier;
+  product_interest: string;
   time_in_business: string;
   funding_amount: string;
   use_of_funds: string[];

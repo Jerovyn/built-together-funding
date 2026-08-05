@@ -1,6 +1,12 @@
 import { DISCLAIMER_PREQUAL_LINE, SITE_NAME } from "@/lib/constants";
-import type { ApplyFormValues, ApplySubmissionMeta } from "@/lib/apply-schema";
+import { REVIEW_DURATION_MINUTES } from "@/lib/booking/availability";
+import type {
+  ApplyFormValues,
+  ApplySubmissionMeta,
+  CalcSnapshot,
+} from "@/lib/apply-schema";
 import { ownerFullName } from "@/lib/apply-schema";
+import { PRODUCT_INTEREST_LABELS } from "@/lib/products";
 import { createResendClient, getResendFromEmail, getInternalNotifyEmail, isResendConfigured, withReplyTo } from "@/lib/resend";
 import {
   createTwilioClient,
@@ -20,6 +26,8 @@ export type ApplyNotificationContext = {
   tier: ApplyResultTier;
   /** Secure statement-upload link; set when the applicant chose "send later". */
   uploadUrl?: string | null;
+  /** Calculator numbers the applicant modeled before applying, if any. */
+  calculator?: CalcSnapshot | null;
 };
 
 export function compactSubmissionMeta(
@@ -45,9 +53,17 @@ function statementsLine(form: ApplyFormValues): string {
     : "Statements: none";
 }
 
+function calculatorLine(calc: CalcSnapshot | null | undefined): string | null {
+  if (!calc) return null;
+  const rate =
+    calc.rateType === "factor" ? `${calc.rate.toFixed(2)}x` : `${calc.rate}% APR`;
+  return `Calculator: modeled $${Math.round(calc.amount).toLocaleString("en-US")} over ${calc.termMonths} mo at ${rate} (~$${Math.round(calc.estPayment).toLocaleString("en-US")}/${calc.frequency})`;
+}
+
 function buildInternalEmailText(ctx: ApplyNotificationContext): string {
-  const { form, meta, leadScore, leadStatus } = ctx;
+  const { form, meta, leadScore, leadStatus, calculator } = ctx;
   const m = compactSubmissionMeta(meta);
+  const calcLine = calculatorLine(calculator);
   const lines = [
     `New ${SITE_NAME} application`,
     "",
@@ -61,9 +77,12 @@ function buildInternalEmailText(ctx: ApplyNotificationContext): string {
     `Business address: ${form.businessAddress}, ${form.businessCity}, ${form.businessState} ${form.businessZip}`,
     `Phone: ${form.phone}`,
     `Email: ${form.email}`,
+    `Product interest: ${PRODUCT_INTEREST_LABELS[form.productInterest] ?? form.productInterest}`,
+    ...(form.industry?.trim() ? [`Industry: ${form.industry.trim()}`] : []),
     `Time in business: ${form.timeInBusiness}`,
     `Funding amount: ${form.fundingAmount}`,
     `Use of funds: ${formatList(form.useOfFunds)}`,
+    ...(calcLine ? [calcLine] : []),
     statementsLine(form),
     "",
     `Lead score (pre-screen routing): ${leadScore}`,
@@ -76,39 +95,75 @@ function buildInternalEmailText(ctx: ApplyNotificationContext): string {
   return lines.join("\n");
 }
 
+function applicantEmailSubject(tier: ApplyResultTier): string {
+  switch (tier) {
+    case "prequalified":
+      return `You may be a fit - next steps from ${SITE_NAME}`;
+    case "needs_review":
+      return `We're on it - your ${SITE_NAME} pre-screen is in review`;
+    case "not_fit_yet":
+      return `About your ${SITE_NAME} pre-screen`;
+  }
+}
+
 function applicantConfirmationEmailBody(
   tier: ApplyResultTier,
+  firstName: string,
   uploadUrl?: string | null,
 ): string {
+  const greeting = `Hi ${firstName.trim() || "there"},`;
   const uploadBlock = uploadUrl
     ? [
         "",
-        "Next step: upload your last 3 months of bank statements with this secure link:",
+        "Fastest next step: upload your last 3 months of bank statements with this secure link:",
         uploadUrl,
-        "Your review moves fastest once we have them.",
+        "Your review moves to the front of the line once we have them.",
       ]
     : [];
 
   switch (tier) {
     case "prequalified":
       return [
-        `Based on your responses, it looks like your business may be a fit for a funding review. Our team will reach out to go over your options. This is not a funding approval. Final options are subject to review, underwriting, and partner availability.`,
+        greeting,
+        "",
+        "Good news - based on your responses, your business may be a fit for a funding review.",
+        "",
+        "Here's what happens next: a real person on our team (not an algorithm) reviews your file, then reaches out to walk through your options together. No pressure, no obligation - just straight numbers so you can decide what's right for your business.",
         ...uploadBlock,
+        "",
+        "One honest note: this is not a funding approval. Final options depend on review, underwriting, and partner availability - we'd rather be upfront about that now than surprise you later.",
+        "",
+        "Talk soon,",
+        `The ${SITE_NAME} team`,
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
     case "needs_review":
       return [
-        `Thanks for completing your pre-screen. Your information needs manual review before we can suggest next steps.`,
-        `Our team may follow up with a few questions. This is not a funding approval. Final options are subject to review, underwriting, and partner availability.`,
+        greeting,
+        "",
+        "Thanks for completing your pre-screen - your information is in and a real person is taking a closer look before we map out next steps.",
+        "",
+        "If anything needs clarifying, we'll reach out with a quick question or two.",
         ...uploadBlock,
+        "",
+        "One honest note: this is not a funding approval. Final options depend on review, underwriting, and partner availability.",
+        "",
+        "Talk soon,",
+        `The ${SITE_NAME} team`,
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
     case "not_fit_yet":
       return [
-        `Thanks for completing your pre-screen. Based on your responses, this may not be the right fit yet.`,
-        `If your business situation changes, you are welcome to reach out again in the future.`,
+        greeting,
+        "",
+        "Thanks for taking the time to check your fit. Based on your responses, this may not be the right match just yet - and we'd rather tell you that straight than waste your time.",
+        "",
+        "Businesses change fast, though. If your revenue, time in business, or plans shift, you're always welcome back - we'll gladly take another look.",
+        "",
+        "Rooting for you,",
+        `The ${SITE_NAME} team`,
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
@@ -117,19 +172,21 @@ function applicantConfirmationEmailBody(
 
 function applicantConfirmationSmsBody(
   tier: ApplyResultTier,
+  firstName: string,
   uploadUrl?: string | null,
 ): string {
   const stop = "Reply STOP to opt out.";
+  const name = firstName.trim() ? `, ${firstName.trim()}` : "";
   const uploadPart = uploadUrl
-    ? ` Upload your bank statements securely here: ${uploadUrl}`
+    ? ` Fastest next step: upload your bank statements securely here: ${uploadUrl}`
     : "";
   switch (tier) {
     case "prequalified":
-      return `${SITE_NAME}: Based on your responses, your business may be a fit for a funding review.${uploadPart} This is not a funding approval. ${stop}`;
+      return `${SITE_NAME}: Good news${name} - your business may be a fit for a funding review. A real person is on your file and we'll reach out soon to walk through your options.${uploadPart} Not a funding approval yet. ${stop}`;
     case "needs_review":
-      return `${SITE_NAME}: Thanks for your pre-screen. Our team will review your information and may follow up.${uploadPart} This is not a funding approval. ${stop}`;
+      return `${SITE_NAME}: Thanks${name} - your pre-screen is in and a real person is taking a closer look. We may reach out with a quick question.${uploadPart} Not a funding approval yet. ${stop}`;
     case "not_fit_yet":
-      return `${SITE_NAME}: Thanks for your pre-screen. This may not be the right fit yet. ${stop}`;
+      return `${SITE_NAME}: Thanks for checking your fit${name}. It may not be the right timing yet, but things change fast - you're welcome back anytime. ${stop}`;
   }
 }
 
@@ -178,8 +235,8 @@ async function sendApplicantEmail(ctx: ApplyNotificationContext): Promise<void> 
     withReplyTo({
       from,
       to: [ctx.form.email.trim()],
-      subject: `We received your pre-screen - ${SITE_NAME}`,
-      text: applicantConfirmationEmailBody(ctx.tier, ctx.uploadUrl),
+      subject: applicantEmailSubject(ctx.tier),
+      text: applicantConfirmationEmailBody(ctx.tier, ctx.form.firstName, ctx.uploadUrl),
     }),
   );
   if (error && process.env.NODE_ENV === "development") {
@@ -199,7 +256,9 @@ async function sendInternalSms(ctx: ApplyNotificationContext): Promise<void> {
   const from = getTwilioFromNumber();
   if (!client || !from) return;
 
-  const body = `New BTF lead: ${ctx.form.businessName}. Pre-screen score ${ctx.leadScore}. Status ${ctx.leadStatus}. Check email for full details.`;
+  const product =
+    PRODUCT_INTEREST_LABELS[ctx.form.productInterest] ?? ctx.form.productInterest;
+  const body = `New BTF lead: ${ctx.form.businessName} (${product}). Pre-screen score ${ctx.leadScore}. Status ${ctx.leadStatus}. Check email for full details.`;
   await Promise.allSettled(
     phones.map(async (to) => {
       try {
@@ -225,7 +284,7 @@ async function sendApplicantSms(ctx: ApplyNotificationContext): Promise<void> {
     await client.messages.create({
       from,
       to,
-      body: applicantConfirmationSmsBody(tier, uploadUrl),
+      body: applicantConfirmationSmsBody(tier, form.firstName, uploadUrl),
     });
   } catch (err) {
     console.error("[apply] Twilio applicant SMS failed:", err);
@@ -290,14 +349,20 @@ export async function sendBookingNotifications(
       const applicantText = [
         `Hi ${firstName || "there"},`,
         "",
-        `Your funding review call with ${SITE_NAME} is booked:`,
+        "You're all set - your funding review call is on the calendar:",
+        "",
         slotLabel,
         ...meetLines,
         ...calendarLines,
         "",
+        `What to expect: about ${REVIEW_DURATION_MINUTES} minutes with a real person (not a call center). We'll go over your file and your numbers, then walk through the options that actually make sense for your business. Bring any questions - and if you haven't sent your bank statements yet, uploading them before the call speeds everything up.`,
+        "",
         meetLink
-          ? "You'll also receive a Google Calendar invite. If you need to reschedule, reply to this email."
-          : "If you need to reschedule, reply to this email.",
+          ? "You'll also receive a Google Calendar invite. Need a different time? Just reply to this email and we'll find one that works."
+          : "Need a different time? Just reply to this email and we'll find one that works.",
+        "",
+        "Talk soon,",
+        `The ${SITE_NAME} team`,
         "",
         DISCLAIMER_PREQUAL_LINE,
       ].join("\n");
@@ -307,7 +372,7 @@ export async function sendBookingNotifications(
           withReplyTo({
             from,
             to: [email],
-            subject: `Funding review call booked — ${SITE_NAME}`,
+            subject: `You're booked: ${slotLabel} - ${SITE_NAME}`,
             text: applicantText,
           }),
         );
@@ -373,8 +438,9 @@ export async function sendBookingNotifications(
       console.error("[booking] Applicant phone not E.164-compatible:", phone);
       return;
     }
-    const meetPart = meetLink ? ` Join: ${meetLink}` : "";
-    const body = `${SITE_NAME}: Funding review call booked — ${slotLabel}.${meetPart} Reply STOP to opt out.`;
+    const namePart = firstName.trim() ? `, ${firstName.trim()}` : "";
+    const meetPart = meetLink ? ` Join here: ${meetLink}` : "";
+    const body = `${SITE_NAME}: You're all set${namePart}! Your funding review call is booked for ${slotLabel}.${meetPart} You'll be talking with a real person - bring any questions. Talk soon! Reply STOP to opt out.`;
     try {
       await client.messages.create({ from, to, body });
     } catch (err) {

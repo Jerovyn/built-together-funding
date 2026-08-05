@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   fetchLeadById,
+  formatCalcSnapshot,
+  formatProductInterest,
   formatUseOfFunds,
 } from "@/lib/admin-leads";
 import {
@@ -132,9 +134,16 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
           <CardContent className="space-y-4 p-5">
             <h2 className="text-sm font-semibold text-btf-text">Funding & pre-screen</h2>
             <dl className="grid gap-3 sm:grid-cols-2">
+              <Field label="Product interest">
+                {formatProductInterest(lead.product_interest)}
+              </Field>
+              <Field label="Industry">{lead.industry ?? "—"}</Field>
               <Field label="Amount">{lead.funding_amount ?? "—"}</Field>
               <Field label="Use of funds">
                 {formatUseOfFunds(lead.use_of_funds)}
+              </Field>
+              <Field label="Calculator modeled">
+                {formatCalcSnapshot(lead.calculator_snapshot)}
               </Field>
               <Field label="Score">{lead.lead_score ?? "—"}</Field>
               <Field label="Status">

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
-import { BRAND_LINE, SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, SITE_TAGLINE } from "@/lib/constants";
 
-export const alt = `${SITE_NAME} - ${BRAND_LINE}`;
+export const alt = `${SITE_NAME} - ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -45,8 +45,20 @@ export default function OpengraphImage() {
           <div
             style={{
               display: "flex",
+              fontSize: 22,
+              fontWeight: 700,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              color: "#36D8F6",
+            }}
+          >
+            {SITE_TAGLINE}
+          </div>
+          <div
+            style={{
+              display: "flex",
               flexDirection: "column",
-              fontSize: 84,
+              fontSize: 82,
               fontWeight: 800,
               lineHeight: 1.02,
               letterSpacing: -2,
@@ -62,14 +74,14 @@ export default function OpengraphImage() {
           </div>
           <div
             style={{
-              fontSize: 30,
+              fontSize: 28,
               color: "#9FB3D9",
-              maxWidth: 900,
+              maxWidth: 980,
               lineHeight: 1.35,
             }}
           >
-            Capacity capital for service businesses - underwritten on real
-            numbers, reviewed by a person.
+            Working capital, equipment, term loans, SBA and more - underwritten
+            on real numbers, reviewed by a person.
           </div>
         </div>
       </div>

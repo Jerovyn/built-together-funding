@@ -74,12 +74,13 @@ function BookingConfirmed({
       )}
     >
       <p className="text-sm font-semibold text-btf-text sm:text-base">
-        Your review call is confirmed
+        You&apos;re all set — your call is booked
       </p>
       <p className="mt-2 text-sm font-medium text-btf-text">{slotLabel}</p>
       <p className="mt-3 text-xs leading-relaxed text-btf-text-muted sm:text-sm">
-        We&apos;ll call you at the number on your file. Check your email for
-        confirmation.
+        We&apos;ll call you at the number on your file — confirmation details
+        are on their way to your email. You&apos;ll be talking with a real
+        person, so bring any questions about your numbers or options.
       </p>
       {statementsSkipped ? (
         <p className="mt-3 rounded-lg border border-btf-accent/20 bg-btf-card/80 p-3 text-xs leading-relaxed text-btf-text sm:text-sm">

@@ -19,6 +19,7 @@ type LeadRow = {
   business_name: string;
   email: string;
   phone: string;
+  product_interest: string | null;
   time_in_business: string;
   funding_amount: string;
   statements_status: string;
@@ -52,7 +53,7 @@ export default async function AdminLeadsPage() {
   const { data, error } = await supabase
     .from("leads")
     .select(
-      "id, name, business_name, email, phone, time_in_business, funding_amount, statements_status, lead_status, lead_score, created_at",
+      "id, name, business_name, email, phone, product_interest, time_in_business, funding_amount, statements_status, lead_status, lead_score, created_at",
     )
     .order("created_at", { ascending: false })
     .limit(200);
@@ -75,19 +76,22 @@ export default async function AdminLeadsPage() {
         <Card>
           <CardContent className="p-6 text-sm text-red-600">
             Could not load leads. Run{" "}
-            <code className="text-btf-accent">docs/supabase-bookings-v4-migration.sql</code> if
-            booking columns are missing.
+            <code className="text-btf-accent">docs/supabase-v6-products-migration.sql</code>{" "}
+            if product columns are missing (and{" "}
+            <code className="text-btf-accent">docs/supabase-bookings-v4-migration.sql</code> for
+            booking columns).
           </CardContent>
         </Card>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-btf-border bg-btf-card">
-          <table className="w-full min-w-[900px] text-left text-sm">
+          <table className="w-full min-w-[1020px] text-left text-sm">
             <thead>
               <tr className="border-b border-btf-border text-xs uppercase tracking-wider text-btf-text-muted">
                 <th className="px-4 py-3 font-medium">Created</th>
                 <th className="px-4 py-3 font-medium">Owner</th>
                 <th className="px-4 py-3 font-medium">Business</th>
                 <th className="px-4 py-3 font-medium">Contact</th>
+                <th className="px-4 py-3 font-medium">Product</th>
                 <th className="px-4 py-3 font-medium">TIB</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
                 <th className="px-4 py-3 font-medium">Statements</th>
@@ -98,7 +102,7 @@ export default async function AdminLeadsPage() {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-8 text-center text-btf-text-muted">
+                  <td colSpan={10} className="px-4 py-8 text-center text-btf-text-muted">
                     No leads yet.
                   </td>
                 </tr>
@@ -127,6 +131,9 @@ export default async function AdminLeadsPage() {
                     <td className="px-4 py-3 text-xs">
                       <div>{row.email}</div>
                       <div className="text-btf-text-muted">{row.phone}</div>
+                    </td>
+                    <td className="px-4 py-3 text-btf-text-muted">
+                      {row.product_interest?.replaceAll("_", " ") ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-btf-text-muted">{row.time_in_business}</td>
                     <td className="px-4 py-3 text-btf-text-muted">{row.funding_amount}</td>

@@ -32,7 +32,9 @@ export function computeApplyScore(values: ApplyFormValues): number {
       u === "equipment" ||
       u === "trucks" ||
       u === "hiring_crews" ||
-      u === "marketing_ads",
+      u === "marketing_ads" ||
+      u === "acquisition_expansion" ||
+      u === "property_project",
   );
   const onlyOther = selected.size === 1 && selected.has("other");
 
@@ -52,6 +54,11 @@ export function computeApplyScore(values: ApplyFormValues): number {
   }
 
   if (values.fundingAmount) score += 5;
+
+  // Picking a concrete product signals researched intent; "not sure" is neutral.
+  if (values.productInterest && values.productInterest !== "not_sure") {
+    score += 5;
+  }
 
   return score;
 }

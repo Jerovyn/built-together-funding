@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listPublishedArticles } from "@/lib/articles-db";
+import { PRODUCT_SLUGS } from "@/lib/products";
 
 const BASE =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
@@ -11,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = [
     { path: "/", priority: 1.0 },
     { path: "/apply/", priority: 0.9 },
+    { path: "/products/", priority: 0.9 },
+    { path: "/calculator/", priority: 0.8 },
     { path: "/how-it-works/", priority: 0.8 },
     { path: "/who-we-help/", priority: 0.8 },
     { path: "/funding-uses/", priority: 0.8 },
@@ -23,13 +26,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/disclosures/", priority: 0.3 },
   ];
 
+  const products = PRODUCT_SLUGS.map((slug) => ({
+    path: `/products/${slug}/`,
+    priority: 0.8,
+  }));
+
   const published = await listPublishedArticles();
   const articles = published.map((a) => ({
     path: `/resources/${a.slug}/`,
     priority: 0.6,
   }));
 
-  return [...pages, ...articles].map((p) => ({
+  return [...pages, ...products, ...articles].map((p) => ({
     url: `${BASE}${p.path}`,
     lastModified: now,
     changeFrequency: "monthly" as const,

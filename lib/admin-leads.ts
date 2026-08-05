@@ -1,8 +1,20 @@
 import { STATEMENTS_BUCKET } from "@/lib/statements";
+import { PRODUCT_INTEREST_LABELS } from "@/lib/products";
 import { maskSsn } from "@/lib/ssn-mask";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export { maskSsn };
+
+export type LeadCalcSnapshot = {
+  product?: string;
+  amount?: number;
+  termMonths?: number;
+  frequency?: string;
+  rateType?: string;
+  rate?: number;
+  estPayment?: number;
+  totalRepayment?: number;
+} | null;
 
 export type LeadPackageRow = {
   id: string;
@@ -24,9 +36,12 @@ export type LeadPackageRow = {
   business_city: string | null;
   business_state: string | null;
   business_zip: string | null;
+  product_interest: string | null;
+  industry: string | null;
   time_in_business: string | null;
   funding_amount: string | null;
   use_of_funds: string[] | null;
+  calculator_snapshot: LeadCalcSnapshot;
   statements_status: string | null;
   statement_paths: string[] | null;
   lead_score: number | null;
@@ -40,7 +55,7 @@ export type LeadPackageRow = {
 };
 
 const LEAD_SELECT =
-  "id, created_at, name, first_name, last_name, business_name, email, phone, dob, ssn, home_address, home_state, home_zip, federal_id, legal_entity, business_address, business_city, business_state, business_zip, time_in_business, funding_amount, use_of_funds, statements_status, statement_paths, lead_score, lead_status, sms_consent, email_consent, source, landing_page, utm_source, utm_campaign";
+  "id, created_at, name, first_name, last_name, business_name, email, phone, dob, ssn, home_address, home_state, home_zip, federal_id, legal_entity, business_address, business_city, business_state, business_zip, product_interest, industry, time_in_business, funding_amount, use_of_funds, calculator_snapshot, statements_status, statement_paths, lead_score, lead_status, sms_consent, email_consent, source, landing_page, utm_source, utm_campaign";
 
 export async function fetchLeadById(
   supabase: SupabaseClient,
@@ -58,6 +73,24 @@ export async function fetchLeadById(
 export function formatUseOfFunds(values: string[] | null | undefined): string {
   if (!values?.length) return "—";
   return values.map((v) => v.replaceAll("_", " ")).join(", ");
+}
+
+export function formatProductInterest(value: string | null | undefined): string {
+  if (!value) return "—";
+  return PRODUCT_INTEREST_LABELS[value] ?? value.replaceAll("_", " ");
+}
+
+export function formatCalcSnapshot(calc: LeadCalcSnapshot): string {
+  if (!calc || typeof calc.amount !== "number") return "—";
+  const rate =
+    calc.rateType === "factor"
+      ? `${Number(calc.rate ?? 0).toFixed(2)}x`
+      : `${calc.rate ?? "?"}% APR`;
+  const payment =
+    typeof calc.estPayment === "number"
+      ? ` (~$${Math.round(calc.estPayment).toLocaleString("en-US")}/${calc.frequency ?? "period"})`
+      : "";
+  return `$${Math.round(calc.amount).toLocaleString("en-US")} · ${calc.termMonths ?? "?"} mo · ${rate}${payment}`;
 }
 
 export function buildApplicationText(
@@ -101,8 +134,11 @@ export function buildApplicationText(
     `Time in business: ${lead.time_in_business ?? "—"}`,
     "",
     "=== FUNDING ===",
+    `Product interest: ${formatProductInterest(lead.product_interest)}`,
+    `Industry: ${lead.industry ?? "—"}`,
     `Amount: ${lead.funding_amount ?? "—"}`,
     `Use of funds: ${formatUseOfFunds(lead.use_of_funds)}`,
+    `Calculator modeled: ${formatCalcSnapshot(lead.calculator_snapshot)}`,
     "",
     "=== PRE-SCREEN ===",
     `Lead score: ${lead.lead_score ?? "—"}`,

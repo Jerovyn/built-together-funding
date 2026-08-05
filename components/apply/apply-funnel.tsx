@@ -27,12 +27,20 @@ import {
   USE_OF_FUND_VALUES,
   type ApplyApiBody,
   type ApplyFormValues,
+  type CalcSnapshot,
 } from "@/lib/apply-schema";
 import {
   CREDIT_CHECK_SHORT,
   DISCLAIMER_PREQUAL_LINE,
+  HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
+import {
+  PRODUCT_INTEREST_OPTIONS,
+  fundingTierForAmount,
+  getProduct,
+  type ProductSlug,
+} from "@/lib/products";
 import {
   resultTierToEventName,
   trackApplyAdsConversion,
@@ -47,8 +55,9 @@ import {
 import type { ApplyResultTier } from "@/types/apply";
 import { createUploadSessionId } from "@/lib/statements";
 import {
-  readCalcPresetFromSession,
-  fundsForCalcPreset,
+  clearCalcSnapshotFromSession,
+  readCalcSnapshotFromSession,
+  usesForProductInterest,
 } from "@/lib/calculator-preset";
 import {
   formatDobInput,
@@ -82,7 +91,9 @@ const AMOUNT_OPTIONS: {
   { value: "25k_75k", label: "$25k-$75k" },
   { value: "75k_150k", label: "$75k-$150k" },
   { value: "150k_300k", label: "$150k-$300k" },
-  { value: "300k_plus", label: "$300k+" },
+  { value: "300k_750k", label: "$300k-$750k" },
+  { value: "750k_2m", label: "$750k-$2M" },
+  { value: "2m_plus", label: "$2M+" },
 ];
 
 const USE_OPTIONS: {
@@ -94,6 +105,9 @@ const USE_OPTIONS: {
   { value: "hiring_crews", label: "Hiring / crews" },
   { value: "marketing_ads", label: "Marketing that already works" },
   { value: "wc_growth", label: "Working capital for growth" },
+  { value: "debt_consolidation", label: "Consolidating debt" },
+  { value: "acquisition_expansion", label: "Acquisition / expansion" },
+  { value: "property_project", label: "Property / major project" },
   { value: "other", label: "Something else" },
 ];
 
@@ -108,6 +122,8 @@ const LEGAL_ENTITY_OPTIONS: {
   { value: "partnership", label: "Partnership" },
   { value: "other", label: "Other" },
 ];
+
+const INDUSTRY_OPTIONS = [...HOME_TRADES_MARQUEE, "Other"] as const;
 
 const selectClass = cn(inputClass, "appearance-none");
 
@@ -174,7 +190,15 @@ type ApplyFunnelDraft = Omit<ApplyFormValues, "legalEntity"> & {
 
 const PARTIAL_STORAGE_KEY = "btf_partial_lead_id";
 
-export function ApplyFunnel() {
+/** Steps whose completion triggers the recoverable partial-lead save. */
+const CONTACT_STEP_INDEX = 2;
+
+type ApplyFunnelProps = {
+  /** Product page / calculator handoff (?product= slug). */
+  initialProductSlug?: string;
+};
+
+export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [resultTier, setResultTier] = useState<ApplyResultTier | null>(null);
@@ -184,6 +208,7 @@ export function ApplyFunnel() {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [uploadSession, setUploadSession] = useState("");
   const [partialLeadId, setPartialLeadId] = useState<string | null>(null);
+  const [calcSnapshot, setCalcSnapshot] = useState<CalcSnapshot | null>(null);
   const applyStarted = useRef(false);
   const stepContentRef = useRef<HTMLDivElement>(null);
 
@@ -200,6 +225,7 @@ export function ApplyFunnel() {
     mode: "onBlur",
     defaultValues: {
       useOfFunds: [],
+      industry: "",
       statementPaths: [],
       statementsSkipped: false,
       firstName: "",
@@ -225,19 +251,42 @@ export function ApplyFunnel() {
 
   useEffect(() => {
     setUploadSession(createUploadSessionId());
-    const preset = readCalcPresetFromSession();
-    if (preset) {
-      setValue("useOfFunds", fundsForCalcPreset(preset), {
+
+    // Seed priority: explicit ?product= link, then calculator snapshot.
+    const linkedProduct = getProduct((initialProductSlug ?? "") as ProductSlug);
+    const snapshot = readCalcSnapshotFromSession();
+
+    if (linkedProduct) {
+      setValue("productInterest", linkedProduct.interestKey, {
         shouldValidate: false,
       });
+      setValue("useOfFunds", [...linkedProduct.useOfFundsSeed], {
+        shouldValidate: false,
+      });
+    } else if (snapshot) {
+      setValue("productInterest", snapshot.product, { shouldValidate: false });
+      const uses = usesForProductInterest(snapshot.product);
+      if (uses.length) {
+        setValue("useOfFunds", uses, { shouldValidate: false });
+      }
     }
+
+    if (snapshot) {
+      setCalcSnapshot(snapshot);
+      if (!linkedProduct || linkedProduct.interestKey === snapshot.product) {
+        setValue("fundingAmount", fundingTierForAmount(snapshot.amount), {
+          shouldValidate: false,
+        });
+      }
+    }
+
     try {
       const stored = sessionStorage.getItem(PARTIAL_STORAGE_KEY);
       if (stored) setPartialLeadId(stored);
     } catch {
       /* private mode */
     }
-  }, [setValue]);
+  }, [setValue, initialProductSlug]);
 
   useEffect(() => {
     if (resultTier) {
@@ -281,16 +330,21 @@ export function ApplyFunnel() {
   const savePartialLead = async (values: ApplyFunnelDraft) => {
     try {
       const body = {
+        productInterest: values.productInterest,
         timeInBusiness: values.timeInBusiness,
         fundingAmount: values.fundingAmount,
         useOfFunds: values.useOfFunds,
+        industry: values.industry,
         statementPaths: values.statementPaths,
         statementsSkipped: values.statementsSkipped,
         firstName: values.firstName,
         lastName: values.lastName,
         email: values.email,
         phone: values.phone,
+        emailConsent: values.emailConsent,
+        smsConsent: values.smsConsent,
         partialLeadId: partialLeadId ?? undefined,
+        calculator: calcSnapshot ?? undefined,
         ...getTrackingPayloadForApply(),
       };
       const res = await fetch("/api/apply/partial/", {
@@ -306,7 +360,7 @@ export function ApplyFunnel() {
         } catch {
           /* silent */
         }
-        trackEvent("apply_partial_saved", { step: 2 });
+        trackEvent("apply_partial_saved", { step: CONTACT_STEP_INDEX });
       }
     } catch {
       /* never block funnel */
@@ -315,7 +369,7 @@ export function ApplyFunnel() {
 
   const nextStep = async () => {
     const fields = [...APPLY_STEP_FIELDS[step]] as FieldPath<ApplyFunnelDraft>[];
-    const ok = await trigger(fields);
+    const ok = fields.length === 0 ? true : await trigger(fields);
     if (!ok) {
       setNudge((v) => v + 1);
       trackEvent("apply_field_error", { step });
@@ -332,7 +386,7 @@ export function ApplyFunnel() {
       /* silent */
     }
 
-    if (step === 2) {
+    if (step === CONTACT_STEP_INDEX) {
       await savePartialLead(formValues);
     }
 
@@ -355,6 +409,7 @@ export function ApplyFunnel() {
         } as TrackEventProps);
         trackEvent("apply_submit", {
           step: APPLY_STEP_COUNT - 1,
+          product_interest: parsed.productInterest,
           time_in_business: parsed.timeInBusiness,
           funding_amount: parsed.fundingAmount,
           use_of_funds: parsed.useOfFunds,
@@ -370,6 +425,7 @@ export function ApplyFunnel() {
         ...parsed,
         ...getTrackingPayloadForApply(),
         partialLeadId: partialLeadId ?? undefined,
+        calculator: calcSnapshot ?? undefined,
       } satisfies ApplyApiBody;
 
       const res = await fetch("/api/apply/", {
@@ -391,6 +447,7 @@ export function ApplyFunnel() {
         try {
           trackEvent(resultTierToEventName(payload.status), {
             result_tier: payload.status,
+            product_interest: parsed.productInterest,
             time_in_business: parsed.timeInBusiness,
             funding_amount: parsed.fundingAmount,
             use_of_funds: parsed.useOfFunds,
@@ -410,6 +467,7 @@ export function ApplyFunnel() {
         } catch {
           /* silent */
         }
+        clearCalcSnapshotFromSession();
         setResultTier(payload.status);
         return;
       }
@@ -484,31 +542,44 @@ export function ApplyFunnel() {
       <div ref={stepContentRef} className="min-h-[16rem] sm:min-h-[18rem]">
         {step === 0 ? (
           <ApplyStep
-            title="Three quick questions"
+            title="What are you looking for?"
             description="Tap your answers - no typing yet."
           >
             <div className="space-y-6">
-              <div role="group" aria-label="How long have you been in business?">
-                <QuestionLabel index={1} text="How long have you been in business?" />
+              <div role="group" aria-label="What type of funding?">
+                <QuestionLabel
+                  index={1}
+                  text="What type of funding?"
+                  hint={'Pick one - or "Not sure yet"'}
+                />
                 <Controller
-                  name="timeInBusiness"
+                  name="productInterest"
                   control={control}
                   render={({ field }) => (
                     <>
-                      <div className="grid grid-cols-2 gap-2">
-                        {TIB_OPTIONS.map((opt) => (
+                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                        {PRODUCT_INTEREST_OPTIONS.map((opt) => (
                           <ApplyOptionCard
                             key={opt.value}
                             compact
                             label={opt.label}
+                            description={opt.hint}
                             selected={field.value === opt.value}
-                            onClick={() => field.onChange(opt.value)}
+                            onClick={() => {
+                              field.onChange(opt.value);
+                              const uses = usesForProductInterest(opt.value);
+                              if (uses.length && formValues.useOfFunds.length === 0) {
+                                setValue("useOfFunds", uses, {
+                                  shouldValidate: false,
+                                });
+                              }
+                            }}
                           />
                         ))}
                       </div>
-                      {errors.timeInBusiness?.message ? (
+                      {errors.productInterest?.message ? (
                         <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                          {errors.timeInBusiness.message}
+                          {errors.productInterest.message}
                         </p>
                       ) : null}
                     </>
@@ -589,50 +660,61 @@ export function ApplyFunnel() {
 
         {step === 1 ? (
           <ApplyStep
-            title="Last 3 months of bank statements"
-            description="Your statements show what forms can't - real revenue, real seasonality. It's how we review every file."
+            title="Business basics"
+            description="Two quick answers so we route your file to the right review."
           >
-            <div className="space-y-4">
-              {uploadSession ? (
-                <StatementUpload
-                  mode="presubmit"
-                  session={uploadSession}
-                  files={uploadedFiles}
-                  onFilesChange={syncFiles}
-                  onUnavailable={() =>
-                    setValue("statementsSkipped", true, { shouldValidate: true })
-                  }
+            <div className="space-y-6">
+              <div role="group" aria-label="How long have you been in business?">
+                <QuestionLabel index={1} text="How long have you been in business?" />
+                <Controller
+                  name="timeInBusiness"
+                  control={control}
+                  render={({ field }) => (
+                    <>
+                      <div className="grid grid-cols-2 gap-2">
+                        {TIB_OPTIONS.map((opt) => (
+                          <ApplyOptionCard
+                            key={opt.value}
+                            compact
+                            label={opt.label}
+                            selected={field.value === opt.value}
+                            onClick={() => field.onChange(opt.value)}
+                          />
+                        ))}
+                      </div>
+                      {errors.timeInBusiness?.message ? (
+                        <p className="mt-2 text-xs font-medium text-red-600" role="alert">
+                          {errors.timeInBusiness.message}
+                        </p>
+                      ) : null}
+                    </>
+                  )}
                 />
-              ) : (
-                <p className="text-sm text-btf-text-muted">Preparing secure upload…</p>
-              )}
+              </div>
 
-              <Controller
-                name="statementsSkipped"
-                control={control}
-                render={({ field }) => (
-                  <ApplyOptionCard
-                    label="I'll send them later"
-                    description="Finish now — we'll email you a secure upload link (and text you if you opted in)."
-                    selected={field.value === true && uploadedFiles.length === 0}
-                    disabled={uploadedFiles.length > 0}
-                    onClick={() => field.onChange(!field.value)}
-                  />
-                )}
-              />
-              {errors.statementsSkipped?.message ? (
-                <p className="text-xs font-medium text-red-600" role="alert">
-                  {errors.statementsSkipped.message}
-                </p>
-              ) : null}
+              <ApplyField
+                label="What industry are you in?"
+                htmlFor="industry"
+                hint="Optional — helps us match the right partners"
+                error={errors.industry?.message}
+              >
+                <select id="industry" className={selectClass} {...register("industry")}>
+                  <option value="">Select your industry (optional)</option>
+                  {INDUSTRY_OPTIONS.map((trade) => (
+                    <option key={trade} value={trade}>
+                      {trade}
+                    </option>
+                  ))}
+                </select>
+              </ApplyField>
             </div>
           </ApplyStep>
         ) : null}
 
         {step === 2 ? (
           <ApplyStep
-            title="About you"
-            description="Owner information for your pre-qualification review. Have your SSN handy — it's encrypted in transit and used only for this review."
+            title="Where do we send your options?"
+            description="Your review results and next steps go here. No spam, no reselling your info."
           >
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -707,6 +789,115 @@ export function ApplyFunnel() {
                 />
               </ApplyField>
 
+              <div className="rounded-xl border border-btf-border bg-btf-secondary p-4">
+                <Controller
+                  name="emailConsent"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="flex cursor-pointer gap-3 text-left">
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4 shrink-0 rounded border-btf-border text-btf-accent focus:ring-btf-accent"
+                        checked={field.value === true}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                      />
+                      <span className="text-sm leading-snug text-btf-text-muted">
+                        <span className="font-medium text-btf-text">
+                          I agree to email (required).
+                        </span>{" "}
+                        Built Together Funding may email me about this
+                        pre-screen and related options.
+                      </span>
+                    </label>
+                  )}
+                />
+                {errors.emailConsent ? (
+                  <p className="mt-2 text-xs font-medium text-red-600" role="alert">
+                    {errors.emailConsent.message as string}
+                  </p>
+                ) : null}
+              </div>
+
+              <div className="rounded-xl border border-btf-border bg-btf-secondary p-4">
+                <Controller
+                  name="smsConsent"
+                  control={control}
+                  render={({ field }) => (
+                    <label className="flex cursor-pointer gap-3 text-left">
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4 shrink-0 rounded border-btf-border text-btf-accent focus:ring-btf-accent"
+                        checked={field.value === true}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                      />
+                      <span className="text-sm leading-snug text-btf-text-muted">
+                        <span className="font-medium text-btf-text">
+                          Text me updates (optional).
+                        </span>{" "}
+                        I may get texts about my review, including a secure
+                        upload link if I choose to send statements later. Reply
+                        STOP to opt out.
+                      </span>
+                    </label>
+                  )}
+                />
+              </div>
+            </div>
+          </ApplyStep>
+        ) : null}
+
+        {step === 3 ? (
+          <ApplyStep
+            title="Last 3 months of bank statements"
+            description="Your statements show what forms can't - real revenue, real seasonality. It's how we review every file."
+          >
+            <div className="space-y-4">
+              {uploadSession ? (
+                <StatementUpload
+                  mode="presubmit"
+                  session={uploadSession}
+                  files={uploadedFiles}
+                  onFilesChange={syncFiles}
+                  onUnavailable={() =>
+                    setValue("statementsSkipped", true, { shouldValidate: true })
+                  }
+                />
+              ) : (
+                <p className="text-sm text-btf-text-muted">Preparing secure upload…</p>
+              )}
+
+              <Controller
+                name="statementsSkipped"
+                control={control}
+                render={({ field }) => (
+                  <ApplyOptionCard
+                    label="I'll send them later"
+                    description="Finish now — we'll email you a secure upload link (and text you if you opted in)."
+                    selected={field.value === true && uploadedFiles.length === 0}
+                    disabled={uploadedFiles.length > 0}
+                    onClick={() => field.onChange(!field.value)}
+                  />
+                )}
+              />
+              {errors.statementsSkipped?.message ? (
+                <p className="text-xs font-medium text-red-600" role="alert">
+                  {errors.statementsSkipped.message}
+                </p>
+              ) : null}
+            </div>
+          </ApplyStep>
+        ) : null}
+
+        {step === 4 ? (
+          <ApplyStep
+            title="About you"
+            description="Owner identity for your pre-qualification review. Have your SSN handy — it's encrypted in transit and used only for this review."
+          >
+            <div className="space-y-4">
               <ApplyField
                 label="Date of birth"
                 htmlFor="dob"
@@ -856,7 +1047,7 @@ export function ApplyFunnel() {
           </ApplyStep>
         ) : null}
 
-        {step === 3 ? (
+        {step === 5 ? (
           <ApplyStep
             title="Your business"
             description="Company details used for underwriting review."
@@ -1072,7 +1263,7 @@ export function ApplyFunnel() {
           </ApplyStep>
         ) : null}
 
-        {step === 4 ? (
+        {step === 6 ? (
           <ApplyStep
             title="Confirm & submit"
             description={CREDIT_CHECK_SHORT + " — review and submit your file."}
@@ -1088,66 +1279,10 @@ export function ApplyFunnel() {
               <p className="rounded-xl border border-btf-border bg-btf-secondary p-4 text-xs leading-relaxed text-btf-text-muted">
                 Built Together Funding is committed to protecting your privacy.
                 Personal information you provide is used only for this funding
-                application and qualification review.
+                application and qualification review. By submitting, you
+                confirm the communication preferences you selected on the
+                contact step.
               </p>
-
-              <div className="rounded-xl border border-btf-border bg-btf-secondary p-4">
-                <Controller
-                  name="emailConsent"
-                  control={control}
-                  render={({ field }) => (
-                    <label className="flex cursor-pointer gap-3 text-left">
-                      <input
-                        type="checkbox"
-                        className="mt-1 h-4 w-4 shrink-0 rounded border-btf-border text-btf-accent focus:ring-btf-accent"
-                        checked={field.value === true}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                      />
-                      <span className="text-sm leading-snug text-btf-text-muted">
-                        <span className="font-medium text-btf-text">
-                          I agree to email (required).
-                        </span>{" "}
-                        Built Together Funding may email me about this
-                        pre-screen and related options.
-                      </span>
-                    </label>
-                  )}
-                />
-                {errors.emailConsent ? (
-                  <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                    {errors.emailConsent.message as string}
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="rounded-xl border border-btf-border bg-btf-secondary p-4">
-                <Controller
-                  name="smsConsent"
-                  control={control}
-                  render={({ field }) => (
-                    <label className="flex cursor-pointer gap-3 text-left">
-                      <input
-                        type="checkbox"
-                        className="mt-1 h-4 w-4 shrink-0 rounded border-btf-border text-btf-accent focus:ring-btf-accent"
-                        checked={field.value === true}
-                        onChange={(e) => field.onChange(e.target.checked)}
-                        onBlur={field.onBlur}
-                        ref={field.ref}
-                      />
-                      <span className="text-sm leading-snug text-btf-text-muted">
-                        <span className="font-medium text-btf-text">
-                          Text me updates (optional).
-                        </span>{" "}
-                        I may get texts about my review, including a secure
-                        upload link if I chose to send statements later. Reply
-                        STOP to opt out.
-                      </span>
-                    </label>
-                  )}
-                />
-              </div>
             </div>
           </ApplyStep>
         ) : null}

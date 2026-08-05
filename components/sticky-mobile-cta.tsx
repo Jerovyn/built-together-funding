@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 const SHOW_ON_PREFIXES = [
   "/",
+  "/products",
   "/how-it-works",
   "/who-we-help",
   "/funding-uses",
