@@ -203,7 +203,7 @@ export default async function ProductPage({
                 delay={Math.min(i * 40, 160)}
                 className="h-full"
               >
-                <div className="flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-200 hover:border-btf-accent/30 hover:shadow-btf-card">
+                <div className="flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-150 hover:border-btf-accent/30 hover:shadow-btf-card motion-safe:active:scale-[0.98]">
                   <p className="text-sm font-bold text-btf-text">{use.title}</p>
                   <p className="mt-1.5 text-sm leading-relaxed text-btf-text-muted">
                     {use.body}
@@ -255,10 +255,10 @@ export default async function ProductPage({
                 key={faq.q}
                 className="group rounded-xl border border-btf-border bg-btf-card open:border-btf-accent/30"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text transition-colors duration-150 active:bg-btf-secondary/70 [&::-webkit-details-marker]:hidden">
                   {faq.q}
                   <span
-                    className="text-lg font-bold text-btf-accent transition-transform group-open:rotate-45"
+                    className="text-lg font-bold text-btf-accent transition-transform duration-150 group-open:rotate-45"
                     aria-hidden
                   >
                     +

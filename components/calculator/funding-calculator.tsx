@@ -439,7 +439,7 @@ export function FundingCalculator({
                   trackEvent("calc_tab_change", { source: key });
                 }}
                 className={cn(
-                  "rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                  "rounded-md px-2.5 py-1.5 text-xs font-semibold transition-all duration-150 motion-safe:active:scale-[0.97] sm:px-3 sm:text-sm",
                   tab === key
                     ? "bg-btf-card text-btf-text shadow-sm"
                     : "text-btf-text-muted hover:text-btf-text",
@@ -499,7 +499,7 @@ export function FundingCalculator({
                     type="button"
                     onClick={() => update({ frequency: f })}
                     className={cn(
-                      "rounded-lg border px-3 py-2 text-xs font-semibold transition-colors sm:text-sm",
+                      "rounded-lg border px-3 py-2 text-xs font-semibold transition-all duration-150 motion-safe:active:scale-[0.97] sm:text-sm",
                       s.frequency === f
                         ? "border-btf-accent bg-btf-accent/10 text-btf-accent"
                         : "border-btf-border bg-btf-bg text-btf-text-muted hover:border-btf-accent/40",

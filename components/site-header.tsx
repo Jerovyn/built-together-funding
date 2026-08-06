@@ -214,16 +214,16 @@ export function SiteHeader() {
               {phoneDisplay}
             </TrackedPhoneLink>
           ) : null}
+          {/* Mobile relies on the sticky bottom bar + menu CTA — one asker at a time. */}
           <TrackedButtonLink
             href={ROUTES.apply}
             variant="primary"
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="header"
-            className="px-3 py-2 text-xs sm:text-sm"
+            className="hidden px-3 py-2 text-sm sm:inline-flex"
             showArrow
           >
-            <span className="hidden sm:inline">{CTA_PREQUAL_LABEL}</span>
-            <span className="sm:hidden">Pre-qual</span>
+            {CTA_PREQUAL_LABEL}
           </TrackedButtonLink>
           <button
             type="button"
@@ -301,12 +301,12 @@ export function SiteHeader() {
               <TrackedButtonLink
                 href={ROUTES.apply}
                 variant="primary"
-                trackLabel="Check your fit"
+                trackLabel={CTA_PREQUAL_LABEL}
                 trackLocation="header_menu"
                 className="w-full justify-center"
                 showArrow
               >
-                Check your fit
+                {CTA_PREQUAL_LABEL}
               </TrackedButtonLink>
               {phoneDisplay && phone ? (
                 <TrackedPhoneLink

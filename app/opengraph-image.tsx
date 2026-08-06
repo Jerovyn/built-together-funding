@@ -5,6 +5,11 @@ export const alt = `${SITE_NAME} - ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/**
+ * Share card follows the drunk test: one plain-words message. The platform
+ * already shows og:title (the category line) and the URL below the image,
+ * so the image itself never repeats them.
+ */
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -15,74 +20,41 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: 72,
+          padding: 80,
           backgroundColor: "#081123",
           backgroundImage:
-            "linear-gradient(rgba(30,58,110,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(30,58,110,0.35) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
+            "radial-gradient(900px 500px at 85% 110%, rgba(59,130,246,0.22), transparent 70%)",
           fontFamily: "sans-serif",
         }}
       >
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            fontSize: 34,
+            alignItems: "baseline",
+            gap: 12,
+            fontSize: 30,
             fontWeight: 700,
             letterSpacing: -0.5,
-            lineHeight: 1.1,
           }}
         >
-          <span style={{ color: "#EAF1FD", textTransform: "uppercase" }}>
-            Built Together
-          </span>
-          <span style={{ color: "#60A5FA", textTransform: "uppercase" }}>
-            Funding
-          </span>
+          <span style={{ color: "#EAF1FD" }}>Built Together</span>
+          <span style={{ color: "#60A5FA" }}>Funding</span>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: 22,
-              fontWeight: 700,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              color: "#60A5FA",
-            }}
-          >
-            {SITE_TAGLINE}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              fontSize: 82,
-              fontWeight: 800,
-              lineHeight: 1.02,
-              letterSpacing: -2,
-              textTransform: "uppercase",
-              maxWidth: 1050,
-            }}
-          >
-            <span style={{ color: "#EAF1FD" }}>Funding is a</span>
-            <span style={{ color: "#EAF1FD" }}>
-              {"commitment\u00A0"}
-              <span style={{ color: "#60A5FA" }}>to growth.</span>
-            </span>
-          </div>
-          <div
-            style={{
-              fontSize: 28,
-              color: "#9FB3D9",
-              maxWidth: 980,
-              lineHeight: 1.35,
-            }}
-          >
-            Working capital, equipment, term loans, SBA and more - underwritten
-            on real numbers, reviewed by a person.
-          </div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            fontSize: 96,
+            fontWeight: 800,
+            lineHeight: 1.05,
+            letterSpacing: -3,
+            maxWidth: 1000,
+            paddingBottom: 24,
+          }}
+        >
+          <span style={{ color: "#EAF1FD" }}>Money to grow</span>
+          <span style={{ color: "#60A5FA" }}>your business.</span>
         </div>
       </div>
     ),

@@ -17,8 +17,15 @@ export const BRAND_LINE = "Funding is a commitment to growth.";
 /** Homepage hero only — reads after header logo: "Built Together Funding where…" */
 export const HERO_BRAND_LINE = "Where funding is a commitment to growth.";
 
-/** Primary funding CTA on conversion paths (hero, header, sticky bar). */
-export const CTA_PREQUAL_LABEL = "Get pre-qualified";
+/**
+ * Primary funding CTA on conversion paths (hero, header, sticky bar).
+ * Deliberately reads as "get information", not "submit to judgment" —
+ * pre-qual language stays inside the funnel where compliance needs it.
+ */
+export const CTA_PREQUAL_LABEL = "See your options";
+
+/** One quiet line under the primary CTA — replaces stacked trust chips. */
+export const CTA_MICRO_LINE = "5 minutes · Won't affect your credit score";
 
 /**
  * Credit-impact line (verified against MCA industry standard: pre-qual uses no
@@ -30,12 +37,13 @@ export const CREDIT_CHECK_LINE =
 /** Short trust-chip version of the credit line. */
 export const CREDIT_CHECK_SHORT = "Won't affect your credit score";
 
-/** Top-nav links that aren't Products (dropdown) or Calculator (standalone). */
+/**
+ * Top-nav links that aren't Products (dropdown) or Calculator (standalone).
+ * Kept short on purpose (Hick's law) — About and Resources live in the footer.
+ */
 export const NAV_LINKS = [
   { href: "/how-it-works/", label: "How It Works" },
   { href: "/who-we-help/", label: "Who We Help" },
-  { href: "/resources/", label: "Resources" },
-  { href: "/about/", label: "About" },
   { href: "/contact/", label: "Contact" },
 ] as const;
 

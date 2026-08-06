@@ -6,74 +6,36 @@ import { Reveal } from "@/components/reveal";
 import { SectionShell } from "@/components/section-shell";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
 import {
-  APPLY_TIME_ESTIMATE,
+  CTA_MICRO_LINE,
   CTA_PREQUAL_LABEL,
-  CREDIT_CHECK_SHORT,
-  DISCLAIMER_PREQUAL_LINE,
-  HERO_BRAND_LINE,
   HOME_FAQS,
-  HOME_MIN_REQUIREMENTS,
   HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
 import { PRODUCTS } from "@/lib/products";
 
-const TRUST_CHIPS = [
-  "Underwritten on bank statements",
-  CREDIT_CHECK_SHORT,
-  "Review within 1 business day",
-];
-
-const FIT_SIGNALS = [
-  "Booked out — capacity is the ceiling",
-  "You can name the truck, machine, or crew you'd buy",
-  "Statements already show steady revenue",
-];
-
 const HOW_IT_WORKS = [
   {
     step: "1",
     title: "Tell us what you're after",
-    body: "Product, amount, basics. About 5 minutes.",
+    body: "5 minutes online. No hard credit pull.",
   },
   {
     step: "2",
-    title: "Share bank statements",
-    body: "Upload now or send later by secure link.",
+    title: "A person reviews your file",
+    body: "Real deposits beat paperwork. 1 business day.",
   },
   {
     step: "3",
-    title: "Get matched options",
-    body: "A person reviews your file in 1 business day.",
-  },
-  {
-    step: "4",
-    title: "Book your review call",
-    body: "Walk through the options together and pick.",
+    title: "Pick your option on a call",
+    body: "We walk the numbers together. You decide.",
   },
 ];
 
-const COMPARISON_ROWS = [
-  {
-    label: "Application",
-    btf: "About 5 minutes, online",
-    bank: "Long forms, branch visits",
-  },
-  {
-    label: "First answer",
-    btf: "Within 1 business day",
-    bank: "Days to weeks",
-  },
-  {
-    label: "Underwriting",
-    btf: "Bank statements first",
-    bank: "Collateral + full financials",
-  },
-  {
-    label: "Who you talk to",
-    btf: "A person, on a call you book",
-    bank: "A committee you never meet",
-  },
+const PROOF_STRIP = [
+  "5 minutes online",
+  "Answer in 1 business day",
+  "A person, not a committee",
 ];
 
 function CheckIcon({ className }: { className?: string }) {
@@ -96,53 +58,43 @@ function CheckIcon({ className }: { className?: string }) {
 export function HomeContent() {
   return (
     <>
-      {/* HERO — light, one primary action */}
+      {/* HERO — one idea, one action */}
       <SectionShell
         contained
         className="relative border-b border-btf-border py-10 sm:py-12 md:py-16"
       >
         <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
-          <div className="min-w-0 space-y-4 sm:space-y-5">
-            <p className="text-sm font-bold tracking-tight text-btf-accent">
-              {HERO_BRAND_LINE}
-            </p>
+          <div className="min-w-0 space-y-5">
             <h1 className="text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl md:text-5xl">
-              More work than you can handle?{" "}
-              <span className="text-btf-accent">We fund the capacity.</span>
+              Money to <span className="text-btf-accent">grow your business.</span>
             </h1>
-            <p className="max-w-lg text-base text-btf-text-muted">
-              Eight ways to fund the next move — underwritten on your bank
-              statements, not a stack of paperwork.
+            <p className="max-w-lg text-base text-btf-text-muted sm:text-lg">
+              Trucks, crews, equipment — $10K to $10M for trades and service
+              businesses. A straight answer in 1 business day.
             </p>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-              <TrackedButtonLink
-                href={ROUTES.apply}
-                variant="primary"
-                trackLabel={CTA_PREQUAL_LABEL}
-                trackLocation="home_hero"
-                className="px-7 py-3.5 text-base"
-                showArrow
-              >
-                {CTA_PREQUAL_LABEL}
-              </TrackedButtonLink>
-              <Link
-                href={ROUTES.calculator}
-                className="text-sm font-semibold text-btf-accent hover:underline"
-              >
-                Run your numbers →
-              </Link>
-            </div>
-            <ul className="flex flex-wrap gap-x-4 gap-y-2">
-              {TRUST_CHIPS.map((chip) => (
-                <li
-                  key={chip}
-                  className="flex items-center gap-1.5 text-sm font-medium text-btf-text-muted"
+            <div className="space-y-2.5">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                <TrackedButtonLink
+                  href={ROUTES.apply}
+                  variant="primary"
+                  trackLabel={CTA_PREQUAL_LABEL}
+                  trackLocation="home_hero"
+                  className="px-7 py-3.5 text-base"
+                  showArrow
                 >
-                  <CheckIcon className="h-4 w-4 shrink-0 text-btf-accent" />
-                  {chip}
-                </li>
-              ))}
-            </ul>
+                  {CTA_PREQUAL_LABEL}
+                </TrackedButtonLink>
+                <Link
+                  href={ROUTES.calculator}
+                  className="text-sm font-semibold text-btf-accent hover:underline"
+                >
+                  Run your numbers →
+                </Link>
+              </div>
+              <p className="text-sm font-medium text-btf-text-muted">
+                {CTA_MICRO_LINE}
+              </p>
+            </div>
           </div>
 
           <Reveal className="relative">
@@ -164,7 +116,7 @@ export function HomeContent() {
         </div>
       </SectionShell>
 
-      {/* TRADES MARQUEE — slower, readable, pauses on hover */}
+      {/* TRADES MARQUEE — zero-reading-effort "people like me" signal */}
       <section
         className="group overflow-hidden border-b border-btf-border bg-btf-secondary py-4"
         aria-label="Industries we serve"
@@ -191,15 +143,15 @@ export function HomeContent() {
         </p>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS — three steps, one line each */}
       <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
         <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
           How it works
         </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {HOW_IT_WORKS.map((item, i) => (
             <Reveal key={item.step} delay={i * 40} className="h-full">
-              <div className="flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 transition-shadow duration-150 hover:shadow-btf-card">
+              <div className="flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 transition-all duration-150 hover:shadow-btf-card motion-safe:active:scale-[0.98]">
                 <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-btf-accent/10 text-sm font-bold tabular-nums text-btf-accent">
                   {item.step}
                 </span>
@@ -213,6 +165,17 @@ export function HomeContent() {
             </Reveal>
           ))}
         </div>
+        <ul className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          {PROOF_STRIP.map((item) => (
+            <li
+              key={item}
+              className="flex items-center gap-1.5 text-sm font-medium text-btf-text-muted"
+            >
+              <CheckIcon className="h-4 w-4 shrink-0 text-btf-accent" />
+              {item}
+            </li>
+          ))}
+        </ul>
       </SectionShell>
 
       {/* PRODUCTS */}
@@ -233,7 +196,7 @@ export function HomeContent() {
             <Reveal key={p.slug} delay={i * 40} className="h-full">
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
-                className="group flex h-full items-center gap-3 rounded-2xl border border-btf-border bg-btf-card p-4 transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card"
+                className="group flex h-full items-center gap-3 rounded-2xl border border-btf-border bg-btf-card p-4 transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:active:scale-[0.98]"
               >
                 <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-btf-accent/10 text-btf-accent">
                   <ProductIcon slug={p.slug} className="h-5 w-5" />
@@ -252,7 +215,7 @@ export function HomeContent() {
         </div>
       </SectionShell>
 
-      {/* CALCULATOR */}
+      {/* CALCULATOR — the useful gift, right after the products */}
       <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
         <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
           Run the math on what you&apos;d buy
@@ -260,100 +223,6 @@ export function HomeContent() {
         <Reveal className="mt-6 min-w-0 sm:mt-8">
           <FundingCalculator embedded />
         </Reveal>
-      </SectionShell>
-
-      {/* COMPARISON */}
-      <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
-        <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
-          Us vs. the typical bank
-        </h2>
-        <Reveal className="mt-8 overflow-hidden rounded-2xl border border-btf-border shadow-btf-card">
-          <table className="w-full border-collapse bg-btf-card text-left text-sm">
-            <thead>
-              <tr className="border-b border-btf-border bg-btf-secondary">
-                <th scope="col" className="p-3 sm:p-4" aria-label="Feature" />
-                <th scope="col" className="p-3 font-bold text-btf-accent sm:p-4">
-                  Built Together Funding
-                </th>
-                <th
-                  scope="col"
-                  className="p-3 font-semibold text-btf-text-muted sm:p-4"
-                >
-                  Typical bank
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARISON_ROWS.map((row) => (
-                <tr key={row.label} className="border-b border-btf-border last:border-0">
-                  <th
-                    scope="row"
-                    className="p-3 align-top text-xs font-semibold text-btf-text-muted sm:p-4 sm:text-sm"
-                  >
-                    {row.label}
-                  </th>
-                  <td className="p-3 align-top font-semibold text-btf-text sm:p-4">
-                    <span className="flex gap-2">
-                      <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-btf-accent" />
-                      {row.btf}
-                    </span>
-                  </td>
-                  <td className="p-3 align-top text-btf-text-muted sm:p-4">{row.bank}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Reveal>
-        <p className="mt-3 max-w-3xl text-xs leading-relaxed text-btf-text-muted">
-          {DISCLAIMER_PREQUAL_LINE}
-        </p>
-      </SectionShell>
-
-      {/* MIN REQUIREMENTS + FIT */}
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
-        <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <h2 className="text-balance text-xl font-bold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
-              Minimum requirements
-            </h2>
-            <ul className="mt-5 grid gap-3">
-              {HOME_MIN_REQUIREMENTS.map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-3 rounded-xl border border-btf-border bg-btf-card p-4 text-sm font-medium text-btf-text"
-                >
-                  <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-btf-accent" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="text-balance text-xl font-bold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
-              When we say yes, it means something.
-            </h2>
-            <p className="mt-2 text-sm text-btf-text-muted">
-              We decline files where the math doesn&apos;t work.{" "}
-              <Link
-                href={ROUTES.whoWeHelp}
-                className="font-semibold text-btf-accent hover:underline"
-              >
-                Who we help
-              </Link>
-            </p>
-            <ul className="mt-5 space-y-3">
-              {FIT_SIGNALS.map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-3 text-sm font-medium text-btf-text md:text-base"
-                >
-                  <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-btf-accent" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
       </SectionShell>
 
       {/* FAQ */}
@@ -367,7 +236,7 @@ export function HomeContent() {
               key={faq.q}
               className="group rounded-xl border border-btf-border bg-btf-card open:border-btf-accent/30"
             >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text [&::-webkit-details-marker]:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text transition-colors duration-150 active:bg-btf-secondary/70 [&::-webkit-details-marker]:hidden">
                 {faq.q}
                 <span
                   className="text-lg font-bold text-btf-accent transition-transform duration-150 group-open:rotate-45"
@@ -384,7 +253,7 @@ export function HomeContent() {
         </div>
       </SectionShell>
 
-      {/* FINAL CTA — the one dark brand moment */}
+      {/* FINAL CTA — disarm, don't push */}
       <section className="relative overflow-hidden bg-btf-ink">
         <Image
           src="/images/action-washing.jpg"
@@ -399,11 +268,13 @@ export function HomeContent() {
           aria-hidden
         />
         <div className="container relative max-w-6xl py-12 sm:py-16 md:py-20">
-          <h2 className="max-w-lg text-balance text-2xl font-extrabold leading-tight tracking-tight text-btf-on-ink sm:text-3xl md:text-5xl">
-            Start your pre-qual.
+          <h2 className="max-w-xl text-balance text-2xl font-extrabold leading-tight tracking-tight text-btf-on-ink sm:text-3xl md:text-5xl">
+            No pressure. No credit hit.{" "}
+            <span className="text-btf-accent-soft">Just your options.</span>
           </h2>
           <p className="mt-3 max-w-sm text-sm text-btf-on-ink-muted">
-            {APPLY_TIME_ESTIMATE}. A straight answer within one business day.
+            About 5 minutes. If it&apos;s not a fit, we&apos;ll tell you
+            straight.
           </p>
           <div className="mt-6">
             <TrackedButtonLink

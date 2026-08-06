@@ -59,7 +59,7 @@ export default async function CalculatorPage({
             <Reveal key={p.slug} delay={Math.min(i * 40, 160)}>
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
-                className="group flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-200 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5"
+                className="group flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
               >
                 <p className="text-sm font-bold text-btf-text group-hover:text-btf-accent">
                   {p.shortName}

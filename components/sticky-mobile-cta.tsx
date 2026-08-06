@@ -40,7 +40,9 @@ export function StickyMobileCta({
       setVisible(false);
       return;
     }
-    const onScroll = () => setVisible(window.scrollY > 380);
+    // Appear only after ~2 screens of value, not the moment scrolling starts —
+    // one persistent asker, and only once the site has given something first.
+    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 2);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

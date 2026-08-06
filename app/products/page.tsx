@@ -38,7 +38,7 @@ export default function ProductsPage() {
             <Reveal key={p.slug} delay={Math.min(i * 40, 160)}>
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
-                className="group flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 shadow-sm transition-all duration-200 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-1"
+                className="group flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 shadow-sm transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-1 motion-safe:active:scale-[0.98]"
               >
                 <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-btf-accent/10 text-btf-accent">
                   <ProductIcon slug={p.slug} />
