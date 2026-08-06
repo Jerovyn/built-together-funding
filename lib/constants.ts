@@ -18,14 +18,25 @@ export const BRAND_LINE = "Funding is a commitment to growth.";
 export const HERO_BRAND_LINE = "Where funding is a commitment to growth.";
 
 /**
- * Primary funding CTA on conversion paths (hero, header, sticky bar).
- * Deliberately reads as "get information", not "submit to judgment" —
- * pre-qual language stays inside the funnel where compliance needs it.
+ * Primary funding CTA — reads as getting information, not submitting to judgment.
  */
 export const CTA_PREQUAL_LABEL = "See your options";
 
-/** One quiet line under the primary CTA — replaces stacked trust chips. */
+/** After the calculator — earned, specific ask. */
+export const CTA_CALC_LABEL = "Use these numbers";
+
+/** One quiet line under the primary CTA. */
 export const CTA_MICRO_LINE = "5 minutes · Won't affect your credit score";
+
+/** Homepage pull line — capacity constraint, not generic growth. */
+export const HOME_PULL_LINE =
+  "Booked out and turning work away? We fund the next truck, crew, or machine.";
+
+export const HOME_DESIRE_SIGNALS = [
+  "The work is already there — capacity is the ceiling",
+  "You can name the truck, crew, or machine you'd buy",
+  "Bank statements show steady revenue",
+] as const;
 
 /**
  * Credit-impact line (verified against MCA industry standard: pre-qual uses no

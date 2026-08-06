@@ -72,7 +72,7 @@ export default function ContactPage() {
       </SectionShell>
 
       <SectionShell className="pb-24 md:pb-28">
-        <CtaBlock label="Check your fit" trackLocation="contact_footer" primaryOnly />
+        <CtaBlock trackLocation="contact_footer" primaryOnly />
       </SectionShell>
     </>
   );

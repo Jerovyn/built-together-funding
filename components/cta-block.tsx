@@ -2,14 +2,13 @@
 
 import { DisclaimerNote } from "@/components/disclaimer-note";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
-import { ROUTES } from "@/lib/constants";
+import { CTA_PREQUAL_LABEL, ROUTES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type CtaBlockProps = {
   className?: string;
   showDisclaimer?: boolean;
   primaryOnly?: boolean;
-  /** Primary button label — defaults to contextual "Check your fit". */
   label?: string;
   trackLocation?: string;
 };
@@ -18,7 +17,7 @@ export function CtaBlock({
   className,
   showDisclaimer = false,
   primaryOnly = false,
-  label = "Check your fit",
+  label = CTA_PREQUAL_LABEL,
   trackLocation = "cta_block",
 }: CtaBlockProps) {
   return (

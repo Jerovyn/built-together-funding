@@ -6,6 +6,7 @@ import { BoltMascot } from "@/components/mascot/bolt";
 import { ButtonLink } from "@/components/ui/button";
 import {
   CREDIT_CHECK_LINE,
+  CTA_PREQUAL_LABEL,
   DISCLAIMER_PREQUAL_LINE,
   ROUTES,
 } from "@/lib/constants";
@@ -14,8 +15,8 @@ import { cn } from "@/lib/utils";
 
 const GUIDE_ANSWERS: { q: string; a: string }[] = [
   {
-    q: "Is pre-qualifying the same as approval?",
-    a: "No. Pre-qualifying tells us your business may be a fit for a funding review. Final options depend on review, underwriting, and partner availability - we'll never tell you you're funded until you actually are.",
+    q: "Is this the same as approval?",
+    a: "No. Seeing your options tells us your business may be a fit for a funding review. Final options depend on review, underwriting, and partner availability.",
   },
   {
     q: "Will this touch my credit?",
@@ -23,19 +24,19 @@ const GUIDE_ANSWERS: { q: string; a: string }[] = [
   },
   {
     q: "What do you need from me?",
-    a: "Your last 3 months of bank statements and answers to three questions. We underwrite on real revenue, not a questionnaire.",
+    a: "About 5 minutes online: what you're after, contact, and your last 3 months of bank statements (upload now or later). Have your EIN handy.",
   },
   {
     q: "How fast will I hear back?",
-    a: "A person reviews every file. You'll usually hear from us within one business day - with a real answer either way.",
+    a: "A person reviews every file. You'll usually hear from us within one business day — with a real answer either way.",
   },
   {
     q: "Who do you fund?",
-    a: "Service and trade businesses with more demand than capacity - roofing, cleaning, landscaping, construction, and similar. If the work is there and capacity is the ceiling, we should talk.",
+    a: "Trades and service businesses where the work is already there and capacity is the ceiling — roofing, cleaning, landscaping, construction, and similar.",
   },
   {
     q: "Is my information safe?",
-    a: "Yes. Everything you share is encrypted in transit, stored privately, and used only to review your application. We don't sell your information.",
+    a: "Yes. Encrypted in transit, stored privately, used only to review your application. We don't sell your information.",
   },
 ];
 
@@ -76,11 +77,7 @@ export function BoltAssistant() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Funnel and secure-upload pages stay distraction-free.
-  if (pathname?.startsWith("/apply") || pathname?.startsWith("/upload")) {
-    return null;
-  }
-
+  // Only rendered on Contact / How it works via SiteChrome.
   const toggle = () => {
     setOpen((v) => {
       const next = !v;
@@ -151,7 +148,7 @@ export function BoltAssistant() {
               variant="primary"
               className="group w-full justify-center"
             >
-              Check your fit
+              {CTA_PREQUAL_LABEL}
             </ButtonLink>
             <p className="text-[11px] leading-snug text-btf-text-muted">
               {DISCLAIMER_PREQUAL_LINE}
@@ -166,10 +163,9 @@ export function BoltAssistant() {
         aria-expanded={open}
         aria-label={open ? "Close Bolt guide" : "Open Bolt guide"}
         className={cn(
-          "fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full border border-btf-border bg-btf-card py-1.5 pl-1.5 pr-4 shadow-btf-card transition-all duration-200 md:bottom-4",
-          "motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-btf-accent/40 motion-safe:hover:shadow-lg motion-safe:active:scale-[0.98]",
-          open && "border-btf-accent/40 shadow-btf-glow",
-          !open && "motion-safe:animate-bolt-breathe",
+          "fixed bottom-20 right-4 z-40 flex items-center gap-2 rounded-full border border-btf-border bg-btf-card py-1.5 pl-1.5 pr-4 shadow-btf-card transition-all duration-150 md:bottom-4",
+          "motion-safe:hover:-translate-y-0.5 motion-safe:hover:border-btf-accent/40 motion-safe:active:scale-[0.98]",
+          open && "border-btf-accent/40",
         )}
       >
         <BoltMascot variant="badge" />

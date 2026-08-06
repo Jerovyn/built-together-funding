@@ -61,7 +61,7 @@ export default function WhoWeHelpPage() {
       </SectionShell>
 
       <SectionShell className="bg-white/40 pb-24 backdrop-blur-[2px] md:pb-28">
-        <CtaBlock label="Check your fit" trackLocation="who_we_help" primaryOnly />
+        <CtaBlock trackLocation="who_we_help" primaryOnly />
       </SectionShell>
     </>
   );

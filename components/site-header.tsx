@@ -60,7 +60,7 @@ function ChevronDownIcon({ className }: { className?: string }) {
   );
 }
 
-export function SiteHeader() {
+export function SiteHeader({ compact = false }: { compact?: boolean }) {
   const phoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY?.trim();
   const phone = process.env.NEXT_PUBLIC_PHONE?.trim();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -73,7 +73,6 @@ export function SiteHeader() {
     setProductsOpen(false);
   }, [pathname]);
 
-  // Close the products dropdown on outside click / Escape.
   useEffect(() => {
     if (!productsOpen) return;
     const onPointerDown = (e: PointerEvent) => {
@@ -93,6 +92,32 @@ export function SiteHeader() {
   }, [productsOpen]);
 
   const isProductsActive = pathname?.startsWith("/products");
+
+  if (compact) {
+    return (
+      <header className="sticky top-0 z-50 border-b border-btf-border bg-white supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
+        <div className="container flex max-w-2xl items-center justify-between gap-3 py-2.5 sm:py-3">
+          <Link href={ROUTES.home} className="flex items-center gap-2">
+            <Image
+              src="/brand/btf-logo-tools.png"
+              alt=""
+              width={540}
+              height={436}
+              priority
+              className="h-8 w-auto"
+            />
+            <span className="sr-only">{SITE_NAME}</span>
+          </Link>
+          <Link
+            href={ROUTES.home}
+            className="text-sm font-semibold text-btf-text-muted hover:text-btf-text"
+          >
+            Exit
+          </Link>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-btf-border bg-white/80 backdrop-blur-md supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">

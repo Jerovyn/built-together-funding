@@ -5,14 +5,31 @@ import { TrackedButtonLink } from "@/components/tracking/tracked-link";
 import {
   CTA_MICRO_LINE,
   CTA_PREQUAL_LABEL,
+  HOME_DESIRE_SIGNALS,
+  HOME_PULL_LINE,
   HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
 
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <path d="M20 6L9 17l-5-5" />
+    </svg>
+  );
+}
+
 /**
- * Homepage is three beats only (Krug): say what we are, prove who it's for,
- * give two clear paths. Calculator, products grid, FAQ, and long how-it-works
- * live on their own pages — not here.
+ * Three beats + desire: who it's for, capacity pull, two clear paths.
  */
 export function HomeContent() {
   return (
@@ -23,13 +40,15 @@ export function HomeContent() {
       >
         <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
           <div className="min-w-0 space-y-5">
-            <h1 className="text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl md:text-5xl">
-              Money to{" "}
-              <span className="text-btf-accent">grow your business.</span>
+            <p className="text-sm font-semibold text-btf-accent">
+              Financing for trades &amp; service businesses
+            </p>
+            <h1 className="text-balance text-3xl font-extrabold leading-[1.08] tracking-tight text-btf-text sm:text-4xl md:text-[2.75rem]">
+              {HOME_PULL_LINE}
             </h1>
             <p className="max-w-md text-base text-btf-text-muted sm:text-lg">
-              Trucks, crews, equipment — $10K to $10M. Straight answer in 1
-              business day.
+              $10K to $10M. Underwritten on your bank statements. Straight
+              answer in 1 business day — from a person, not a portal.
             </p>
             <div className="space-y-2">
               <TrackedButtonLink
@@ -51,7 +70,7 @@ export function HomeContent() {
           <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-btf-border shadow-btf-card">
             <Image
               src="/images/hero-crew.png"
-              alt="Roofing crew working on a home at golden hour"
+              alt="Trade crew on a job — the kind of work we fund capacity for"
               fill
               priority
               sizes="(min-width: 1024px) 50vw, 100vw"
@@ -87,12 +106,27 @@ export function HomeContent() {
         </p>
       </section>
 
-      <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
+      <SectionShell className="border-b border-btf-border py-10 sm:py-12">
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {HOME_DESIRE_SIGNALS.map((item) => (
+            <li
+              key={item}
+              className="flex gap-2.5 text-sm font-medium text-btf-text"
+            >
+              <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-btf-accent" />
+              {item}
+            </li>
+          ))}
+        </ul>
+      </SectionShell>
+
+      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 sm:py-14">
         <p className="text-sm font-medium text-btf-text-muted">
-          Apply online → we review your statements → you pick on a call.
+          Tell us what you need → we review your statements → you pick on a
+          call.
         </p>
         <h2 className="mt-3 max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
-          What do you want to do?
+          Ready when you are.
         </h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <TrackedButtonLink
@@ -121,12 +155,11 @@ export function HomeContent() {
           </Link>
         </div>
         <p className="mt-6 text-sm text-btf-text-muted">
-          Curious about products?{" "}
           <Link
             href={ROUTES.products}
             className="font-semibold text-btf-accent hover:underline"
           >
-            Compare financing options
+            Compare financing products →
           </Link>
         </p>
       </SectionShell>

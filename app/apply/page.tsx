@@ -31,7 +31,7 @@ export default async function ApplyPage({
               : "See your options"}
           </h1>
           <p className="text-xs leading-snug text-btf-text-muted sm:text-sm">
-            {APPLY_TIME_ESTIMATE}.
+            {APPLY_TIME_ESTIMATE}. One question at a time — we&apos;re with you.
           </p>
           <p className="text-xs leading-snug text-btf-text-muted">
             {DISCLAIMER_PREQUAL_LINE}

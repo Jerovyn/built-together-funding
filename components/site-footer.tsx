@@ -3,177 +3,98 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BROKER_DISCLOSURE,
-  DISCLAIMER_SHORT,
+  DISCLAIMER_PREQUAL_LINE,
   FOOTER_LINKS,
   ROUTES,
-  SITE_TAGLINE,
 } from "@/lib/constants";
-import { PRODUCTS } from "@/lib/products";
-import { TrackedLink } from "@/components/tracking/tracked-link";
 import { TrackedPhoneLink } from "@/components/tracking/tracked-phone-link";
 
-const EXPLORE_LINKS = [
-  { href: ROUTES.calculator, label: "Funding Calculator" },
-  { href: ROUTES.howItWorks, label: "How It Works" },
-  { href: ROUTES.whoWeHelp, label: "Who We Help" },
-  { href: ROUTES.fundingUses, label: "Funding Uses" },
-  { href: ROUTES.resources, label: "Resources" },
-  { href: ROUTES.about, label: "About" },
-  { href: ROUTES.contact, label: "Contact" },
-] as const;
-
+/**
+ * Short footer (Krug): phone/email, a handful of links, one disclosure line.
+ * Full broker language lives on /disclosures — not here.
+ */
 export function SiteFooter() {
   const phoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY;
   const phone = process.env.NEXT_PUBLIC_PHONE;
   const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
-  const address = process.env.NEXT_PUBLIC_BUSINESS_ADDRESS;
   const year = new Date().getFullYear();
 
-  return (
-    <footer className="relative overflow-hidden bg-btf-ink text-btf-on-ink">
-      <div className="container relative max-w-6xl py-10 sm:py-14">
-        <p className="text-balance text-xl font-extrabold uppercase leading-tight tracking-tight text-btf-on-ink sm:text-2xl md:text-3xl lg:text-4xl">
-          Funding is a commitment{" "}
-          <span className="text-btf-accent-soft">to growth.</span>
-        </p>
+  const links = [
+    { href: ROUTES.products, label: "Products" },
+    { href: ROUTES.calculator, label: "Calculator" },
+    { href: ROUTES.howItWorks, label: "How it works" },
+    { href: ROUTES.whoWeHelp, label: "Who we help" },
+    { href: ROUTES.contact, label: "Contact" },
+    ...FOOTER_LINKS.filter((l) => l.href !== "/iso/"),
+  ];
 
-        <div className="mt-10 flex flex-col gap-8 border-t border-btf-ink-border pt-8 sm:mt-12 sm:gap-10 sm:pt-10 lg:flex-row lg:justify-between">
-          <div className="max-w-sm space-y-4">
-            <Link href={ROUTES.home} className="inline-flex items-center gap-3">
+  return (
+    <footer className="border-t border-btf-ink-border bg-btf-ink text-btf-on-ink">
+      <div className="container max-w-6xl py-8 sm:py-10">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-3">
+            <Link href={ROUTES.home} className="inline-flex items-center gap-2.5">
               <Image
                 src="/brand/btf-logo-tools.png"
                 alt=""
                 width={540}
                 height={436}
-                className="h-14 w-auto md:h-16"
+                className="h-10 w-auto"
               />
-              <span className="flex flex-col leading-none">
-                <span className="text-base font-bold uppercase tracking-tight text-btf-on-ink">
-                  Built Together
-                </span>
-                <span className="text-base font-bold uppercase tracking-tight text-btf-accent-soft">
-                  Funding
-                </span>
+              <span className="text-sm font-bold tracking-tight text-btf-on-ink">
+                Built Together Funding
               </span>
             </Link>
-            <p className="text-sm font-semibold text-btf-on-ink">{SITE_TAGLINE}</p>
-            <p className="text-sm leading-relaxed text-btf-on-ink-muted">
-              Money to grow your service business when the work is already
-              there. Not a bailout — a build.
-            </p>
+            <ul className="space-y-1 text-sm text-btf-on-ink-muted">
+              {phoneDisplay && phone ? (
+                <li>
+                  <TrackedPhoneLink
+                    href={`tel:${phone}`}
+                    className="hover:text-btf-on-ink"
+                    trackLocation="footer"
+                  >
+                    {phoneDisplay}
+                  </TrackedPhoneLink>
+                </li>
+              ) : null}
+              {email ? (
+                <li>
+                  <a href={`mailto:${email}`} className="hover:text-btf-on-ink">
+                    {email}
+                  </a>
+                </li>
+              ) : null}
+            </ul>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4 sm:gap-10">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
-                Financing
-              </p>
-              <ul className="mt-3 space-y-2">
-                {PRODUCTS.map((p) => (
-                  <li key={p.slug}>
-                    <Link
-                      href={`${ROUTES.products}${p.slug}/`}
-                      className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
-                    >
-                      {p.shortName}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
-                Explore
-              </p>
-              <ul className="mt-3 space-y-2">
-                {EXPLORE_LINKS.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
-                Legal
-              </p>
-              <ul className="mt-3 space-y-2">
-                {FOOTER_LINKS.map((item) => (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-btf-on-ink-muted">
-                Contact
-              </p>
-              <ul className="mt-3 space-y-2 text-sm text-btf-on-ink-muted">
-                <li>
-                  <TrackedLink
-                    href={ROUTES.apply}
-                    className="hover:text-btf-on-ink"
-                    trackLabel="Check your fit"
-                    trackLocation="footer"
+          <nav aria-label="Footer">
+            <ul className="flex flex-wrap gap-x-4 gap-y-2 sm:justify-end">
+              {links.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
                   >
-                    Check your fit
-                  </TrackedLink>
+                    {item.label}
+                  </Link>
                 </li>
-                <li>
-                  <TrackedLink
-                    href={ROUTES.iso}
-                    className="hover:text-btf-on-ink"
-                    trackLabel="ISO / Partner signup"
-                    trackLocation="footer"
-                  >
-                    ISO / Partner signup
-                  </TrackedLink>
-                </li>
-                {phoneDisplay && phone ? (
-                  <li>
-                    <TrackedPhoneLink
-                      href={`tel:${phone}`}
-                      className="hover:text-btf-on-ink"
-                      trackLocation="footer"
-                    >
-                      {phoneDisplay}
-                    </TrackedPhoneLink>
-                  </li>
-                ) : null}
-                {email ? (
-                  <li>
-                    <a href={`mailto:${email}`} className="hover:text-btf-on-ink">
-                      {email}
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          </div>
+              ))}
+            </ul>
+          </nav>
         </div>
 
-        <div className="mt-12 space-y-4 border-t border-btf-ink-border pt-8">
-          <p className="max-w-4xl text-xs leading-relaxed text-btf-on-ink-muted">
-            <span className="font-semibold text-btf-on-ink">
-              Important disclosure:
-            </span>{" "}
-            {BROKER_DISCLOSURE} {DISCLAIMER_SHORT}
+        <div className="mt-8 space-y-2 border-t border-btf-ink-border pt-6">
+          <p className="max-w-3xl text-xs leading-relaxed text-btf-on-ink-muted">
+            {DISCLAIMER_PREQUAL_LINE}{" "}
+            <Link
+              href="/disclosures/"
+              className="underline underline-offset-2 hover:text-btf-on-ink"
+            >
+              Full disclosures
+            </Link>
           </p>
           <p className="text-xs text-btf-on-ink-muted">
-            &copy; {year} Built Together Funding Corp. All rights reserved.
-            {address ? ` ${address}.` : null}
+            &copy; {year} Built Together Funding Corp.
           </p>
         </div>
       </div>

@@ -63,7 +63,7 @@ export default async function ResourcesPage() {
       </SectionShell>
 
       <SectionShell className="pb-24 md:pb-28">
-        <CtaBlock label="Check your fit" trackLocation="resources" primaryOnly />
+        <CtaBlock trackLocation="resources" primaryOnly />
       </SectionShell>
     </>
   );

@@ -21,24 +21,24 @@ const COPY: Record<
   { headline: string; lines: string[] }
 > = {
   prequalified: {
-    headline: "Your business may be a fit for a funding review.",
+    headline: "Good news — you may be a fit.",
     lines: [
-      "Here's what happens next: a person reviews your file — and the person who reviews it is the person who calls you.",
-      "Pick a time for your review call, or expect to hear from us within one business day.",
+      "A real person reviews your file next. The person who reviews it is the person who talks with you.",
+      "Pick a call time now, or we'll reach out within one business day.",
     ],
   },
   needs_review: {
-    headline: "Your application needs manual review.",
+    headline: "We've got your file — it needs a closer look.",
     lines: [
-      "We may need more information before determining fit.",
-      "Book a call to walk through your file, or we'll reach out with specific questions within one business day.",
+      "Sometimes we need one or two clarifications before we map options.",
+      "Book a short call, or wait for us to reach out within one business day.",
     ],
   },
   not_fit_yet: {
-    headline: "This may not be the right fit yet.",
+    headline: "This may not be the right timing yet.",
     lines: [
-      "Funding should only be used when demand already exists and capacity is the constraint.",
-      "That's not a knock on your business — it's timing. When revenue and demand are clearer, you're welcome back.",
+      "We fund when demand is already there and capacity is the constraint — that doesn't sound like your file today.",
+      "When the work is clearer, you're welcome back. No hard feelings.",
     ],
   },
 };
@@ -77,7 +77,7 @@ export function ApplyResult({
         <CardContent className="space-y-6 p-6 md:p-10">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-btf-accent">
-              Pre-screen result
+              Next step
             </p>
             <h2 className="text-2xl font-semibold tracking-tight text-btf-text md:text-3xl">
               {block.headline}
@@ -117,7 +117,7 @@ export function ApplyResult({
                 className="mt-3 w-full min-h-11 touch-manipulation sm:w-auto"
                 onClick={() => setBookingOpen(true)}
               >
-                Pick a time
+                Pick a call time
               </Button>
             </div>
           ) : null}

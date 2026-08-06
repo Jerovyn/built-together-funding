@@ -11,7 +11,7 @@ import {
 import { saveCalcSnapshotToSession } from "@/lib/calculator-preset";
 import type { CalcSnapshot } from "@/lib/apply-schema";
 import {
-  CTA_PREQUAL_LABEL,
+  CTA_CALC_LABEL,
   DISCLAIMER_ESTIMATE_LINE,
   ROUTES,
 } from "@/lib/constants";
@@ -399,6 +399,10 @@ export function FundingCalculator({
             {money(cost.perPayment)}
           </p>
           <p className="mt-2 text-sm text-btf-text-muted">
+            Roughly what you&apos;d remit each {FREQUENCY_UNIT[s.frequency]} at
+            these settings — not a quote.
+          </p>
+          <p className="mt-1 text-sm text-btf-text-muted">
             Total repayment {money(cost.totalRepayment)} · Cost of capital{" "}
             {money(cost.totalCost)}
           </p>
@@ -534,7 +538,7 @@ export function FundingCalculator({
         <TrackedButtonLink
           href={`${ROUTES.apply}?product=${product.slug}`}
           variant="primary"
-          trackLabel={CTA_PREQUAL_LABEL}
+          trackLabel={CTA_CALC_LABEL}
           trackLocation="funding_calculator"
           className="w-full justify-center"
           showArrow
@@ -543,7 +547,7 @@ export function FundingCalculator({
             saveCalcSnapshotToSession(snapshot);
           }}
         >
-          {CTA_PREQUAL_LABEL}
+          {CTA_CALC_LABEL}
         </TrackedButtonLink>
 
         <p className="text-[11px] leading-snug text-btf-text-muted">

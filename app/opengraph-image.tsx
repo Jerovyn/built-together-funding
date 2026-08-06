@@ -5,11 +5,6 @@ export const alt = `${SITE_NAME} - ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-/**
- * Share card follows the drunk test: one plain-words message. The platform
- * already shows og:title (the category line) and the URL below the image,
- * so the image itself never repeats them.
- */
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -20,10 +15,10 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: 80,
+          padding: 72,
           backgroundColor: "#081123",
           backgroundImage:
-            "radial-gradient(900px 500px at 85% 110%, rgba(59,130,246,0.22), transparent 70%)",
+            "radial-gradient(800px 420px at 90% 100%, rgba(29,78,216,0.28), transparent 65%)",
           fontFamily: "sans-serif",
         }}
       >
@@ -32,9 +27,8 @@ export default function OpengraphImage() {
             display: "flex",
             alignItems: "baseline",
             gap: 12,
-            fontSize: 30,
+            fontSize: 28,
             fontWeight: 700,
-            letterSpacing: -0.5,
           }}
         >
           <span style={{ color: "#EAF1FD" }}>Built Together</span>
@@ -45,16 +39,25 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 96,
-            fontWeight: 800,
-            lineHeight: 1.05,
-            letterSpacing: -3,
-            maxWidth: 1000,
-            paddingBottom: 24,
+            gap: 20,
+            maxWidth: 980,
+            paddingBottom: 16,
           }}
         >
-          <span style={{ color: "#EAF1FD" }}>Money to grow</span>
-          <span style={{ color: "#60A5FA" }}>your business.</span>
+          <div
+            style={{
+              fontSize: 52,
+              fontWeight: 800,
+              lineHeight: 1.12,
+              letterSpacing: -1.5,
+              color: "#EAF1FD",
+            }}
+          >
+            Booked out? We fund the next truck, crew, or machine.
+          </div>
+          <div style={{ fontSize: 24, color: "#9FB3D9" }}>
+            Trades & service businesses · Answer in 1 business day
+          </div>
         </div>
       </div>
     ),

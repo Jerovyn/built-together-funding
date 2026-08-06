@@ -72,7 +72,7 @@ export default function FundingUsesPage() {
       </SectionShell>
 
       <SectionShell className="pb-24 md:pb-28">
-        <CtaBlock label="Run my file" trackLocation="funding_uses" primaryOnly />
+        <CtaBlock trackLocation="funding_uses" primaryOnly />
       </SectionShell>
     </>
   );

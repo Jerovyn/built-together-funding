@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { SectionShell } from "@/components/section-shell";
-import { ROUTES } from "@/lib/constants";
+import { CTA_PREQUAL_LABEL, ROUTES } from "@/lib/constants";
 
 export default function NotFound() {
   return (
@@ -22,7 +22,7 @@ export default function NotFound() {
             Back to home
           </ButtonLink>
           <ButtonLink href={ROUTES.apply} variant="secondary">
-            Check your fit
+            {CTA_PREQUAL_LABEL}
           </ButtonLink>
         </div>
         <p className="mt-8 text-sm text-btf-text-muted">

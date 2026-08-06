@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FundingCalculator } from "@/components/calculator/funding-calculator";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
 import {
-  CTA_PREQUAL_LABEL,
+  CTA_CALC_LABEL,
   DISCLAIMER_ESTIMATE_LINE,
   DISCLAIMER_PREQUAL_LINE,
   ROUTES,
@@ -53,11 +53,11 @@ export default async function CalculatorPage({
                   : ROUTES.apply
               }
               variant="primary"
-              trackLabel={CTA_PREQUAL_LABEL}
+              trackLabel={CTA_CALC_LABEL}
               trackLocation="calculator_page_footer"
               showArrow
             >
-              {CTA_PREQUAL_LABEL}
+              {CTA_CALC_LABEL}
             </TrackedButtonLink>
             <Link
               href={ROUTES.products}

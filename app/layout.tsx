@@ -2,18 +2,15 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { Inter_Tight } from "next/font/google";
-import { BrandAmbientBackground } from "@/components/brand/brand-ambient-background";
-import { BoltAssistant } from "@/components/mascot/bolt-assistant";
 import { PixelScripts } from "@/components/tracking/pixel-scripts";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
-import { StickyMobileCta } from "@/components/sticky-mobile-cta";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { SiteChrome } from "@/components/site-chrome";
 import {
+  HOME_FAQS,
+  HOME_PULL_LINE,
   SITE_DESCRIPTION,
   SITE_NAME,
   SITE_TAGLINE,
-  HOME_FAQS,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import "./globals.css";
@@ -40,16 +37,15 @@ export const metadata: Metadata = {
     apple: "/brand/btf-logo-icon-mark.png",
   },
   openGraph: {
-    // Descriptor-forward so link previews read like a category, not a name.
-    title: SITE_TAGLINE,
+    title: `${SITE_NAME} | ${SITE_TAGLINE}`,
     siteName: SITE_NAME,
-    description: SITE_DESCRIPTION,
+    description: HOME_PULL_LINE,
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
-    description: SITE_DESCRIPTION,
+    description: HOME_PULL_LINE,
   },
 };
 
@@ -107,28 +103,19 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={interTight.variable} suppressHydrationWarning>
-      {/* suppressHydrationWarning: browser extensions (ColorZilla, Grammarly, etc.)
-          inject attributes into <html>/<body> before React hydrates. */}
       <body
         suppressHydrationWarning
         className={cn(
           "relative flex min-h-screen flex-col bg-[#F5F9FC] font-sans antialiased",
         )}
       >
-        <BrandAmbientBackground />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <PixelScripts />
         <TrackingProvider>
-          <div className="relative z-10 flex min-h-screen flex-col">
-            <SiteHeader />
-            <main className="min-w-0 flex-1 overflow-x-clip">{children}</main>
-            <SiteFooter />
-            <BoltAssistant />
-            <StickyMobileCta />
-          </div>
+          <SiteChrome>{children}</SiteChrome>
         </TrackingProvider>
         <Analytics />
       </body>

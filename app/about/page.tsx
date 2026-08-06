@@ -40,7 +40,7 @@ export default function AboutPage() {
       </SectionShell>
 
       <SectionShell className="bg-btf-bg pb-24 md:pb-28">
-        <CtaBlock label="Check your fit" trackLocation="about" primaryOnly />
+        <CtaBlock trackLocation="about" primaryOnly />
       </SectionShell>
     </>
   );

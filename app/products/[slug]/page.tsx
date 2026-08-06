@@ -8,7 +8,6 @@ import {
   BROKER_DISCLOSURE,
   CTA_PREQUAL_LABEL,
   DISCLAIMER_ESTIMATE_LINE,
-  DISCLAIMER_PREQUAL_LINE,
   ROUTES,
   SITE_NAME,
 } from "@/lib/constants";
@@ -136,7 +135,7 @@ export default async function ProductPage({
                 {product.name}
               </h1>
               <p className="mt-4 max-w-xl text-base leading-relaxed text-btf-text-muted">
-                {product.description}
+                {product.tagline}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <TrackedButtonLink
@@ -152,11 +151,11 @@ export default async function ProductPage({
                   href={calcHref}
                   className="text-sm font-semibold text-btf-accent hover:underline"
                 >
-                  Calculate payments →
+                  Estimate a payment →
                 </Link>
               </div>
               <p className="mt-4 text-xs text-btf-text-muted">
-                Pre-qualifying won&apos;t affect your credit score.
+                Won&apos;t affect your credit score.
               </p>
             </div>
 
@@ -230,7 +229,7 @@ export default async function ProductPage({
               </p>
             </div>
             <ul className="grid gap-2.5 sm:grid-cols-2">
-              {product.benefits.map((benefit, i) => (
+              {product.benefits.slice(0, 4).map((benefit, i) => (
                 <Reveal key={benefit} delay={Math.min(i * 40, 160)} as="li">
                   <span className="flex gap-2.5 rounded-xl border border-btf-border bg-btf-card p-3.5 text-sm font-medium text-btf-text">
                     <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-btf-accent" />
@@ -280,8 +279,7 @@ export default async function ProductPage({
             See if {product.shortName.toLowerCase()} fits your file.
           </h2>
           <p className="mt-3 max-w-md text-sm text-btf-on-ink-muted">
-            About 4–5 minutes. A straight answer within one business day.{" "}
-            {DISCLAIMER_PREQUAL_LINE}
+            About 5 minutes. Straight answer within one business day.
           </p>
           <div className="mt-6">
             <TrackedButtonLink

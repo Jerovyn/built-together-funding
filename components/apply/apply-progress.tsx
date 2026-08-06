@@ -7,7 +7,7 @@ type ApplyProgressProps = {
   className?: string;
 };
 
-/** Slim top progress: descriptive phase label + bar (% lives on BoltCoach). */
+/** Slim progress: phase + fraction. */
 export function ApplyProgress({
   currentStep,
   totalSteps,
@@ -19,9 +19,10 @@ export function ApplyProgress({
   return (
     <div className={cn("space-y-2", className)}>
       <p className="text-xs font-medium text-btf-text-muted">
-        {label}{" "}
+        {label}
         <span className="text-btf-text-muted/70">
-          ({currentStep + 1} of {totalSteps})
+          {" "}
+          · {currentStep + 1} of {totalSteps}
         </span>
       </p>
       <div
@@ -33,7 +34,7 @@ export function ApplyProgress({
         aria-label={`${label}, ${pct} percent complete`}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-btf-accent to-btf-accent-mid transition-[width] duration-300 ease-out"
+          className="h-full rounded-full bg-btf-accent transition-[width] duration-300 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>
