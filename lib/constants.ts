@@ -26,7 +26,7 @@ export const CTA_PREQUAL_LABEL = "See your options";
 export const CTA_CALC_LABEL = "Use these numbers";
 
 /** One quiet line under the primary CTA. */
-export const CTA_MICRO_LINE = "5 minutes · Won't affect your credit score";
+export const CTA_MICRO_LINE = "About 2 minutes · Won't affect your credit score";
 
 /** Homepage pull line — capacity constraint, not generic growth. */
 export const HOME_PULL_LINE =
@@ -81,9 +81,9 @@ export const ROUTES = {
   bookReview: "/book/",
 } as const;
 
-/** Shown on apply page and FAQ — sets honest time expectations. */
+/** Shown on apply page and FAQ — Stage A is the quick path; full file is optional. */
 export const APPLY_TIME_ESTIMATE =
-  "About 5 minutes · one question at a time · EIN handy";
+  "About 2 minutes to see if we should talk · full file optional after";
 
 export const HOME_MIN_REQUIREMENTS = [
   "6+ months in business (most files)",
@@ -149,7 +149,7 @@ export const HOME_FAQS = [
   },
   {
     q: "What do you need?",
-    a: "A few quick screens, about 5 minutes: what you need, contact, bank statements (now or later), then owner and business details. Have your EIN handy.",
+    a: "About 2 minutes first: what the money is for, how much, rough monthly revenue, time in business, and how to reach you. Bank statements, SSN, and EIN only if you choose to finish the full file — or we can collect them after you talk with us.",
   },
   {
     q: "What are the minimum requirements?",

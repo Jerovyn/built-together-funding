@@ -1,12 +1,23 @@
 import type { ApplyFormValues } from "@/lib/apply-schema";
 import type { ApplyResultTier, LeadDbStatus } from "@/types/apply";
 
+type ScoreInput = Pick<
+  ApplyFormValues,
+  | "timeInBusiness"
+  | "useOfFunds"
+  | "statementPaths"
+  | "statementsSkipped"
+  | "fundingAmount"
+  | "productInterest"
+  | "monthlyRevenue"
+>;
+
 /**
- * Pre-screen routing score (not underwriting). With the short funnel, bank
- * statements are the real signal; this score only routes follow-up priority.
- * Backend POST /api/apply reuses this function for parity.
+ * Pre-screen routing score (not underwriting). Stage A soft-skips statements
+ * (+5). Uploading in Stage B adds the full +30. Backend POST /api/apply and
+ * Stage A reuses this for parity.
  */
-export function computeApplyScore(values: ApplyFormValues): number {
+export function computeApplyScore(values: ScoreInput): number {
   let score = 0;
 
   switch (values.timeInBusiness) {
@@ -44,6 +55,29 @@ export function computeApplyScore(values: ApplyFormValues): number {
     score += 25;
   } else if (selected.size > 0) {
     score += 12;
+  }
+
+  switch (values.monthlyRevenue) {
+    case "250k_plus":
+      score += 25;
+      break;
+    case "100k_250k":
+      score += 22;
+      break;
+    case "50k_100k":
+      score += 18;
+      break;
+    case "25k_50k":
+      score += 12;
+      break;
+    case "10k_25k":
+      score += 5;
+      break;
+    case "under_10k":
+      score -= 15;
+      break;
+    default:
+      break;
   }
 
   // Statements provided up front are the strongest intent + review signal.

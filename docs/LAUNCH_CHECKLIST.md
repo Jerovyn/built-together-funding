@@ -19,10 +19,12 @@ Use this before paid ads, high-volume outbound, or any compliance-sensitive go-l
 
 - [ ] Create project; copy URL and **service_role** key (server-only)
 - [ ] Run [`docs/supabase-leads.sql`](./supabase-leads.sql) in SQL Editor
+- [ ] Run later migrations as needed, including [`docs/supabase-v7-monthly-revenue.sql`](./supabase-v7-monthly-revenue.sql) (Stage A monthly revenue)
 - [ ] Confirm `public.leads` exists
 - [ ] Set `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in production env
-- [ ] Submit a **test** application on deployed or local API-backed environment
-- [ ] Confirm a new row appears with expected `lead_status` and score
+- [ ] Submit a **test** Stage A application (`/apply/` through contact → soft result)
+- [ ] Confirm a new row appears with expected `lead_status`, score, and `monthly_revenue`
+- [ ] Optional: “Finish file” Stage B and confirm SSN/EIN/statements land on the same lead
 
 ## Resend
 

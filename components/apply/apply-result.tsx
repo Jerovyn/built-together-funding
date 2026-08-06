@@ -14,6 +14,9 @@ type ApplyResultProps = {
   bookingToken?: string | null;
   firstName?: string;
   businessName?: string;
+  /** Stage A soft result — offer booking + optional continue-file. */
+  stageA?: boolean;
+  onContinueFile?: () => void;
 };
 
 const COPY: Record<
@@ -23,12 +26,12 @@ const COPY: Record<
   prequalified: {
     headline: "Good news — you may be a fit.",
     lines: [
-      "A real person reviews your file next. The person who reviews it is the person who talks with you.",
+      "A real person reviews next. The person who reviews your file is the person who talks with you.",
       "Pick a call time now, or we'll reach out within one business day.",
     ],
   },
   needs_review: {
-    headline: "We've got your file — it needs a closer look.",
+    headline: "We've got your answers — they need a closer look.",
     lines: [
       "Sometimes we need one or two clarifications before we map options.",
       "Book a short call, or wait for us to reach out within one business day.",
@@ -37,7 +40,7 @@ const COPY: Record<
   not_fit_yet: {
     headline: "This may not be the right timing yet.",
     lines: [
-      "We fund when demand is already there and capacity is the constraint — that doesn't sound like your file today.",
+      "We fund when demand is already there and capacity is the constraint — that doesn't sound like the fit today.",
       "When the work is clearer, you're welcome back. No hard feelings.",
     ],
   },
@@ -49,10 +52,15 @@ export function ApplyResult({
   bookingToken,
   firstName,
   businessName,
+  stageA = false,
+  onContinueFile,
 }: ApplyResultProps) {
   const block = COPY[tier];
-  const showUploadNote = statementsSkipped && tier !== "not_fit_yet";
+  const showUploadNote =
+    !stageA && statementsSkipped && tier !== "not_fit_yet";
   const showBooking = tier !== "not_fit_yet" && Boolean(bookingToken);
+  const showContinue =
+    stageA && tier !== "not_fit_yet" && typeof onContinueFile === "function";
   const [bookedSlotLabel, setBookedSlotLabel] = useState<string | null>(null);
   const [bookingOpen, setBookingOpen] = useState(false);
   const autoOpenedRef = useRef(false);
@@ -77,7 +85,7 @@ export function ApplyResult({
         <CardContent className="space-y-6 p-6 md:p-10">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-btf-accent">
-              Next step
+              {stageA ? "You're in" : "Next step"}
             </p>
             <h2 className="text-2xl font-semibold tracking-tight text-btf-text md:text-3xl">
               {block.headline}
@@ -87,6 +95,13 @@ export function ApplyResult({
             {block.lines.map((line) => (
               <p key={line}>{line}</p>
             ))}
+            {stageA && tier !== "not_fit_yet" ? (
+              <p className="rounded-xl border border-btf-accent/25 bg-btf-accent/5 p-4 font-medium text-btf-text">
+                You don&apos;t need bank statements or tax IDs to talk with us.
+                Want to speed the review? You can finish your file anytime —
+                including after you book.
+              </p>
+            ) : null}
             {showUploadNote && !bookedSlotLabel ? (
               <p className="rounded-xl border border-btf-accent/25 bg-btf-accent/5 p-4 font-medium text-btf-text">
                 One more thing: watch your email (and texts, if you opted in) for
@@ -99,7 +114,7 @@ export function ApplyResult({
           {showBooking && bookingToken && bookedSlotLabel ? (
             <BookingConfirmed
               slotLabel={bookedSlotLabel}
-              statementsSkipped={statementsSkipped}
+              statementsSkipped={statementsSkipped || stageA}
             />
           ) : null}
 
@@ -126,6 +141,16 @@ export function ApplyResult({
             {DISCLAIMER_PREQUAL_LINE}
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {showContinue ? (
+              <Button
+                type="button"
+                variant="secondary"
+                className="border border-btf-border"
+                onClick={onContinueFile}
+              >
+                Finish file (optional)
+              </Button>
+            ) : null}
             {showBooking && bookingToken && !bookedSlotLabel ? (
               <Button
                 type="button"
@@ -163,7 +188,7 @@ export function ApplyResult({
           bookingToken={bookingToken}
           firstName={firstName}
           businessName={businessName}
-          statementsSkipped={statementsSkipped}
+          statementsSkipped={statementsSkipped || stageA}
           bookedSlotLabel={bookedSlotLabel}
           onBooked={handleBooked}
         />

@@ -9,19 +9,19 @@ const config: Config = {
     extend: {
       colors: {
         btf: {
-          // Bright, clean, friendly (OnDeck-like) palette
+          // Merch-adjacent: sky/cyan accent family + ink (backpack/card), light workspace
           bg: "#FFFFFF",
           secondary: "#F7F8FA",
           card: "#FFFFFF",
           muted: "#EEF2F7",
           border: "#E5E7EB",
           subtle: "#CBD5E1",
-          accent: "#1D4ED8",
-          "accent-mid": "#2563EB",
-          "accent-soft": "#3B82F6",
+          accent: "#0284C7",
+          "accent-mid": "#0EA5E9",
+          "accent-soft": "#38BDF8",
           text: "#0F172A",
           "text-muted": "#475569",
-          // Deep navy "ink" family for dark brand sections (same blue family)
+          // Deep navy "ink" family for brand bands (matches merch black/navy)
           ink: "#081123",
           "ink-2": "#0C1A38",
           "ink-3": "#122650",

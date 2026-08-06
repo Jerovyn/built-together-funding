@@ -19,6 +19,11 @@ import {
   APPLY_STEP_COUNT,
   APPLY_STEP_FIELDS,
   LEGAL_ENTITY_VALUES,
+  MONTHLY_REVENUE_VALUES,
+  STAGE_A_LAST_INDEX,
+  STAGE_A_STEP_COUNT,
+  STAGE_B_FIRST_INDEX,
+  STAGE_B_STEP_COUNT,
   US_STATE_CODES,
   applyFormSchema,
   FUNDING_AMOUNT_VALUES,
@@ -35,7 +40,6 @@ import {
   ROUTES,
 } from "@/lib/constants";
 import {
-  PRODUCT_INTEREST_OPTIONS,
   fundingTierForAmount,
   getProduct,
   type ProductSlug,
@@ -110,6 +114,18 @@ const USE_OPTIONS: {
   { value: "other", label: "Something else" },
 ];
 
+const REVENUE_OPTIONS: {
+  value: (typeof MONTHLY_REVENUE_VALUES)[number];
+  label: string;
+}[] = [
+  { value: "under_10k", label: "Under $10k / mo" },
+  { value: "10k_25k", label: "$10k–$25k / mo" },
+  { value: "25k_50k", label: "$25k–$50k / mo" },
+  { value: "50k_100k", label: "$50k–$100k / mo" },
+  { value: "100k_250k", label: "$100k–$250k / mo" },
+  { value: "250k_plus", label: "$250k+ / mo" },
+];
+
 const LEGAL_ENTITY_OPTIONS: {
   value: (typeof LEGAL_ENTITY_VALUES)[number];
   label: string;
@@ -162,9 +178,6 @@ type ApplyFunnelDraft = Omit<ApplyFormValues, "legalEntity"> & {
 
 const PARTIAL_STORAGE_KEY = "btf_partial_lead_id";
 
-/** Steps whose completion triggers the recoverable partial-lead save. */
-const CONTACT_STEP_INDEX = 4;
-
 type ApplyFunnelProps = {
   /** Product page / calculator handoff (?product= slug). */
   initialProductSlug?: string;
@@ -173,6 +186,8 @@ type ApplyFunnelProps = {
 export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  /** Soft result after Stage A contact; file not finished yet. */
+  const [stageAResult, setStageAResult] = useState<ApplyResultTier | null>(null);
   const [resultTier, setResultTier] = useState<ApplyResultTier | null>(null);
   const [bookingToken, setBookingToken] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -196,6 +211,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     resolver: zodResolver(applyFormSchema) as Resolver<ApplyFunnelDraft>,
     mode: "onBlur",
     defaultValues: {
+      productInterest: "not_sure",
       useOfFunds: [],
       industry: "",
       statementPaths: [],
@@ -299,43 +315,86 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     }
   };
 
-  const savePartialLead = async (values: ApplyFunnelDraft) => {
+  const stageABodyFromValues = (values: ApplyFunnelDraft) => ({
+    productInterest: values.productInterest || "not_sure",
+    timeInBusiness: values.timeInBusiness,
+    fundingAmount: values.fundingAmount,
+    monthlyRevenue: values.monthlyRevenue,
+    useOfFunds: values.useOfFunds,
+    industry: values.industry,
+    statementPaths: [] as string[],
+    statementsSkipped: true,
+    firstName: values.firstName,
+    lastName: values.lastName,
+    email: values.email,
+    phone: values.phone,
+    emailConsent: values.emailConsent,
+    smsConsent: values.smsConsent,
+    partialLeadId: partialLeadId ?? undefined,
+    calculator: calcSnapshot ?? undefined,
+    ...getTrackingPayloadForApply(),
+  });
+
+  const submitStageA = async (values: ApplyFunnelDraft) => {
+    setLoading(true);
+    setSubmitError(null);
     try {
-      const body = {
-        productInterest: values.productInterest,
-        timeInBusiness: values.timeInBusiness,
-        fundingAmount: values.fundingAmount,
-        useOfFunds: values.useOfFunds,
-        industry: values.industry,
-        statementPaths: values.statementPaths,
-        statementsSkipped: values.statementsSkipped,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        phone: values.phone,
-        emailConsent: values.emailConsent,
-        smsConsent: values.smsConsent,
-        partialLeadId: partialLeadId ?? undefined,
-        calculator: calcSnapshot ?? undefined,
-        ...getTrackingPayloadForApply(),
-      };
-      const res = await fetch("/api/apply/partial/", {
+      const attr = getAttributionEventProps();
+      trackEvent("apply_step_complete", {
+        step: STAGE_A_LAST_INDEX,
+        page_path: getCurrentPagePath(),
+        ...attr,
+      } as TrackEventProps);
+
+      const res = await fetch("/api/apply/stage-a/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify(stageABodyFromValues(values)),
       });
-      const json = (await res.json()) as { ok?: boolean; partialLeadId?: string };
-      if (res.ok && json.ok && json.partialLeadId) {
-        setPartialLeadId(json.partialLeadId);
-        try {
-          sessionStorage.setItem(PARTIAL_STORAGE_KEY, json.partialLeadId);
-        } catch {
-          /* silent */
+      const json: unknown = await res.json().catch(() => null);
+      const payload =
+        json && typeof json === "object"
+          ? (json as {
+              ok?: unknown;
+              status?: unknown;
+              bookingToken?: unknown;
+              leadId?: unknown;
+            })
+          : null;
+
+      if (res.ok && payload?.ok === true && isApplyResultTier(payload.status)) {
+        if (typeof payload.leadId === "string") {
+          setPartialLeadId(payload.leadId);
+          try {
+            sessionStorage.setItem(PARTIAL_STORAGE_KEY, payload.leadId);
+          } catch {
+            /* silent */
+          }
         }
-        trackEvent("apply_partial_saved", { step: CONTACT_STEP_INDEX });
+        trackEvent("apply_partial_saved", { step: STAGE_A_LAST_INDEX });
+        trackEvent(resultTierToEventName(payload.status), {
+          result_tier: payload.status,
+          product_interest: values.productInterest || "not_sure",
+          time_in_business: values.timeInBusiness,
+          funding_amount: values.fundingAmount,
+          use_of_funds: values.useOfFunds,
+          statements_provided: false,
+          page_path: getCurrentPagePath(),
+          ...attr,
+        } as TrackEventProps);
+        trackApplyAdsConversion(payload.status);
+        if (typeof payload.bookingToken === "string") {
+          setBookingToken(payload.bookingToken);
+        }
+        setValue("statementsSkipped", true, { shouldValidate: false });
+        setStageAResult(payload.status);
+        return;
       }
+      setSubmitError(SUBMIT_FAIL_MESSAGE);
     } catch {
-      /* never block funnel */
+      setSubmitError(SUBMIT_FAIL_MESSAGE);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -358,11 +417,18 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
       /* silent */
     }
 
-    if (step === CONTACT_STEP_INDEX) {
-      await savePartialLead(formValues);
+    if (step === STAGE_A_LAST_INDEX) {
+      await submitStageA(formValues);
+      return;
     }
 
     setStep((s) => Math.min(s + 1, APPLY_STEP_COUNT - 1));
+  };
+
+  const continueFile = () => {
+    setStageAResult(null);
+    setStep(STAGE_B_FIRST_INDEX);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const prevStep = () => setStep((s) => Math.max(s - 1, 0));
@@ -458,6 +524,20 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     stepContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  if (stageAResult) {
+    return (
+      <ApplyResult
+        tier={stageAResult}
+        stageA
+        statementsSkipped
+        bookingToken={bookingToken}
+        firstName={formValues.firstName}
+        businessName={formValues.businessName || formValues.firstName}
+        onContinueFile={continueFile}
+      />
+    );
+  }
+
   if (resultTier) {
     return (
       <ApplyResult
@@ -508,43 +588,54 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
       aria-busy={loading}
     >
       <div className="pb-3">
-        <ApplyProgress currentStep={step} totalSteps={APPLY_STEP_COUNT} />
+        <ApplyProgress
+          currentStep={
+            step < STAGE_B_FIRST_INDEX ? step : step - STAGE_B_FIRST_INDEX
+          }
+          totalSteps={
+            step < STAGE_B_FIRST_INDEX ? STAGE_A_STEP_COUNT : STAGE_B_STEP_COUNT
+          }
+          labelStep={step}
+          phaseHint={
+            step < STAGE_B_FIRST_INDEX ? "Quick check" : "Finish file"
+          }
+        />
       </div>
 
       <div ref={stepContentRef} className="min-h-[16rem] sm:min-h-[18rem]">
         {step === 0 ? (
           <ApplyStep
-            title="What type of funding?"
-            description='Pick one — or "Not sure yet."'
+            title="What's the money for?"
+            description="Pick what you'd actually buy — we'll match the product."
           >
-            <div role="group" aria-label="What type of funding?">
+            <div role="group" aria-label="What's the money for?">
               <Controller
-                name="productInterest"
+                name="useOfFunds"
                 control={control}
                 render={({ field }) => (
                   <>
                     <div className="grid grid-cols-2 gap-2">
-                      {PRODUCT_INTEREST_OPTIONS.map((opt) => (
-                        <ApplyOptionCard
-                          key={opt.value}
-                          compact
-                          label={opt.label}
-                          selected={field.value === opt.value}
-                          onClick={() => {
-                            field.onChange(opt.value);
-                            const uses = usesForProductInterest(opt.value);
-                            if (uses.length && formValues.useOfFunds.length === 0) {
-                              setValue("useOfFunds", uses, {
-                                shouldValidate: false,
-                              });
-                            }
-                          }}
-                        />
-                      ))}
+                      {USE_OPTIONS.map((opt) => {
+                        const set = new Set(field.value);
+                        const selected = set.has(opt.value);
+                        return (
+                          <ApplyOptionCard
+                            key={opt.value}
+                            compact
+                            label={opt.label}
+                            selected={selected}
+                            onClick={() => {
+                              if (selected) set.delete(opt.value);
+                              else set.add(opt.value);
+                              field.onChange([...set] as ApplyFormValues["useOfFunds"]);
+                            }}
+                          />
+                        );
+                      })}
                     </div>
-                    {errors.productInterest?.message ? (
+                    {errors.useOfFunds?.message ? (
                       <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                        {errors.productInterest.message}
+                        {errors.useOfFunds.message}
                       </p>
                     ) : null}
                   </>
@@ -590,37 +681,29 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
 
         {step === 2 ? (
           <ApplyStep
-            title="What's the money for?"
-            description="Pick all that apply."
+            title="About how much comes in each month?"
+            description="Bank deposits — a range is fine. This is how funding gets underwritten."
           >
-            <div role="group" aria-label="What's the money for?">
+            <div role="group" aria-label="About how much comes in each month?">
               <Controller
-                name="useOfFunds"
+                name="monthlyRevenue"
                 control={control}
                 render={({ field }) => (
                   <>
                     <div className="grid grid-cols-2 gap-2">
-                      {USE_OPTIONS.map((opt) => {
-                        const set = new Set(field.value);
-                        const selected = set.has(opt.value);
-                        return (
-                          <ApplyOptionCard
-                            key={opt.value}
-                            compact
-                            label={opt.label}
-                            selected={selected}
-                            onClick={() => {
-                              if (selected) set.delete(opt.value);
-                              else set.add(opt.value);
-                              field.onChange([...set] as ApplyFormValues["useOfFunds"]);
-                            }}
-                          />
-                        );
-                      })}
+                      {REVENUE_OPTIONS.map((opt) => (
+                        <ApplyOptionCard
+                          key={opt.value}
+                          compact
+                          label={opt.label}
+                          selected={field.value === opt.value}
+                          onClick={() => field.onChange(opt.value)}
+                        />
+                      ))}
                     </div>
-                    {errors.useOfFunds?.message ? (
+                    {errors.monthlyRevenue?.message ? (
                       <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                        {errors.useOfFunds.message}
+                        {errors.monthlyRevenue.message}
                       </p>
                     ) : null}
                   </>
@@ -683,8 +766,8 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
 
         {step === 4 ? (
           <ApplyStep
-            title="Where do we send your options?"
-            description="Your review results and next steps go here. No spam, no reselling your info."
+            title="Where do we reach you?"
+            description="About 2 minutes so far. No SSN or bank statements yet — just so we can send your options."
           >
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -823,7 +906,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
         {step === 5 ? (
           <ApplyStep
             title="Last 3 months of bank statements"
-            description="Your statements show what forms can't - real revenue, real seasonality. It's how we review every file."
+            description="Optional now — upload if you have them handy, or send later with a secure link. Statements are how we review every file."
           >
             <div className="space-y-4">
               {uploadSession ? (
@@ -865,7 +948,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
         {step === 6 ? (
           <ApplyStep
             title="About you"
-            description="Owner identity for your pre-qualification review. Have your SSN handy — it's encrypted in transit and used only for this review."
+            description="Owner identity for underwriting. SSN is encrypted in transit and used only for this review — never sold."
           >
             <div className="space-y-4">
               <ApplyField
@@ -1287,7 +1370,11 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
               className="shrink-0"
               data-nudge="true"
             >
-              Continue
+              {loading && step === STAGE_A_LAST_INDEX
+                ? "Checking…"
+                : step === STAGE_A_LAST_INDEX
+                  ? "See my options"
+                  : "Continue"}
             </Button>
           ) : (
             <button
@@ -1295,7 +1382,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
               disabled={loading}
               className={cn(buttonClasses("primary"), "shrink-0", loading && "opacity-70")}
             >
-              {loading ? "Submitting…" : "See my options"}
+              {loading ? "Submitting…" : "Submit file"}
             </button>
           )}
         </div>

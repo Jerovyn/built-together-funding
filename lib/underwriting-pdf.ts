@@ -161,6 +161,7 @@ export async function buildApplicationPdf(
       rows: [
         ["Product interest", formatProductInterest(lead.product_interest)],
         ["Industry", lead.industry ?? "—"],
+        ["Monthly revenue", lead.monthly_revenue ?? "—"],
         ["Amount requested", lead.funding_amount ?? "—"],
         ["Use of funds", formatUseOfFunds(lead.use_of_funds)],
       ],

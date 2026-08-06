@@ -71,6 +71,7 @@ function buildLeadInsert(
     industry: form.industry?.trim() || null,
     time_in_business: form.timeInBusiness,
     funding_amount: form.fundingAmount,
+    monthly_revenue: form.monthlyRevenue,
     use_of_funds: form.useOfFunds,
     calculator_snapshot: calculator,
     statement_paths: form.statementPaths,

@@ -48,6 +48,15 @@ export function formatDobDisplay(value: string): string {
   return value;
 }
 
+export const MONTHLY_REVENUE_LABELS: Record<string, string> = {
+  under_10k: "Under $10k / mo",
+  "10k_25k": "$10k–$25k / mo",
+  "25k_50k": "$25k–$50k / mo",
+  "50k_100k": "$50k–$100k / mo",
+  "100k_250k": "$100k–$250k / mo",
+  "250k_plus": "$250k+ / mo",
+};
+
 export const FUNDING_AMOUNT_LABELS: Record<string, string> = {
   under_25k: "Under $25k",
   "25k_75k": "$25k–$75k",

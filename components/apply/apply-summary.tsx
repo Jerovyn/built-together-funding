@@ -3,10 +3,10 @@ import {
   FUNDING_AMOUNT_LABELS,
   formatDobDisplay,
   LEGAL_ENTITY_LABELS,
+  MONTHLY_REVENUE_LABELS,
   TIB_LABELS,
   USE_LABELS,
 } from "@/lib/input-formatters";
-import { PRODUCT_INTEREST_LABELS } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
 type ApplySummaryProps = {
@@ -75,17 +75,20 @@ export function ApplySummary({
         Your file summary
       </p>
       <Row
-        label="Funding"
-        value={[
-          values.productInterest
-            ? PRODUCT_INTEREST_LABELS[values.productInterest] ?? values.productInterest
-            : "",
-          values.fundingAmount ? FUNDING_AMOUNT_LABELS[values.fundingAmount] : "",
-          uses,
-        ]
+        label="Need"
+        value={[uses, values.fundingAmount ? FUNDING_AMOUNT_LABELS[values.fundingAmount] : ""]
           .filter(Boolean)
           .join(" · ")}
         onEdit={() => onEditStep(0)}
+      />
+      <Row
+        label="Monthly revenue"
+        value={
+          values.monthlyRevenue
+            ? MONTHLY_REVENUE_LABELS[values.monthlyRevenue] ?? values.monthlyRevenue
+            : "—"
+        }
+        onEdit={() => onEditStep(2)}
       />
       <Row
         label="Time in business"

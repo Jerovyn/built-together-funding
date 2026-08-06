@@ -26,6 +26,7 @@ function buildPartialRow(body: ApplyPartialBody, meta: ApplySubmissionMeta) {
     industry: body.industry?.trim() || null,
     time_in_business: body.timeInBusiness,
     funding_amount: body.fundingAmount,
+    monthly_revenue: body.monthlyRevenue,
     use_of_funds: body.useOfFunds,
     calculator_snapshot: body.calculator ?? null,
     statement_paths: body.statementPaths,

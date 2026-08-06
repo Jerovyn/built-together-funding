@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
+  BRAND_LINE,
   DISCLAIMER_PREQUAL_LINE,
   FOOTER_LINKS,
   ROUTES,
@@ -45,6 +46,7 @@ export function SiteFooter() {
                 Built Together Funding
               </span>
             </Link>
+            <p className="max-w-xs text-sm text-btf-on-ink-muted">{BRAND_LINE}</p>
             <ul className="space-y-1 text-sm text-btf-on-ink-muted">
               {phoneDisplay && phone ? (
                 <li>

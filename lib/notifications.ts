@@ -80,6 +80,7 @@ function buildInternalEmailText(ctx: ApplyNotificationContext): string {
     `Product interest: ${PRODUCT_INTEREST_LABELS[form.productInterest] ?? form.productInterest}`,
     ...(form.industry?.trim() ? [`Industry: ${form.industry.trim()}`] : []),
     `Time in business: ${form.timeInBusiness}`,
+    `Monthly revenue: ${form.monthlyRevenue}`,
     `Funding amount: ${form.fundingAmount}`,
     `Use of funds: ${formatList(form.useOfFunds)}`,
     ...(calcLine ? [calcLine] : []),
@@ -303,6 +304,132 @@ export async function sendApplyNotifications(
     sendApplicantEmail(ctx),
     sendInternalSms(ctx),
     sendApplicantSms(ctx),
+  ]);
+}
+
+export type StageANotificationContext = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  timeInBusiness: string;
+  fundingAmount: string;
+  monthlyRevenue: string;
+  useOfFunds: string[];
+  productInterest: string;
+  industry?: string;
+  leadScore: number;
+  leadStatus: LeadDbStatus;
+  tier: ApplyResultTier;
+  smsConsent: boolean;
+  meta: ApplySubmissionMeta;
+  calculator?: CalcSnapshot | null;
+};
+
+/** Stage A prequal — no SSN/EIN/business packet yet. */
+export async function sendStageANotifications(
+  ctx: StageANotificationContext,
+): Promise<void> {
+  const name = `${ctx.firstName.trim()} ${ctx.lastName.trim()}`.trim();
+  const m = compactSubmissionMeta(ctx.meta);
+  const calcLine = calculatorLine(ctx.calculator);
+  const product =
+    PRODUCT_INTEREST_LABELS[
+      ctx.productInterest as keyof typeof PRODUCT_INTEREST_LABELS
+    ] ?? ctx.productInterest;
+
+  await Promise.allSettled([
+    (async () => {
+      const to = getInternalNotifyEmail();
+      if (!to || !isResendConfigured()) return;
+      const resend = createResendClient();
+      const from = getResendFromEmail();
+      if (!resend || !from) return;
+      const lines = [
+        `New ${SITE_NAME} Stage A prequal`,
+        "",
+        `Owner: ${name}`,
+        `Phone: ${ctx.phone}`,
+        `Email: ${ctx.email}`,
+        `Product interest: ${product}`,
+        ...(ctx.industry?.trim() ? [`Industry: ${ctx.industry.trim()}`] : []),
+        `Time in business: ${ctx.timeInBusiness}`,
+        `Monthly revenue: ${ctx.monthlyRevenue}`,
+        `Funding amount: ${ctx.fundingAmount}`,
+        `Use of funds: ${formatList(ctx.useOfFunds)}`,
+        ...(calcLine ? [calcLine] : []),
+        "",
+        `Lead score (pre-screen routing): ${ctx.leadScore}`,
+        `Lead status: ${ctx.leadStatus}`,
+        "File: Stage A only — statements / SSN / EIN not collected yet.",
+      ];
+      if (m.utm_source) lines.push(`UTM source: ${m.utm_source}`);
+      if (m.landing_page) lines.push(`Landing page: ${m.landing_page}`);
+      lines.push("", DISCLAIMER_PREQUAL_LINE);
+      try {
+        await resend.emails.send(
+          withReplyTo({
+            from,
+            to: [to],
+            subject: `Stage A prequal - ${name} - Score ${ctx.leadScore}`,
+            text: lines.join("\n"),
+          }),
+        );
+      } catch (e) {
+        console.error("[apply/stage-a] Internal email failed:", e);
+      }
+    })(),
+    (async () => {
+      if (!isResendConfigured()) return;
+      const resend = createResendClient();
+      const from = getResendFromEmail();
+      if (!resend || !from) return;
+      try {
+        await resend.emails.send(
+          withReplyTo({
+            from,
+            to: [ctx.email.trim()],
+            subject: applicantEmailSubject(ctx.tier),
+            text: applicantConfirmationEmailBody(ctx.tier, ctx.firstName, null),
+          }),
+        );
+      } catch (e) {
+        console.error("[apply/stage-a] Applicant email failed:", e);
+      }
+    })(),
+    (async () => {
+      if (!isTwilioConfigured()) return;
+      const from = getTwilioFromNumber();
+      const client = createTwilioClient();
+      if (!from || !client) return;
+      for (const to of getInternalNotifyPhones()) {
+        try {
+          await client.messages.create({
+            from,
+            to,
+            body: `BTF Stage A: ${name} (${product}). Score ${ctx.leadScore}. Status ${ctx.leadStatus}. Full file not yet.`,
+          });
+        } catch (e) {
+          console.error("[apply/stage-a] Internal SMS failed:", e);
+        }
+      }
+    })(),
+    (async () => {
+      if (!ctx.smsConsent || !isTwilioConfigured()) return;
+      const from = getTwilioFromNumber();
+      const client = createTwilioClient();
+      const to = toE164Phone(ctx.phone);
+      if (!from || !client || !to) return;
+      try {
+        await client.messages.create({
+          from,
+          to,
+          body: applicantConfirmationSmsBody(ctx.tier, ctx.firstName, null),
+        });
+      } catch (e) {
+        console.error("[apply/stage-a] Applicant SMS failed:", e);
+      }
+    })(),
   ]);
 }
 

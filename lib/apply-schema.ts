@@ -18,6 +18,16 @@ export const FUNDING_AMOUNT_VALUES = [
   "2m_plus",
 ] as const;
 
+/** Approximate monthly business revenue — primary MCA/cash-flow signal. */
+export const MONTHLY_REVENUE_VALUES = [
+  "under_10k",
+  "10k_25k",
+  "25k_50k",
+  "50k_100k",
+  "100k_250k",
+  "250k_plus",
+] as const;
+
 /** Financing product the applicant is interested in (see lib/products.ts). */
 export const PRODUCT_INTEREST_VALUES = [
   "working_capital",
@@ -173,8 +183,9 @@ const dobSchema = z
   .transform(dobToIso);
 
 /**
- * Apply funnel: product + funding fit, business basics, contact + consent,
- * statements, owner identity, business info, confirm.
+ * Apply funnel: Stage A (use / amount / revenue / time / contact) then
+ * Stage B (statements / identity / business / confirm). Product defaults to
+ * "not_sure" — we route; owners shouldn't pick a financing taxonomy first.
  */
 const applyFormObject = z.object({
   productInterest: z.enum(PRODUCT_INTEREST_VALUES, {
@@ -185,6 +196,9 @@ const applyFormObject = z.object({
   }),
   fundingAmount: z.enum(FUNDING_AMOUNT_VALUES, {
     message: "Select a funding range",
+  }),
+  monthlyRevenue: z.enum(MONTHLY_REVENUE_VALUES, {
+    message: "Select your approximate monthly revenue",
   }),
   useOfFunds: z
     .array(z.enum(USE_OF_FUND_VALUES))
@@ -334,14 +348,15 @@ export function splitApplyApiPayload(data: ApplyApiBody): {
 }
 
 /**
- * Partial lead capture (fires right after the contact + consent step so
- * mid-funnel abandonment is recoverable). Never SSN/EIN.
+ * Partial / Stage A lead capture. Never SSN/EIN.
+ * Statements are soft-skipped for Stage A scoring (+5 intent) until Stage B.
  */
 export const applyPartialBodySchema = z
   .object({
     productInterest: z.enum(PRODUCT_INTEREST_VALUES),
     timeInBusiness: z.enum(TIME_IN_BUSINESS_VALUES),
     fundingAmount: z.enum(FUNDING_AMOUNT_VALUES),
+    monthlyRevenue: z.enum(MONTHLY_REVENUE_VALUES),
     useOfFunds: z.array(z.enum(USE_OF_FUND_VALUES)).min(1),
     industry: z.string().trim().max(80).optional().default(""),
     statementPaths: z.array(z.string().min(1).max(600)).max(STATEMENT_MAX_FILES),
@@ -359,15 +374,19 @@ export const applyPartialBodySchema = z
 
 export type ApplyPartialBody = z.infer<typeof applyPartialBodySchema>;
 
+/** Stage A POST body — same shape as partial; server scores and returns tier. */
+export const applyStageABodySchema = applyPartialBodySchema;
+
+export type ApplyStageABody = z.infer<typeof applyStageABodySchema>;
+
 /**
- * One question per early screen so each viewport is readable in ~2 seconds.
- * Contact + consent still land early enough for recoverable partial leads;
- * identity / business details come after commitment is built.
+ * Stage A (0–4): use → amount → revenue → time → contact → soft result.
+ * Stage B (5–8): statements → identity → business → confirm full file.
  */
 export const APPLY_STEP_FIELDS = [
-  ["productInterest"] as const,
-  ["fundingAmount"] as const,
   ["useOfFunds"] as const,
+  ["fundingAmount"] as const,
+  ["monthlyRevenue"] as const,
   ["timeInBusiness", "industry"] as const,
   ["firstName", "lastName", "email", "phone", "emailConsent", "smsConsent"] as const,
   ["statementPaths", "statementsSkipped"] as const,
@@ -386,10 +405,19 @@ export const APPLY_STEP_FIELDS = [
 
 export const APPLY_STEP_COUNT = APPLY_STEP_FIELDS.length;
 
+/** Last index of Stage A (contact). Soft result fires after this step. */
+export const STAGE_A_LAST_INDEX = 4;
+
+/** First index of Stage B (statements). */
+export const STAGE_B_FIRST_INDEX = 5;
+
+export const STAGE_A_STEP_COUNT = STAGE_A_LAST_INDEX + 1;
+export const STAGE_B_STEP_COUNT = APPLY_STEP_COUNT - STAGE_B_FIRST_INDEX;
+
 export const APPLY_STEP_LABELS = [
-  "Product",
+  "What it's for",
   "Amount",
-  "Use of funds",
+  "Revenue",
   "Time in business",
   "Contact",
   "Bank statements",

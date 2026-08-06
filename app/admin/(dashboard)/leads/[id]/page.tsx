@@ -138,6 +138,9 @@ export default async function AdminLeadDetailPage({ params }: PageProps) {
                 {formatProductInterest(lead.product_interest)}
               </Field>
               <Field label="Industry">{lead.industry ?? "—"}</Field>
+              <Field label="Monthly revenue">
+                {lead.monthly_revenue?.replaceAll("_", " ") ?? "—"}
+              </Field>
               <Field label="Amount">{lead.funding_amount ?? "—"}</Field>
               <Field label="Use of funds">
                 {formatUseOfFunds(lead.use_of_funds)}

@@ -40,6 +40,7 @@ export type LeadPackageRow = {
   industry: string | null;
   time_in_business: string | null;
   funding_amount: string | null;
+  monthly_revenue: string | null;
   use_of_funds: string[] | null;
   calculator_snapshot: LeadCalcSnapshot;
   statements_status: string | null;
@@ -55,7 +56,7 @@ export type LeadPackageRow = {
 };
 
 const LEAD_SELECT =
-  "id, created_at, name, first_name, last_name, business_name, email, phone, dob, ssn, home_address, home_state, home_zip, federal_id, legal_entity, business_address, business_city, business_state, business_zip, product_interest, industry, time_in_business, funding_amount, use_of_funds, calculator_snapshot, statements_status, statement_paths, lead_score, lead_status, sms_consent, email_consent, source, landing_page, utm_source, utm_campaign";
+  "id, created_at, name, first_name, last_name, business_name, email, phone, dob, ssn, home_address, home_state, home_zip, federal_id, legal_entity, business_address, business_city, business_state, business_zip, product_interest, industry, time_in_business, funding_amount, monthly_revenue, use_of_funds, calculator_snapshot, statements_status, statement_paths, lead_score, lead_status, sms_consent, email_consent, source, landing_page, utm_source, utm_campaign";
 
 export async function fetchLeadById(
   supabase: SupabaseClient,
@@ -136,6 +137,7 @@ export function buildApplicationText(
     "=== FUNDING ===",
     `Product interest: ${formatProductInterest(lead.product_interest)}`,
     `Industry: ${lead.industry ?? "—"}`,
+    `Monthly revenue: ${lead.monthly_revenue ?? "—"}`,
     `Amount: ${lead.funding_amount ?? "—"}`,
     `Use of funds: ${formatUseOfFunds(lead.use_of_funds)}`,
     `Calculator modeled: ${formatCalcSnapshot(lead.calculator_snapshot)}`,
