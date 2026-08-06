@@ -72,7 +72,7 @@ export const ROUTES = {
 
 /** Shown on apply page and FAQ — sets honest time expectations. */
 export const APPLY_TIME_ESTIMATE =
-  "About 4–5 minutes · 7 quick steps · EIN handy";
+  "About 5 minutes · one question at a time · EIN handy";
 
 export const HOME_MIN_REQUIREMENTS = [
   "6+ months in business (most files)",
@@ -138,7 +138,7 @@ export const HOME_FAQS = [
   },
   {
     q: "What do you need?",
-    a: "Seven quick steps, about 4–5 minutes: what you're looking for, business basics, contact, bank statements (upload now or secure link later), owner and business details, then confirm. Have your EIN handy.",
+    a: "A few quick screens, about 5 minutes: what you need, contact, bank statements (now or later), then owner and business details. Have your EIN handy.",
   },
   {
     q: "What are the minimum requirements?",

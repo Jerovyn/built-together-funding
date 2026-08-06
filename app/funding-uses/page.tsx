@@ -57,7 +57,7 @@ export default function FundingUsesPage() {
         <h2 className="mb-8 text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
           Run your numbers
         </h2>
-        <FundingCalculator embedded />
+        <FundingCalculator />
       </SectionShell>
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">

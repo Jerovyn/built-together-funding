@@ -88,21 +88,21 @@ export function ApplySummary({
         onEdit={() => onEditStep(0)}
       />
       <Row
-        label="Business basics"
+        label="Time in business"
         value={[
           values.timeInBusiness ? TIB_LABELS[values.timeInBusiness] : "",
           values.industry || "",
         ]
           .filter(Boolean)
           .join(" · ")}
-        onEdit={() => onEditStep(1)}
+        onEdit={() => onEditStep(3)}
       />
       <Row
         label="Contact"
         value={[name, values.email, values.phone].filter(Boolean).join(" · ")}
-        onEdit={() => onEditStep(2)}
+        onEdit={() => onEditStep(4)}
       />
-      <Row label="Statements" value={statements} onEdit={() => onEditStep(3)} />
+      <Row label="Statements" value={statements} onEdit={() => onEditStep(5)} />
       <Row
         label="Business"
         value={[
@@ -111,13 +111,13 @@ export function ApplySummary({
         ]
           .filter(Boolean)
           .join(" · ")}
-        onEdit={() => onEditStep(5)}
+        onEdit={() => onEditStep(7)}
       />
       {values.dob ? (
         <Row
           label="DOB on file"
           value={formatDobDisplay(values.dob)}
-          onEdit={() => onEditStep(4)}
+          onEdit={() => onEditStep(6)}
         />
       ) : null}
     </div>

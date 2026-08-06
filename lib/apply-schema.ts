@@ -360,13 +360,14 @@ export const applyPartialBodySchema = z
 export type ApplyPartialBody = z.infer<typeof applyPartialBodySchema>;
 
 /**
- * Step map (7 quick steps, VersaFi-style micro-steps). Contact + consent land
- * at step 3 of 7 — early enough that abandonment leaves a recoverable,
- * contactable lead; sensitive identity fields (DOB/SSN) come later, after
- * commitment is built.
+ * One question per early screen so each viewport is readable in ~2 seconds.
+ * Contact + consent still land early enough for recoverable partial leads;
+ * identity / business details come after commitment is built.
  */
 export const APPLY_STEP_FIELDS = [
-  ["productInterest", "fundingAmount", "useOfFunds"] as const,
+  ["productInterest"] as const,
+  ["fundingAmount"] as const,
+  ["useOfFunds"] as const,
   ["timeInBusiness", "industry"] as const,
   ["firstName", "lastName", "email", "phone", "emailConsent", "smsConsent"] as const,
   ["statementPaths", "statementsSkipped"] as const,
@@ -386,8 +387,10 @@ export const APPLY_STEP_FIELDS = [
 export const APPLY_STEP_COUNT = APPLY_STEP_FIELDS.length;
 
 export const APPLY_STEP_LABELS = [
-  "Your funding",
-  "Business basics",
+  "Product",
+  "Amount",
+  "Use of funds",
+  "Time in business",
   "Contact",
   "Bank statements",
   "About you",

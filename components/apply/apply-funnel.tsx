@@ -13,7 +13,6 @@ import { ApplyStep } from "@/components/apply/apply-step";
 import { ApplySummary } from "@/components/apply/apply-summary";
 import { SensitiveInput } from "@/components/apply/sensitive-input";
 import { StatementUpload } from "@/components/apply/statement-upload";
-import { BoltCoach } from "@/components/mascot/bolt-coach";
 import { Button, ButtonLink, buttonClasses } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -157,33 +156,6 @@ function ChevronLeftIcon({ className }: { className?: string }) {
   );
 }
 
-function QuestionLabel({
-  index,
-  text,
-  hint,
-}: {
-  index: number;
-  text: string;
-  hint?: string;
-}) {
-  return (
-    <div className="mb-2.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-      <span
-        className="text-xs font-bold tabular-nums text-btf-accent"
-        aria-hidden
-      >
-        {index}.
-      </span>
-      <span className="text-sm font-semibold text-btf-text sm:text-base">
-        {text}
-      </span>
-      {hint ? (
-        <span className="text-xs text-btf-text-muted">{hint}</span>
-      ) : null}
-    </div>
-  );
-}
-
 type ApplyFunnelDraft = Omit<ApplyFormValues, "legalEntity"> & {
   legalEntity: string;
 };
@@ -191,7 +163,7 @@ type ApplyFunnelDraft = Omit<ApplyFormValues, "legalEntity"> & {
 const PARTIAL_STORAGE_KEY = "btf_partial_lead_id";
 
 /** Steps whose completion triggers the recoverable partial-lead save. */
-const CONTACT_STEP_INDEX = 2;
+const CONTACT_STEP_INDEX = 4;
 
 type ApplyFunnelProps = {
   /** Product page / calculator handoff (?product= slug). */
@@ -542,130 +514,129 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
       <div ref={stepContentRef} className="min-h-[16rem] sm:min-h-[18rem]">
         {step === 0 ? (
           <ApplyStep
-            title="What are you looking for?"
-            description="Tap your answers - no typing yet."
+            title="What type of funding?"
+            description='Pick one — or "Not sure yet."'
           >
-            <div className="space-y-6">
-              <div role="group" aria-label="What type of funding?">
-                <QuestionLabel
-                  index={1}
-                  text="What type of funding?"
-                  hint={'Pick one - or "Not sure yet"'}
-                />
-                <Controller
-                  name="productInterest"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                        {PRODUCT_INTEREST_OPTIONS.map((opt) => (
-                          <ApplyOptionCard
-                            key={opt.value}
-                            compact
-                            label={opt.label}
-                            description={opt.hint}
-                            selected={field.value === opt.value}
-                            onClick={() => {
-                              field.onChange(opt.value);
-                              const uses = usesForProductInterest(opt.value);
-                              if (uses.length && formValues.useOfFunds.length === 0) {
-                                setValue("useOfFunds", uses, {
-                                  shouldValidate: false,
-                                });
-                              }
-                            }}
-                          />
-                        ))}
-                      </div>
-                      {errors.productInterest?.message ? (
-                        <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                          {errors.productInterest.message}
-                        </p>
-                      ) : null}
-                    </>
-                  )}
-                />
-              </div>
-
-              <div role="group" aria-label="How much are you looking for?">
-                <QuestionLabel index={2} text="How much are you looking for?" />
-                <Controller
-                  name="fundingAmount"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <div className="grid grid-cols-2 gap-2">
-                        {AMOUNT_OPTIONS.map((opt) => (
-                          <ApplyOptionCard
-                            key={opt.value}
-                            compact
-                            label={opt.label}
-                            selected={field.value === opt.value}
-                            onClick={() => field.onChange(opt.value)}
-                          />
-                        ))}
-                      </div>
-                      {errors.fundingAmount?.message ? (
-                        <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                          {errors.fundingAmount.message}
-                        </p>
-                      ) : null}
-                    </>
-                  )}
-                />
-              </div>
-
-              <div role="group" aria-label="What's the money for?">
-                <QuestionLabel
-                  index={3}
-                  text="What's the money for?"
-                  hint="Pick all that apply"
-                />
-                <Controller
-                  name="useOfFunds"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <div className="grid grid-cols-2 gap-2">
-                        {USE_OPTIONS.map((opt) => {
-                          const set = new Set(field.value);
-                          const selected = set.has(opt.value);
-                          return (
-                            <ApplyOptionCard
-                              key={opt.value}
-                              compact
-                              label={opt.label}
-                              selected={selected}
-                              onClick={() => {
-                                if (selected) set.delete(opt.value);
-                                else set.add(opt.value);
-                                field.onChange([...set] as ApplyFormValues["useOfFunds"]);
-                              }}
-                            />
-                          );
-                        })}
-                      </div>
-                      {errors.useOfFunds?.message ? (
-                        <p className="mt-2 text-xs font-medium text-red-600" role="alert">
-                          {errors.useOfFunds.message}
-                        </p>
-                      ) : null}
-                    </>
-                  )}
-                />
-              </div>
+            <div role="group" aria-label="What type of funding?">
+              <Controller
+                name="productInterest"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <div className="grid grid-cols-2 gap-2">
+                      {PRODUCT_INTEREST_OPTIONS.map((opt) => (
+                        <ApplyOptionCard
+                          key={opt.value}
+                          compact
+                          label={opt.label}
+                          selected={field.value === opt.value}
+                          onClick={() => {
+                            field.onChange(opt.value);
+                            const uses = usesForProductInterest(opt.value);
+                            if (uses.length && formValues.useOfFunds.length === 0) {
+                              setValue("useOfFunds", uses, {
+                                shouldValidate: false,
+                              });
+                            }
+                          }}
+                        />
+                      ))}
+                    </div>
+                    {errors.productInterest?.message ? (
+                      <p className="mt-2 text-xs font-medium text-red-600" role="alert">
+                        {errors.productInterest.message}
+                      </p>
+                    ) : null}
+                  </>
+                )}
+              />
             </div>
           </ApplyStep>
         ) : null}
 
         {step === 1 ? (
           <ApplyStep
-            title="Business basics"
-            description="Two quick answers so we route your file to the right review."
+            title="How much are you looking for?"
+            description="A range is fine — we refine it later."
           >
-            <div className="space-y-6">
+            <div role="group" aria-label="How much are you looking for?">
+              <Controller
+                name="fundingAmount"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <div className="grid grid-cols-2 gap-2">
+                      {AMOUNT_OPTIONS.map((opt) => (
+                        <ApplyOptionCard
+                          key={opt.value}
+                          compact
+                          label={opt.label}
+                          selected={field.value === opt.value}
+                          onClick={() => field.onChange(opt.value)}
+                        />
+                      ))}
+                    </div>
+                    {errors.fundingAmount?.message ? (
+                      <p className="mt-2 text-xs font-medium text-red-600" role="alert">
+                        {errors.fundingAmount.message}
+                      </p>
+                    ) : null}
+                  </>
+                )}
+              />
+            </div>
+          </ApplyStep>
+        ) : null}
+
+        {step === 2 ? (
+          <ApplyStep
+            title="What's the money for?"
+            description="Pick all that apply."
+          >
+            <div role="group" aria-label="What's the money for?">
+              <Controller
+                name="useOfFunds"
+                control={control}
+                render={({ field }) => (
+                  <>
+                    <div className="grid grid-cols-2 gap-2">
+                      {USE_OPTIONS.map((opt) => {
+                        const set = new Set(field.value);
+                        const selected = set.has(opt.value);
+                        return (
+                          <ApplyOptionCard
+                            key={opt.value}
+                            compact
+                            label={opt.label}
+                            selected={selected}
+                            onClick={() => {
+                              if (selected) set.delete(opt.value);
+                              else set.add(opt.value);
+                              field.onChange([...set] as ApplyFormValues["useOfFunds"]);
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                    {errors.useOfFunds?.message ? (
+                      <p className="mt-2 text-xs font-medium text-red-600" role="alert">
+                        {errors.useOfFunds.message}
+                      </p>
+                    ) : null}
+                  </>
+                )}
+              />
+            </div>
+          </ApplyStep>
+        ) : null}
+
+        {step === 3 ? (
+          <ApplyStep
+            title="How long have you been in business?"
+            description="Helps us route your file to the right review."
+          >
+            <div className="space-y-5">
               <div role="group" aria-label="How long have you been in business?">
-                <QuestionLabel index={1} text="How long have you been in business?" />
                 <Controller
                   name="timeInBusiness"
                   control={control}
@@ -693,13 +664,12 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
               </div>
 
               <ApplyField
-                label="What industry are you in?"
+                label="Industry (optional)"
                 htmlFor="industry"
-                hint="Optional — helps us match the right partners"
                 error={errors.industry?.message}
               >
                 <select id="industry" className={selectClass} {...register("industry")}>
-                  <option value="">Select your industry (optional)</option>
+                  <option value="">Select if you want</option>
                   {INDUSTRY_OPTIONS.map((trade) => (
                     <option key={trade} value={trade}>
                       {trade}
@@ -711,7 +681,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           </ApplyStep>
         ) : null}
 
-        {step === 2 ? (
+        {step === 4 ? (
           <ApplyStep
             title="Where do we send your options?"
             description="Your review results and next steps go here. No spam, no reselling your info."
@@ -850,7 +820,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           </ApplyStep>
         ) : null}
 
-        {step === 3 ? (
+        {step === 5 ? (
           <ApplyStep
             title="Last 3 months of bank statements"
             description="Your statements show what forms can't - real revenue, real seasonality. It's how we review every file."
@@ -892,7 +862,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           </ApplyStep>
         ) : null}
 
-        {step === 4 ? (
+        {step === 6 ? (
           <ApplyStep
             title="About you"
             description="Owner identity for your pre-qualification review. Have your SSN handy — it's encrypted in transit and used only for this review."
@@ -1047,7 +1017,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           </ApplyStep>
         ) : null}
 
-        {step === 5 ? (
+        {step === 7 ? (
           <ApplyStep
             title="Your business"
             description="Company details used for underwriting review."
@@ -1263,7 +1233,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           </ApplyStep>
         ) : null}
 
-        {step === 6 ? (
+        {step === 8 ? (
           <ApplyStep
             title="Confirm & submit"
             description={CREDIT_CHECK_SHORT + " — review and submit your file."}
@@ -1295,20 +1265,14 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           "sm:static sm:inset-auto sm:rounded-b-xl sm:-mx-4 sm:-mb-4 sm:border-t sm:pb-0",
         )}
       >
-        <div className="mx-auto flex max-w-2xl items-center gap-2 px-3 py-2.5 sm:px-4">
-          <BoltCoach
-            currentStep={step}
-            totalSteps={APPLY_STEP_COUNT}
-            nudgeSignal={nudge}
-            className="min-w-0 flex-1"
-          />
+        <div className="mx-auto flex max-w-2xl items-center justify-end gap-2 px-3 py-2.5 sm:px-4">
           {step > 0 ? (
             <Button
               type="button"
               variant="ghost"
               onClick={prevStep}
               aria-label="Previous step"
-              className="h-11 w-11 shrink-0 px-0"
+              className="mr-auto h-11 w-11 shrink-0 px-0"
             >
               <ChevronLeftIcon className="h-6 w-6" />
             </Button>
@@ -1331,7 +1295,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
               disabled={loading}
               className={cn(buttonClasses("primary"), "shrink-0", loading && "opacity-70")}
             >
-              {loading ? "Submitting…" : "Review My Fit"}
+              {loading ? "Submitting…" : "See my options"}
             </button>
           )}
         </div>
