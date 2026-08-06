@@ -49,7 +49,7 @@ export default function OpengraphImage() {
               fontWeight: 700,
               letterSpacing: 2,
               textTransform: "uppercase",
-              color: "#36D8F6",
+              color: "#60A5FA",
             }}
           >
             {SITE_TAGLINE}

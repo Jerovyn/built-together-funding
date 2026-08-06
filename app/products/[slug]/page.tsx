@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { InkGrid } from "@/components/brand/ink-grid";
 import { ProductIcon } from "@/components/products/product-icon";
 import { Reveal } from "@/components/reveal";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
@@ -111,39 +110,35 @@ export default async function ProductPage({
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
-        <div className="container relative max-w-6xl py-10 sm:py-12 md:py-16">
-          <nav aria-label="Breadcrumb" className="text-xs text-btf-on-ink-muted">
+      <section className="border-b border-btf-border">
+        <div className="container max-w-6xl py-8 sm:py-10 md:py-12">
+          <nav aria-label="Breadcrumb" className="text-xs text-btf-text-muted">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
-                <Link href={ROUTES.home} className="hover:text-btf-on-ink">
+                <Link href={ROUTES.home} className="hover:text-btf-text">
                   Home
                 </Link>
               </li>
               <li aria-hidden>/</li>
               <li>
-                <Link href={ROUTES.products} className="hover:text-btf-on-ink">
+                <Link href={ROUTES.products} className="hover:text-btf-text">
                   Products
                 </Link>
               </li>
               <li aria-hidden>/</li>
-              <li className="font-semibold text-btf-on-ink">{product.shortName}</li>
+              <li className="font-semibold text-btf-text">{product.shortName}</li>
             </ol>
           </nav>
 
           <div className="mt-6 grid items-start gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-12">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#36D8F6]">
-                Financing product
-              </p>
-              <h1 className="mt-2 text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-on-ink sm:text-4xl md:text-5xl">
+              <h1 className="text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl md:text-5xl">
                 {product.name}
               </h1>
-              <p className="mt-4 max-w-xl text-base leading-relaxed text-btf-on-ink-muted">
+              <p className="mt-4 max-w-xl text-base leading-relaxed text-btf-text-muted">
                 {product.description}
               </p>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <TrackedButtonLink
                   href={applyHref}
                   variant="primary"
@@ -155,37 +150,35 @@ export default async function ProductPage({
                 </TrackedButtonLink>
                 <Link
                   href={calcHref}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-btf-ink-border bg-white/5 px-5 py-3 text-base font-semibold text-btf-on-ink transition-colors hover:border-[#36D8F6]/50 hover:bg-white/10"
+                  className="text-sm font-semibold text-btf-accent hover:underline"
                 >
-                  Calculate payments
+                  Calculate payments →
                 </Link>
               </div>
-              <p className="mt-4 text-xs text-btf-on-ink-muted">
+              <p className="mt-4 text-xs text-btf-text-muted">
                 Pre-qualifying won&apos;t affect your credit score.
               </p>
             </div>
 
             {/* Quick facts card */}
             <Reveal className="min-w-0">
-              <div className="rounded-2xl border border-btf-ink-border bg-btf-ink-2/80 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:p-6">
+              <div className="rounded-2xl border border-btf-border bg-btf-card p-5 shadow-btf-card sm:p-6">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#36D8F6]/10 text-[#36D8F6]">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-btf-accent/10 text-btf-accent">
                     <ProductIcon slug={product.slug} className="h-5 w-5" />
                   </span>
-                  <p className="text-sm font-bold uppercase tracking-wider text-btf-on-ink">
-                    Quick facts
-                  </p>
+                  <p className="text-sm font-bold text-btf-text">Quick facts</p>
                 </div>
-                <dl className="mt-4 divide-y divide-btf-ink-border">
+                <dl className="mt-4 divide-y divide-btf-border">
                   {product.quickFacts.map((fact) => (
                     <div
                       key={fact.label}
                       className="flex items-baseline justify-between gap-4 py-2.5"
                     >
-                      <dt className="shrink-0 text-xs font-medium text-btf-on-ink-muted">
+                      <dt className="shrink-0 text-xs font-medium text-btf-text-muted">
                         {fact.label}
                       </dt>
-                      <dd className="text-right text-sm font-semibold text-btf-on-ink">
+                      <dd className="text-right text-sm font-semibold text-btf-text">
                         {fact.value}
                       </dd>
                     </div>
@@ -207,7 +200,7 @@ export default async function ProductPage({
             {product.uses.map((use, i) => (
               <Reveal
                 key={use.title}
-                delay={Math.min(i * 70, 280)}
+                delay={Math.min(i * 40, 160)}
                 className="h-full"
               >
                 <div className="flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-200 hover:border-btf-accent/30 hover:shadow-btf-card">
@@ -238,7 +231,7 @@ export default async function ProductPage({
             </div>
             <ul className="grid gap-2.5 sm:grid-cols-2">
               {product.benefits.map((benefit, i) => (
-                <Reveal key={benefit} delay={Math.min(i * 50, 250)} as="li">
+                <Reveal key={benefit} delay={Math.min(i * 40, 160)} as="li">
                   <span className="flex gap-2.5 rounded-xl border border-btf-border bg-btf-card p-3.5 text-sm font-medium text-btf-text">
                     <CheckIcon className="mt-0.5 h-5 w-5 shrink-0 text-btf-accent" />
                     {benefit}
@@ -282,7 +275,6 @@ export default async function ProductPage({
 
       {/* Final CTA */}
       <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
         <div className="container relative max-w-6xl py-12 sm:py-16">
           <h2 className="max-w-lg text-balance text-2xl font-extrabold leading-tight tracking-tight text-btf-on-ink sm:text-3xl md:text-4xl">
             See if {product.shortName.toLowerCase()} fits your file.
@@ -291,7 +283,7 @@ export default async function ProductPage({
             About 4–5 minutes. A straight answer within one business day.{" "}
             {DISCLAIMER_PREQUAL_LINE}
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6">
             <TrackedButtonLink
               href={applyHref}
               variant="primary"
@@ -302,12 +294,6 @@ export default async function ProductPage({
             >
               {CTA_PREQUAL_LABEL}
             </TrackedButtonLink>
-            <Link
-              href={calcHref}
-              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-btf-ink-border bg-white/5 px-5 py-3 text-base font-semibold text-btf-on-ink transition-colors hover:border-[#36D8F6]/50 hover:bg-white/10"
-            >
-              Calculate payments
-            </Link>
           </div>
           <p className="mt-8 max-w-3xl text-xs leading-relaxed text-btf-on-ink-muted">
             {BROKER_DISCLOSURE}

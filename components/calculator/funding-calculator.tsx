@@ -405,7 +405,7 @@ export function FundingCalculator({
                   "shrink-0 snap-start rounded-full border px-3.5 py-2 text-xs font-semibold transition-all duration-150 sm:text-sm",
                   "motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
                   slug === p.slug
-                    ? "border-btf-accent bg-btf-accent text-white shadow-btf-glow"
+                    ? "border-btf-accent bg-btf-accent text-white"
                     : "border-btf-border bg-btf-bg text-btf-text-muted hover:border-btf-accent/40 hover:text-btf-text",
                 )}
               >
@@ -613,7 +613,7 @@ export function FundingCalculator({
               </dl>
 
               <p className="mt-3 text-xs leading-snug text-btf-text-muted">
-                Range shown for this product: {product.rateRangeLabel}. Flip to{" "}
+                Flip to{" "}
                 <button
                   type="button"
                   onClick={() => setTab("earn")}

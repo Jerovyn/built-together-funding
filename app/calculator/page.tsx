@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FundingCalculator } from "@/components/calculator/funding-calculator";
-import { InkGrid } from "@/components/brand/ink-grid";
 import { Reveal } from "@/components/reveal";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
 import {
@@ -28,21 +27,14 @@ export default async function CalculatorPage({
 
   return (
     <>
-      <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
-        <div className="container relative max-w-6xl py-10 sm:py-12 md:py-14">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#36D8F6]">
-            Funding calculator
-          </p>
-          <h1 className="mt-2 max-w-2xl text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-on-ink sm:text-4xl">
+      <section className="border-b border-btf-border">
+        <div className="container max-w-6xl py-10 sm:py-12">
+          <h1 className="max-w-2xl text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl">
             Know your numbers before you commit.
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-btf-on-ink-muted sm:text-base">
-            Model the payment on every product we place — with the right math
-            for each one. Then flip to{" "}
-            <span className="font-semibold text-btf-on-ink">What it earns</span>{" "}
-            and see whether the move pays for itself. No other funding
-            calculator shows you both sides.
+          <p className="mt-3 max-w-xl text-base text-btf-text-muted">
+            What it costs, and whether it pays for itself — for every product
+            we place.
           </p>
         </div>
       </section>
@@ -64,7 +56,7 @@ export default async function CalculatorPage({
         </h2>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PRODUCTS.map((p, i) => (
-            <Reveal key={p.slug} delay={Math.min(i * 60, 240)}>
+            <Reveal key={p.slug} delay={Math.min(i * 40, 160)}>
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
                 className="group flex h-full flex-col rounded-xl border border-btf-border bg-btf-card p-4 transition-all duration-200 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5"

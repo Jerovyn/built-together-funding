@@ -1,8 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FundingCalculator } from "@/components/calculator/funding-calculator";
-import { InkGrid } from "@/components/brand/ink-grid";
-import { CountUp } from "@/components/count-up";
 import { ProductIcon } from "@/components/products/product-icon";
 import { Reveal } from "@/components/reveal";
 import { SectionShell } from "@/components/section-shell";
@@ -12,12 +10,11 @@ import {
   CTA_PREQUAL_LABEL,
   CREDIT_CHECK_SHORT,
   DISCLAIMER_PREQUAL_LINE,
+  HERO_BRAND_LINE,
   HOME_FAQS,
   HOME_MIN_REQUIREMENTS,
-  HOME_STATS,
   HOME_TRADES_MARQUEE,
   ROUTES,
-  SITE_TAGLINE,
 } from "@/lib/constants";
 import { PRODUCTS } from "@/lib/products";
 
@@ -35,24 +32,24 @@ const FIT_SIGNALS = [
 
 const HOW_IT_WORKS = [
   {
-    step: "01",
+    step: "1",
     title: "Tell us what you're after",
-    body: "Product, amount, and basics — about 5 minutes, no hard credit pull.",
+    body: "Product, amount, basics. About 5 minutes.",
   },
   {
-    step: "02",
+    step: "2",
     title: "Share bank statements",
-    body: "Upload now or use a secure link later. Real deposits beat forms.",
+    body: "Upload now or send later by secure link.",
   },
   {
-    step: "03",
+    step: "3",
     title: "Get matched options",
-    body: "A person reviews your file within 1 business day and maps what fits.",
+    body: "A person reviews your file in 1 business day.",
   },
   {
-    step: "04",
+    step: "4",
     title: "Book your review call",
-    body: "Pick a time on the spot — we walk the options with you on a video call.",
+    body: "Walk through the options together and pick.",
   },
 ];
 
@@ -70,22 +67,12 @@ const COMPARISON_ROWS = [
   {
     label: "Underwriting",
     btf: "Bank statements first",
-    bank: "Collateral + full financial package",
-  },
-  {
-    label: "Options",
-    btf: "8 products across a partner network",
-    bank: "One institution's products",
+    bank: "Collateral + full financials",
   },
   {
     label: "Who you talk to",
     btf: "A person, on a call you book",
     bank: "A committee you never meet",
-  },
-  {
-    label: "Pre-qualification",
-    btf: "No credit score impact",
-    bank: "Varies — often a pull up front",
   },
 ];
 
@@ -109,106 +96,81 @@ function CheckIcon({ className }: { className?: string }) {
 export function HomeContent() {
   return (
     <>
-      {/* HERO — dark ink with network grid */}
-      <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
-        <div className="container relative max-w-6xl py-12 sm:py-14 md:py-20">
-          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-            <div className="min-w-0 space-y-5">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#36D8F6]">
-                {SITE_TAGLINE}
-              </p>
-              <h1 className="text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-on-ink sm:text-4xl md:text-5xl lg:text-[3.4rem]">
-                More work than you can handle?{" "}
-                <span className="bg-gradient-to-r from-[#36D8F6] to-btf-accent-soft bg-clip-text text-transparent">
-                  We fund the capacity.
-                </span>
-              </h1>
-              <p className="max-w-lg text-base leading-relaxed text-btf-on-ink-muted">
-                Working capital, equipment, term loans, and five more ways to
-                fund the next move — matched to your business and underwritten
-                on real bank statements.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <TrackedButtonLink
-                  href={ROUTES.apply}
-                  variant="primary"
-                  trackLabel={CTA_PREQUAL_LABEL}
-                  trackLocation="home_hero"
-                  className="px-7 py-3.5 text-base"
-                  showArrow
-                >
-                  {CTA_PREQUAL_LABEL}
-                </TrackedButtonLink>
-                <Link
-                  href={ROUTES.calculator}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-btf-ink-border bg-white/5 px-5 py-3 text-base font-semibold text-btf-on-ink transition-colors hover:border-[#36D8F6]/50 hover:bg-white/10"
-                >
-                  Run your numbers
-                </Link>
-              </div>
-              <ul className="flex flex-wrap gap-x-4 gap-y-2">
-                {TRUST_CHIPS.map((chip) => (
-                  <li
-                    key={chip}
-                    className="flex items-center gap-1.5 text-sm font-medium text-btf-on-ink-muted"
-                  >
-                    <CheckIcon className="h-4 w-4 shrink-0 text-[#36D8F6]" />
-                    {chip}
-                  </li>
-                ))}
-              </ul>
+      {/* HERO — light, one primary action */}
+      <SectionShell
+        contained
+        className="relative border-b border-btf-border py-10 sm:py-12 md:py-16"
+      >
+        <div className="grid items-center gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="min-w-0 space-y-4 sm:space-y-5">
+            <p className="text-sm font-bold tracking-tight text-btf-accent">
+              {HERO_BRAND_LINE}
+            </p>
+            <h1 className="text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl md:text-5xl">
+              More work than you can handle?{" "}
+              <span className="text-btf-accent">We fund the capacity.</span>
+            </h1>
+            <p className="max-w-lg text-base text-btf-text-muted">
+              Eight ways to fund the next move — underwritten on your bank
+              statements, not a stack of paperwork.
+            </p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <TrackedButtonLink
+                href={ROUTES.apply}
+                variant="primary"
+                trackLabel={CTA_PREQUAL_LABEL}
+                trackLocation="home_hero"
+                className="px-7 py-3.5 text-base"
+                showArrow
+              >
+                {CTA_PREQUAL_LABEL}
+              </TrackedButtonLink>
+              <Link
+                href={ROUTES.calculator}
+                className="text-sm font-semibold text-btf-accent hover:underline"
+              >
+                Run your numbers →
+              </Link>
             </div>
-
-            <Reveal className="relative">
-              <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-btf-ink-border shadow-[0_30px_60px_rgba(0,0,0,0.45)]">
-                <Image
-                  src="/images/hero-crew.png"
-                  alt="Roofing crew of several workers on a home at golden hour"
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                  className="object-cover"
-                />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-btf-ink/70 via-transparent to-transparent"
-                  aria-hidden
-                />
-              </div>
-              <div className="absolute -bottom-4 left-4 rounded-xl border border-btf-ink-border bg-btf-ink-2/95 px-4 py-3 shadow-[0_16px_40px_rgba(0,0,0,0.4)] backdrop-blur-sm sm:left-6">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-btf-on-ink-muted">
-                  Every file
-                </p>
-                <p className="text-sm font-extrabold text-btf-on-ink">
-                  Reviewed by a person · 1 business day
-                </p>
-              </div>
-            </Reveal>
+            <ul className="flex flex-wrap gap-x-4 gap-y-2">
+              {TRUST_CHIPS.map((chip) => (
+                <li
+                  key={chip}
+                  className="flex items-center gap-1.5 text-sm font-medium text-btf-text-muted"
+                >
+                  <CheckIcon className="h-4 w-4 shrink-0 text-btf-accent" />
+                  {chip}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Stats band — operational, honest */}
-          <div className="mt-14 grid grid-cols-2 gap-6 border-t border-btf-ink-border pt-8 sm:mt-16 lg:grid-cols-4">
-            {HOME_STATS.map((stat) => (
-              <div key={stat.label} className="min-w-0">
-                <p className="text-3xl font-extrabold tabular-nums tracking-tight text-btf-on-ink sm:text-4xl">
-                  <CountUp value={stat.value} suffix={stat.suffix} />
-                </p>
-                <p className="mt-1 text-xs font-medium leading-snug text-btf-on-ink-muted sm:text-sm">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
+          <Reveal className="relative">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-2xl border border-btf-border shadow-btf-card">
+              <Image
+                src="/images/hero-crew.png"
+                alt="Roofing crew of several workers on a home at golden hour"
+                fill
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="object-cover"
+              />
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-btf-ink/50 via-transparent to-transparent"
+                aria-hidden
+              />
+            </div>
+          </Reveal>
         </div>
-      </section>
+      </SectionShell>
 
-      {/* TRADES MARQUEE */}
+      {/* TRADES MARQUEE — slower, readable, pauses on hover */}
       <section
-        className="overflow-hidden border-b border-white/60 bg-white/25 py-4 backdrop-blur-md"
+        className="group overflow-hidden border-b border-btf-border bg-btf-secondary py-4"
         aria-label="Industries we serve"
       >
         <div
-          className="flex w-max motion-reduce:animate-none motion-safe:animate-marquee-x"
+          className="flex w-max motion-reduce:animate-none motion-safe:animate-marquee-x group-hover:[animation-play-state:paused]"
           aria-hidden="true"
         >
           {[0, 1].map((copy) => (
@@ -216,7 +178,7 @@ export function HomeContent() {
               {HOME_TRADES_MARQUEE.map((trade) => (
                 <span
                   key={`${copy}-${trade}`}
-                  className="shrink-0 rounded-full border border-white/80 bg-white/35 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[#007ABE] shadow-[0_0_18px_rgba(54,216,246,0.14)] backdrop-blur-sm sm:px-5 sm:py-2 sm:text-xs"
+                  className="shrink-0 rounded-full border border-btf-border bg-white px-4 py-1.5 text-sm font-medium text-btf-text-muted"
                 >
                   {trade}
                 </span>
@@ -231,20 +193,19 @@ export function HomeContent() {
 
       {/* HOW IT WORKS */}
       <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-btf-accent">
-          Simple process
-        </p>
-        <h2 className="mt-2 max-w-xl text-balance text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
-          From application to answers in four steps.
+        <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
+          How it works
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {HOW_IT_WORKS.map((item, i) => (
-            <Reveal key={item.step} delay={Math.min(i * 80, 320)} className="h-full">
-              <div className="relative flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 transition-all duration-200 hover:border-btf-accent/30 hover:shadow-btf-card">
-                <span className="text-3xl font-extrabold tabular-nums text-btf-accent/15">
+            <Reveal key={item.step} delay={i * 40} className="h-full">
+              <div className="flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 transition-shadow duration-150 hover:shadow-btf-card">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-btf-accent/10 text-sm font-bold tabular-nums text-btf-accent">
                   {item.step}
                 </span>
-                <p className="mt-2 text-base font-bold text-btf-text">{item.title}</p>
+                <p className="mt-3 text-base font-bold text-btf-text">
+                  {item.title}
+                </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-btf-text-muted">
                   {item.body}
                 </p>
@@ -252,29 +213,14 @@ export function HomeContent() {
             </Reveal>
           ))}
         </div>
-        <p className="mt-5 text-sm text-btf-text-muted">
-          Full detail on{" "}
-          <Link
-            href={ROUTES.howItWorks}
-            className="font-semibold text-btf-accent hover:underline"
-          >
-            how it works
-          </Link>
-          .
-        </p>
       </SectionShell>
 
       {/* PRODUCTS */}
       <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 sm:py-14 md:py-16">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-btf-accent">
-              Financing solutions
-            </p>
-            <h2 className="mt-2 max-w-xl text-balance text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
-              Eight ways to fund the next move.
-            </h2>
-          </div>
+          <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
+            What we finance
+          </h2>
           <Link
             href={ROUTES.products}
             className="text-sm font-semibold text-btf-accent hover:underline"
@@ -284,23 +230,22 @@ export function HomeContent() {
         </div>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {PRODUCTS.map((p, i) => (
-            <Reveal key={p.slug} delay={Math.min(i * 60, 300)} className="h-full">
+            <Reveal key={p.slug} delay={i * 40} className="h-full">
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
-                className="group flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-4 transition-all duration-200 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-1"
+                className="group flex h-full items-center gap-3 rounded-2xl border border-btf-border bg-btf-card p-4 transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card"
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-btf-accent/10 text-btf-accent">
+                <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-btf-accent/10 text-btf-accent">
                   <ProductIcon slug={p.slug} className="h-5 w-5" />
                 </span>
-                <p className="mt-3 text-sm font-bold text-btf-text group-hover:text-btf-accent">
-                  {p.shortName}
-                </p>
-                <p className="mt-0.5 text-xs font-semibold text-btf-accent">
-                  {p.amountRangeLabel}
-                </p>
-                <p className="mt-1.5 flex-1 text-xs leading-relaxed text-btf-text-muted">
-                  {p.tagline}
-                </p>
+                <span className="min-w-0">
+                  <span className="block text-sm font-bold text-btf-text group-hover:text-btf-accent">
+                    {p.shortName}
+                  </span>
+                  <span className="mt-0.5 block text-xs font-medium text-btf-text-muted">
+                    {p.amountRangeLabel}
+                  </span>
+                </span>
               </Link>
             </Reveal>
           ))}
@@ -309,48 +254,25 @@ export function HomeContent() {
 
       {/* CALCULATOR */}
       <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-btf-accent">
-          Funding calculator
-        </p>
-        <h2 className="mt-2 max-w-xl text-balance text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
-          Know your numbers before you commit.
+        <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
+          Run the math on what you&apos;d buy
         </h2>
-        <p className="mt-2 max-w-xl text-sm text-btf-text-muted">
-          Model the payment with the right math for each product — then flip
-          the tab and see if the move pays for itself.
-        </p>
         <Reveal className="mt-6 min-w-0 sm:mt-8">
           <FundingCalculator embedded />
         </Reveal>
-        <p className="mt-4 text-sm text-btf-text-muted">
-          Want the full-screen version?{" "}
-          <Link
-            href={ROUTES.calculator}
-            className="font-semibold text-btf-accent hover:underline"
-          >
-            Open the calculator
-          </Link>
-          .
-        </p>
       </SectionShell>
 
       {/* COMPARISON */}
       <SectionShell className="border-b border-btf-border py-12 sm:py-14 md:py-16">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-btf-accent">
-          Why owners pick us
-        </p>
-        <h2 className="mt-2 max-w-xl text-balance text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
-          Built Together Funding vs. the bank line.
+        <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
+          Us vs. the typical bank
         </h2>
         <Reveal className="mt-8 overflow-hidden rounded-2xl border border-btf-border shadow-btf-card">
           <table className="w-full border-collapse bg-btf-card text-left text-sm">
             <thead>
               <tr className="border-b border-btf-border bg-btf-secondary">
                 <th scope="col" className="p-3 sm:p-4" aria-label="Feature" />
-                <th
-                  scope="col"
-                  className="p-3 font-extrabold text-btf-accent sm:p-4"
-                >
+                <th scope="col" className="p-3 font-bold text-btf-accent sm:p-4">
                   Built Together Funding
                 </th>
                 <th
@@ -388,16 +310,12 @@ export function HomeContent() {
       </SectionShell>
 
       {/* MIN REQUIREMENTS + FIT */}
-      <SectionShell className="border-b border-btf-border bg-white/40 py-12 backdrop-blur-[2px] md:py-14">
+      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="text-balance text-xl font-extrabold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
+            <h2 className="text-balance text-xl font-bold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
               Minimum requirements
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-btf-text-muted">
-              We review every file by hand. These are the basics most
-              successful applications share.
-            </p>
             <ul className="mt-5 grid gap-3">
               {HOME_MIN_REQUIREMENTS.map((item) => (
                 <li
@@ -411,7 +329,7 @@ export function HomeContent() {
             </ul>
           </div>
           <div>
-            <h2 className="text-balance text-xl font-extrabold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
+            <h2 className="text-balance text-xl font-bold tracking-tight text-btf-text sm:text-2xl md:text-3xl">
               When we say yes, it means something.
             </h2>
             <p className="mt-2 text-sm text-btf-text-muted">
@@ -440,7 +358,7 @@ export function HomeContent() {
 
       {/* FAQ */}
       <SectionShell className="border-b border-btf-border py-12 md:py-14">
-        <h2 className="text-2xl font-extrabold tracking-tight text-btf-text md:text-3xl">
+        <h2 className="text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
           Quick answers
         </h2>
         <div className="mt-6 grid gap-2 lg:max-w-2xl">
@@ -452,7 +370,7 @@ export function HomeContent() {
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text [&::-webkit-details-marker]:hidden">
                 {faq.q}
                 <span
-                  className="text-lg font-bold text-btf-accent transition-transform group-open:rotate-45"
+                  className="text-lg font-bold text-btf-accent transition-transform duration-150 group-open:rotate-45"
                   aria-hidden
                 >
                   +
@@ -466,15 +384,14 @@ export function HomeContent() {
         </div>
       </SectionShell>
 
-      {/* FINAL CTA */}
+      {/* FINAL CTA — the one dark brand moment */}
       <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
         <Image
           src="/images/action-washing.jpg"
           alt=""
           fill
           sizes="100vw"
-          className="object-cover opacity-25"
+          className="object-cover opacity-35"
           aria-hidden
         />
         <div

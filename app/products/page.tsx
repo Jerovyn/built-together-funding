@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { InkGrid } from "@/components/brand/ink-grid";
 import { ProductIcon } from "@/components/products/product-icon";
 import { Reveal } from "@/components/reveal";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
@@ -20,19 +19,15 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-btf-ink">
-        <InkGrid />
-        <div className="container relative max-w-6xl py-10 sm:py-12 md:py-16">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#36D8F6]">
-            Financing products
-          </p>
-          <h1 className="mt-2 max-w-2xl text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-on-ink sm:text-4xl md:text-5xl">
-            One application. Every option that fits.
+      <section className="border-b border-btf-border">
+        <div className="container max-w-6xl py-10 sm:py-12">
+          <h1 className="max-w-2xl text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl">
+            One application.{" "}
+            <span className="text-btf-accent">Every option that fits.</span>
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-btf-on-ink-muted sm:text-base">
-            Eight ways to fund the next move — matched against your real bank
-            statements, compared across our partner network, explained by a
-            person.
+          <p className="mt-3 max-w-xl text-base text-btf-text-muted">
+            Eight products, compared across our partner network and explained
+            by a person.
           </p>
         </div>
       </section>
@@ -40,7 +35,7 @@ export default function ProductsPage() {
       <section className="container max-w-6xl py-10 sm:py-14">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PRODUCTS.map((p, i) => (
-            <Reveal key={p.slug} delay={Math.min(i * 60, 300)}>
+            <Reveal key={p.slug} delay={Math.min(i * 40, 160)}>
               <Link
                 href={`${ROUTES.products}${p.slug}/`}
                 className="group flex h-full flex-col rounded-2xl border border-btf-border bg-btf-card p-5 shadow-sm transition-all duration-200 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-1"
