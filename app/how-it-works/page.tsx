@@ -6,21 +6,21 @@ import { HOME_FAQS, SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "How It Works",
-  description: `How ${SITE_NAME} works: apply online, we review your statements, you pick on a call.`,
+  description: `How ${SITE_NAME} small business funding works: apply online, we review bank statements, you choose options on a call.`,
 };
 
 const STEPS = [
   {
-    title: "Tell us what you're after",
-    body: "About 2 minutes online — what the money is for, amount, revenue, and how to reach you. No SSN yet. No hard credit pull.",
+    title: "Tell us what you need funding for",
+    body: "About 2 minutes online — use of funds, amount, revenue, and how to reach you. No SSN yet. No hard credit pull.",
   },
   {
-    title: "We review your statements",
-    body: "Upload last 3–6 months when you're ready. A person looks at real deposits within 1 business day — not a black-box score.",
+    title: "We review your bank statements",
+    body: "Upload last 3–6 months when you're ready. A person reviews real deposits within 1 business day.",
   },
   {
-    title: "You pick on a call",
-    body: "We walk the options together. You decide. No pressure.",
+    title: "Choose options on a call",
+    body: "We walk through funding that fits. You decide what to take — or not.",
   },
 ] as const;
 
@@ -28,16 +28,16 @@ export default function HowItWorksPage() {
   return (
     <>
       <MarketingPageHero
-        title="How it works"
-        description="Three steps. Real numbers. A person on the other end."
+        title="How small business funding works here"
+        description="Apply online, we review your bank statements, then you choose funding options on a call with a person."
       />
 
-      <SectionShell className="border-b border-btf-border py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/70 py-12 md:py-14">
         <ol className="grid gap-4 sm:grid-cols-3">
           {STEPS.map((step, i) => (
             <li
               key={step.title}
-              className="flex flex-col rounded-xl border border-btf-border bg-btf-card p-5"
+              className="flex flex-col rounded-xl border border-btf-border bg-btf-card p-5 transition-all duration-150 hover:border-btf-accent/30 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-btf-accent/10 text-sm font-bold text-btf-accent">
                 {i + 1}

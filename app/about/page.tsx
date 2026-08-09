@@ -7,7 +7,7 @@ import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `Why ${SITE_NAME} exists — operator-led, stricter standard for growth capital.`,
+  description: `About ${SITE_NAME} — small business funding for trades and service companies, led by operators.`,
 };
 
 export default function AboutPage() {
@@ -15,8 +15,8 @@ export default function AboutPage() {
     <>
       <MarketingPageHero
         badge="About"
-        title="Built by operators"
-        description="For people who live in trucks, crews, and schedules — not bank lobby talk."
+        title="Operator-led small business funding"
+        description="Built for people who run trucks, crews, and schedules — with a stricter bar for when funding makes sense."
       />
 
       <SectionShell className="border-b border-btf-border bg-white/40 py-12 backdrop-blur-[2px] md:py-14">

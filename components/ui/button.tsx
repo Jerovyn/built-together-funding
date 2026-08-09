@@ -3,11 +3,11 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-btf-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-btf-bg disabled:pointer-events-none disabled:opacity-50 min-h-[44px] motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.97]";
+  "group inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base font-semibold transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-btf-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-btf-bg disabled:pointer-events-none disabled:opacity-50 min-h-[44px] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]";
 
 const variants = {
   primary:
-    "bg-btf-accent text-white shadow-btf-glow hover:bg-btf-accent-mid hover:shadow-[0_10px_28px_rgba(2,132,199,0.28)] active:bg-btf-accent-soft",
+    "bg-btf-accent text-white shadow-btf-glow hover:bg-btf-accent-mid hover:shadow-[0_10px_28px_rgba(2,132,199,0.28)] active:bg-btf-accent",
   secondary:
     "border border-btf-border bg-white text-btf-text shadow-sm hover:border-btf-accent/40 hover:bg-btf-secondary hover:shadow-btf-card",
   ghost:

@@ -13,6 +13,7 @@ import {
   CTA_PREQUAL_LABEL,
   HOME_DESIRE_SIGNALS,
   HOME_PULL_LINE,
+  HOME_SUPPORT_LINE,
   HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
@@ -43,9 +44,9 @@ function CheckIcon({ className }: { className?: string }) {
 
 const EASE_POINTS = [
   "About 2 minutes to see if we should talk — no SSN yet",
-  "Won't affect your credit score to look",
+  "Checking options won't affect your credit score",
   "Same person reviews your file and calls you",
-  "Statements optional until you're ready",
+  "Bank statements optional until you're ready",
 ] as const;
 
 /** Desktop marquee — keep short. Mobile uses a static subset. */
@@ -53,7 +54,7 @@ const HOME_TRADES_MARQUEE_LIST = HOME_TRADES_MARQUEE.slice(0, 14);
 const HOME_TRADES_MOBILE_STATIC = HOME_TRADES_MARQUEE.slice(0, 8);
 
 /**
- * Light, trusting home: capacity pull + purpose taps + photo overlap + paths.
+ * Light home: plain funding language + soft section washes + purpose taps.
  */
 export function HomeContent() {
   const router = useRouter();
@@ -77,20 +78,23 @@ export function HomeContent() {
 
   return (
     <>
-      {/* First viewport — light trust surface + purpose taps */}
-      <section className="relative border-b border-btf-border bg-white/70">
-        <div className="container max-w-6xl px-4 py-8 sm:py-12 md:py-16">
+      {/* First viewport — soft cyan wash + purpose taps */}
+      <section className="relative overflow-hidden border-b border-btf-border bg-gradient-to-br from-[#F0F9FF] via-white to-[#F7F8FA]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full bg-btf-accent/[0.07] blur-3xl"
+        />
+        <div className="container relative max-w-6xl px-4 py-8 sm:py-12 md:py-16">
           <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
             <div className="min-w-0 space-y-4 sm:space-y-5">
               <p className="text-sm font-semibold text-btf-accent">
-                Financing for trades &amp; service businesses
+                Small business funding · Trades &amp; service companies
               </p>
               <h1 className="text-balance text-[1.75rem] font-bold leading-[1.15] tracking-tight text-btf-text sm:text-4xl sm:font-extrabold md:text-[2.5rem]">
                 {HOME_PULL_LINE}
               </h1>
               <p className="max-w-md text-base leading-relaxed text-btf-text-muted sm:text-lg">
-                Apply in minutes. Underwritten on your bank statements. Straight
-                answer in 1 business day — from a person, not a portal.
+                {HOME_SUPPORT_LINE}
               </p>
               <p className="text-sm font-medium text-btf-text-muted">
                 {CTA_MICRO_LINE}
@@ -98,7 +102,7 @@ export function HomeContent() {
               {phoneDisplay && phone ? (
                 <TrackedPhoneLink
                   href={`tel:${phone}`}
-                  className="inline-block text-sm font-semibold text-btf-accent hover:underline"
+                  className="inline-block text-sm font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
                   trackLocation="home_hero"
                 >
                   Or call {phoneDisplay}
@@ -108,7 +112,7 @@ export function HomeContent() {
 
             <div className="min-w-0 space-y-3">
               <p className="text-base font-semibold text-btf-text">
-                Why do you need funding?
+                What do you need funding for?
               </p>
               <ul className="flex flex-col gap-2.5">
                 {HOME_PURPOSE_OPTIONS.map((option) => (
@@ -117,12 +121,19 @@ export function HomeContent() {
                       type="button"
                       onClick={() => startWithPurpose(option)}
                       className={cn(
-                        "flex w-full min-h-12 items-center justify-center rounded-xl border border-btf-border bg-btf-accent/[0.04] px-5 py-3.5 text-center text-base font-semibold text-btf-text shadow-sm",
-                        "transition-all duration-150 hover:border-btf-accent/35 hover:bg-btf-accent/[0.08]",
-                        "motion-safe:active:scale-[0.98]",
+                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border bg-white/80 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm backdrop-blur-sm",
+                        "transition-all duration-150 ease-out",
+                        "hover:border-btf-accent/40 hover:bg-btf-accent/[0.06] hover:shadow-btf-glow",
+                        "motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
                       )}
                     >
-                      {option.label}
+                      <span>{option.label}</span>
+                      <span
+                        aria-hidden
+                        className="text-btf-accent transition-transform duration-150 group-hover:translate-x-0.5"
+                      >
+                        →
+                      </span>
                     </button>
                   </li>
                 ))}
@@ -142,8 +153,8 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Photo + overlapping trust card — soft secondary, no ink slab */}
-      <section className="relative bg-btf-secondary/80 pb-14 pt-10 sm:pb-16 sm:pt-12">
+      {/* Photo + overlapping trust card — soft secondary wash */}
+      <section className="relative bg-gradient-to-b from-btf-secondary via-[#F0F9FF]/50 to-btf-secondary pb-14 pt-10 sm:pb-16 sm:pt-12">
         <div className="container relative max-w-3xl px-4">
           <div className="relative mx-auto aspect-[4/3] max-h-[22rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border shadow-btf-card sm:max-h-[26rem]">
             <Image
@@ -230,9 +241,9 @@ export function HomeContent() {
         </p>
       </section>
 
-      <SectionShell className="border-b border-btf-border bg-white/80 py-12 sm:py-14">
+      <SectionShell className="border-b border-btf-border bg-gradient-to-b from-white to-[#F0F9FF]/60 py-12 sm:py-14">
         <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
-          We removed the hard parts on purpose.
+          A simpler way to check small business funding options.
         </h2>
         <ul className="mt-6 grid gap-3 sm:grid-cols-2">
           {EASE_POINTS.map((item) => (
@@ -247,12 +258,12 @@ export function HomeContent() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border py-12 sm:py-14">
+      <SectionShell className="border-b border-btf-border bg-btf-secondary/70 py-12 sm:py-14">
         <p className="text-sm font-medium text-btf-text-muted">
-          Tell us what you need → we review → you pick on a call.
+          Tell us what you need → we review → you choose on a call.
         </p>
         <h2 className="mt-3 max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
-          Ready when you are.
+          Compare funding options when you&apos;re ready.
         </h2>
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           <TrackedButtonLink
@@ -260,7 +271,7 @@ export function HomeContent() {
             variant="primary"
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="home_path_apply"
-            className="h-auto min-h-[5.5rem] flex-col items-start justify-center gap-1 px-6 py-5 text-left motion-safe:active:scale-[0.98]"
+            className="group h-auto min-h-[5.5rem] flex-col items-start justify-center gap-1 px-6 py-5 text-left"
             showArrow
           >
             <span className="text-lg font-bold">{CTA_PREQUAL_LABEL}</span>
@@ -270,20 +281,20 @@ export function HomeContent() {
           </TrackedButtonLink>
           <Link
             href={ROUTES.calculator}
-            className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border bg-btf-card px-6 py-5 text-left transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:active:scale-[0.98]"
+            className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border bg-white px-6 py-5 text-left shadow-sm transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
           >
             <span className="text-lg font-bold text-btf-text">
-              Run your numbers first →
+              Estimate payments first →
             </span>
             <span className="text-sm font-medium text-btf-text-muted">
-              Estimate a payment. No signup needed.
+              Payment ranges. No signup needed.
             </span>
           </Link>
         </div>
         <p className="mt-6 text-sm text-btf-text-muted">
           <Link
             href={ROUTES.products}
-            className="font-semibold text-btf-accent hover:underline"
+            className="font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
           >
             Compare financing products →
           </Link>

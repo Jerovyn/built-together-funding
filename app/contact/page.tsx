@@ -20,8 +20,8 @@ export default function ContactPage() {
     <>
       <MarketingPageHero
         badge="Contact"
-        title="Get in touch"
-        description="Fastest path to an answer: start the pre-qual."
+        title="Contact Built Together Funding"
+        description="Fastest path: start the pre-qual and see funding options for your business."
       />
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">

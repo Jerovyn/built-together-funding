@@ -52,7 +52,7 @@ export const ARTICLES: Article[] = [
       },
     ],
     takeaway:
-      "Funding is a commitment to growth - which means it only makes sense when the growth is already knocking. If you can name the work you'd take and the thing you'd buy to take it, that's a conversation worth having.",
+      "Small business funding only makes sense when demand is already there. If you can name the work you'd take and the truck, crew, or equipment you'd buy to take it, that's a conversation worth having.",
   },
   {
     slug: "equipment-financing-vs-working-capital",

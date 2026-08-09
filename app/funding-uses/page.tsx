@@ -9,7 +9,7 @@ import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Funding Uses",
-  description: `Capacity capital with ${SITE_NAME}: equipment, trucks, crews, inventory, and proven marketing.`,
+  description: `What small business funding is for with ${SITE_NAME}: equipment, trucks, crews, inventory, and proven marketing.`,
 };
 
 const GOOD_USES = [
@@ -30,8 +30,8 @@ export default function FundingUsesPage() {
     <>
       <MarketingPageHero
         badge="Uses"
-        title="Money with a job"
-        description="Funding earns its keep when it buys capacity for work that's already there."
+        title="What small business funding is for"
+        description="Best used when it buys capacity — trucks, equipment, crews, inventory — for work that's already there."
       />
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">

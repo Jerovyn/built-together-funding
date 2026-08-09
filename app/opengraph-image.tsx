@@ -53,10 +53,10 @@ export default function OpengraphImage() {
               color: "#EAF1FD",
             }}
           >
-            Booked out? We fund the next truck, crew, or machine.
+            Booked out? Get funding for the next truck, crew, or machine.
           </div>
           <div style={{ fontSize: 24, color: "#9FB3D9" }}>
-            Trades & service businesses · Answer in 1 business day
+            Small business funding · Trades & service · 1 business day
           </div>
         </div>
       </div>

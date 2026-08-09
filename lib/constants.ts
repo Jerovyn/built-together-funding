@@ -6,16 +6,18 @@ export const SITE_NAME = "Built Together Funding";
  * "service businesses" keeps it broad enough to expand).
  */
 export const SITE_TAGLINE =
-  "Business Financing for Trades & Service Businesses";
+  "Small Business Funding for Trades & Service Companies";
 
 export const SITE_DESCRIPTION =
-  "Compare working capital, term loans, equipment financing, SBA options and more — built for trades and service businesses. Pre-qualify in minutes, underwritten on real bank statements. Pre-qualification is not funding approval.";
+  "Small business funding for trades and service companies — working capital, equipment financing, term loans, and more. Compare options in minutes. Underwritten on bank statements. Pre-qualification is not funding approval.";
 
-/** Core brand message. Use at key moments: footer, brand band, funnel intro, final CTA. */
-export const BRAND_LINE = "Funding is a commitment to growth.";
+/** Quiet brand line — plain category language, not a slogan. */
+export const BRAND_LINE =
+  "Small business funding when the work is already there.";
 
-/** Homepage hero only — reads after header logo: "Built Together Funding where…" */
-export const HERO_BRAND_LINE = "Where funding is a commitment to growth.";
+/** Alternate brand line for hero/photo overlays. */
+export const HERO_BRAND_LINE =
+  "Funding for small businesses ready to add capacity.";
 
 /**
  * Primary funding CTA — reads as getting information, not submitting to judgment.
@@ -26,16 +28,21 @@ export const CTA_PREQUAL_LABEL = "See your options";
 export const CTA_CALC_LABEL = "Use these numbers";
 
 /** One quiet line under the primary CTA. */
-export const CTA_MICRO_LINE = "About 2 minutes · Won't affect your credit score";
+export const CTA_MICRO_LINE =
+  "About 2 minutes · Checking options won't affect your credit score";
 
-/** Homepage pull line — capacity constraint, not generic growth. */
+/** Homepage H1 — capacity + funding keywords, plain English. */
 export const HOME_PULL_LINE =
-  "Booked out and turning work away? We fund the next truck, crew, or machine.";
+  "Booked out? Get funding for the next truck, crew, or machine.";
+
+/** One support sentence under the H1 — SEO + honesty, same length as before. */
+export const HOME_SUPPORT_LINE =
+  "Small business funding for trades and service companies that already have the work — we review bank statements and map real options with a person, not a portal.";
 
 export const HOME_DESIRE_SIGNALS = [
-  "The work is already there — capacity is the ceiling",
-  "You can name the truck, crew, or machine you'd buy",
-  "Bank statements show steady revenue",
+  "Jobs are booked — you need capacity, not a rescue loan",
+  "You know the truck, crew, or equipment the funding buys",
+  "Business bank statements show steady revenue",
 ] as const;
 
 /**

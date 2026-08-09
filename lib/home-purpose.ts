@@ -8,26 +8,26 @@ export type HomePurposeOption = {
   useOfFunds: UseOfFund[];
 };
 
-/** OnDeck-style first taps — maps into Stage A useOfFunds. */
+/** First taps — trade/funding language mapped into Stage A useOfFunds. */
 export const HOME_PURPOSE_OPTIONS: HomePurposeOption[] = [
   {
     id: "cash_flow",
-    label: "Manage cash flow",
+    label: "Working capital / cash flow",
     useOfFunds: ["wc_growth"],
   },
   {
     id: "equipment",
-    label: "Buy equipment",
+    label: "Equipment financing",
     useOfFunds: ["equipment"],
   },
   {
     id: "grow",
-    label: "Grow my business",
+    label: "Trucks, crews, or expansion",
     useOfFunds: ["trucks", "hiring_crews"],
   },
   {
     id: "expenses",
-    label: "Cover business expenses",
+    label: "Other small business funding",
     useOfFunds: ["other"],
   },
 ];

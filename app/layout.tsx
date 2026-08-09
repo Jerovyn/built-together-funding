@@ -6,6 +6,7 @@ import { PixelScripts } from "@/components/tracking/pixel-scripts";
 import { TrackingProvider } from "@/components/tracking/tracking-provider";
 import { SiteChrome } from "@/components/site-chrome";
 import {
+  BRAND_LINE,
   HOME_FAQS,
   HOME_PULL_LINE,
   SITE_DESCRIPTION,
@@ -75,7 +76,7 @@ export default function RootLayout({
         alternateName: SITE_NAME,
         url: `${siteUrl}/`,
         logo: `${siteUrl}/brand/btf-logo-icon-mark.png`,
-        slogan: "Funding is a commitment to growth.",
+        slogan: BRAND_LINE,
         description: SITE_DESCRIPTION,
         ...(phone ? { telephone: phone } : {}),
       },

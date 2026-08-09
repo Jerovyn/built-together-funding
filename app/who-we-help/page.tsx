@@ -9,28 +9,28 @@ import { SITE_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Who We Help",
-  description: `${SITE_NAME} — service and trade businesses scaling capacity.`,
+  description: `${SITE_NAME} — small business funding for trades and service companies that need capacity, not a rescue loan.`,
 };
 
 const IDEAL_FIT = [
-  "Steady revenue on the books",
-  "Work is there — capacity is the bottleneck",
-  "You can name what the money buys",
+  "Steady business revenue on bank statements",
+  "Work is booked — capacity is the bottleneck",
+  "You can name the truck, crew, or equipment funding buys",
 ] as const;
 
 const NOT_FIT = [
   "Under ~1 year in business",
   "No clear pipeline of work",
-  "Money to survive, not grow",
+  "Funding to stay afloat, not to take more work",
 ] as const;
 
 export default function WhoWeHelpPage() {
   return (
     <>
       <MarketingPageHero
-        badge="Fit"
-        title="Who we fund"
-        description="Operators already winning — who need more trucks, machines, crews, or inventory."
+        badge="Small business funding"
+        title="Who we help"
+        description="Trades and service companies with real demand who need funding for trucks, equipment, crews, or working capital."
       />
 
       <SectionShell className="border-b border-btf-border bg-btf-secondary/60 py-12 md:py-14">

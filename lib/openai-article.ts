@@ -69,7 +69,7 @@ function fallbackDraft(imageName: string): GeneratedArticleDraft {
       "A practical read on using capital only when demand already exists — and capacity is the bottleneck.",
     readMinutes: 4,
     intro:
-      "Funding is a commitment to growth. That only works when the work is already there and you need capacity to take it. Here's the operator frame we use when reviewing files.",
+      "Small business funding only makes sense when the work is already there and capacity is the constraint. Here's the operator frame we use when reviewing files.",
     sections: [
       {
         heading: "What the image is pointing at",
