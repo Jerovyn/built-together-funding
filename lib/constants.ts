@@ -50,11 +50,12 @@ export const CREDIT_CHECK_SHORT = "Won't affect your credit score";
 
 /**
  * Top-nav links that aren't Products (dropdown) or Calculator (standalone).
- * Kept short on purpose (Hick's law) — About and Resources live in the footer.
+ * Kept short on purpose (Hick's law).
  */
 export const NAV_LINKS = [
   { href: "/how-it-works/", label: "How It Works" },
   { href: "/who-we-help/", label: "Who We Help" },
+  { href: "/resources/", label: "Resources" },
   { href: "/contact/", label: "Contact" },
 ] as const;
 
@@ -85,12 +86,24 @@ export const ROUTES = {
 export const APPLY_TIME_ESTIMATE =
   "About 2 minutes to see if we should talk · full file optional after";
 
-export const HOME_MIN_REQUIREMENTS = [
-  "6+ months in business (most files)",
-  "Steady revenue on bank statements",
-  "U.S.-based service or trade business",
-  "Owner can provide EIN and last 3 months of statements",
+/** Door criteria — shown as cards on Who we help + FAQ. */
+export const HOME_REQUIREMENT_CARDS = [
+  { value: "1 Year", label: "in business" },
+  { value: "Business", label: "checking account" },
+  { value: "$100K", label: "business annual revenue" },
+  { value: "625", label: "personal FICO® score" },
 ] as const;
+
+export const HOME_MIN_REQUIREMENTS = [
+  "1 year in business",
+  "Business checking account",
+  "$100K+ business annual revenue",
+  "625+ personal FICO® score",
+  "Last 3–6 months of business bank statements for underwriting",
+] as const;
+
+/** Statement ask used in email/SMS/result copy. */
+export const STATEMENTS_WINDOW_LINE = "last 3–6 months of business bank statements";
 
 /** Homepage trades marquee — add any U.S. service/trade vertical. */
 export const HOME_TRADES_MARQUEE = [
@@ -149,7 +162,7 @@ export const HOME_FAQS = [
   },
   {
     q: "What do you need?",
-    a: "About 2 minutes first: what the money is for, how much, rough monthly revenue, time in business, and how to reach you. Bank statements, SSN, and EIN only if you choose to finish the full file — or we can collect them after you talk with us.",
+    a: "About 2 minutes first: what the money is for, how much, rough monthly revenue, time in business, and how to reach you. After that, a secure link lets you upload last 3–6 months of bank statements and finish the full file (SSN, EIN) when you're ready — that speeds underwriting.",
   },
   {
     q: "What are the minimum requirements?",

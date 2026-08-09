@@ -14,10 +14,12 @@ import {
 } from "@/lib/apply-scoring";
 import { DEV_BOOKING_TOKEN } from "@/lib/booking/dev";
 import { sendStageANotifications } from "@/lib/notifications";
+import { buildFinishFileUrl, buildUploadUrl } from "@/lib/site-url";
 import {
   createServiceRoleClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/server";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import type { LeadDbStatus } from "@/types/apply";
 
 export const runtime = "nodejs";
@@ -93,6 +95,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, message: VALIDATION_FAIL }, { status: 400 });
   }
 
+  const captcha = await verifyTurnstileToken(
+    parsed.data.turnstileToken,
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+  );
+  if (!captcha.ok) {
+    return NextResponse.json(
+      { ok: false, message: captcha.message ?? VALIDATION_FAIL },
+      { status: 400 },
+    );
+  }
+
   const {
     partialLeadId,
     utm_source,
@@ -105,6 +118,7 @@ export async function POST(req: Request) {
     landing_page,
     source,
     calculator,
+    turnstileToken: _turnstileToken,
     ...formFields
   } = parsed.data;
 
@@ -140,6 +154,7 @@ export async function POST(req: Request) {
   }
 
   let bookingToken: string | null = null;
+  let uploadToken: string | null = null;
   let leadId: string | null = null;
 
   if (supabaseOk) {
@@ -167,7 +182,7 @@ export async function POST(req: Request) {
         .from("leads")
         .update(row)
         .eq("id", partialLeadId)
-        .select("id, booking_token")
+        .select("id, booking_token, upload_token")
         .maybeSingle();
 
       if (error || !data) {
@@ -178,12 +193,14 @@ export async function POST(req: Request) {
       }
       bookingToken =
         typeof data.booking_token === "string" ? data.booking_token : null;
+      uploadToken =
+        typeof data.upload_token === "string" ? data.upload_token : null;
       leadId = typeof data.id === "string" ? data.id : null;
     } else {
       const { data, error } = await supabase
         .from("leads")
         .insert(row)
-        .select("id, booking_token")
+        .select("id, booking_token, upload_token")
         .single();
 
       if (error || !data) {
@@ -194,9 +211,13 @@ export async function POST(req: Request) {
       }
       bookingToken =
         typeof data.booking_token === "string" ? data.booking_token : null;
+      uploadToken =
+        typeof data.upload_token === "string" ? data.upload_token : null;
       leadId = typeof data.id === "string" ? data.id : null;
     }
   }
+
+  const fitForLinks = tier !== "not_fit_yet";
 
   await sendStageANotifications({
     firstName: formFields.firstName,
@@ -215,6 +236,8 @@ export async function POST(req: Request) {
     smsConsent: formFields.smsConsent === true,
     meta,
     calculator: calculator ?? null,
+    uploadUrl: fitForLinks ? buildUploadUrl(uploadToken) : null,
+    finishFileUrl: fitForLinks ? buildFinishFileUrl(bookingToken) : null,
   });
 
   const devBookingToken =

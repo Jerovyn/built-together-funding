@@ -12,11 +12,11 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     title: "Tell us what you're after",
-    body: "About 5 minutes online. Product, amount, contact — no hard credit pull.",
+    body: "About 2 minutes online — what the money is for, amount, revenue, and how to reach you. No SSN yet. No hard credit pull.",
   },
   {
     title: "We review your statements",
-    body: "A person looks at real deposits within 1 business day. Not a black-box score.",
+    body: "Upload last 3–6 months when you're ready. A person looks at real deposits within 1 business day — not a black-box score.",
   },
   {
     title: "You pick on a call",

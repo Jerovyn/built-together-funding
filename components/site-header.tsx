@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -98,13 +97,13 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       <header className="sticky top-0 z-50 border-b border-btf-border bg-white supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
         <div className="container flex max-w-2xl items-center justify-between gap-3 py-2.5 sm:py-3">
           <Link href={ROUTES.home} className="flex items-center gap-2">
-            <Image
-              src="/brand/btf-logo-tools.png"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/btf-logo-bt-mark.png"
               alt=""
-              width={540}
-              height={436}
-              priority
-              className="h-8 w-auto"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full object-cover"
             />
             <span className="sr-only">{SITE_NAME}</span>
           </Link>
@@ -126,13 +125,13 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
           href={ROUTES.home}
           className="flex min-w-0 shrink items-center gap-2 sm:gap-3"
         >
-          <Image
-            src="/brand/btf-logo-tools.png"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/btf-logo-bt-mark.png"
             alt=""
-            width={540}
-            height={436}
-            priority
-            className="h-9 w-auto shrink-0 sm:h-10 md:h-12"
+            width={44}
+            height={44}
+            className="h-9 w-9 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
           />
           <span className="hidden min-w-0 flex-col leading-none sm:flex">
             <span className="text-xs font-bold uppercase tracking-tight text-btf-text sm:text-sm md:text-base">

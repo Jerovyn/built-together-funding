@@ -91,8 +91,8 @@ export default async function UploadTokenPage({
             Upload statements for {lead.business_name as string}
           </h1>
           <p className="text-sm leading-relaxed text-btf-text-muted md:text-base">
-            Last 3 months of business bank statements. PDF straight from your
-            bank portal works best.
+            Upload your last 3–6 months of business bank statements — multiple
+            files at once is fine. PDF straight from your bank portal works best.
           </p>
         </div>
         <div className="rounded-2xl border border-btf-border bg-btf-card p-5 shadow-btf-card md:p-6">

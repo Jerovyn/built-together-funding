@@ -158,7 +158,8 @@ export function StatementUpload({
               : "Tap to upload your statements"}
         </span>
         <span className="text-xs text-btf-text-muted">
-          PDF, PNG, or JPG - up to {STATEMENT_MAX_FILES} files, 4MB each
+          Last 3–6 months · PDF, PNG, or JPG · up to {STATEMENT_MAX_FILES} files,
+          4MB each
         </span>
       </button>
       <input

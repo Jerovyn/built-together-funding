@@ -13,6 +13,10 @@ import { ApplyStep } from "@/components/apply/apply-step";
 import { ApplySummary } from "@/components/apply/apply-summary";
 import { SensitiveInput } from "@/components/apply/sensitive-input";
 import { StatementUpload } from "@/components/apply/statement-upload";
+import {
+  isTurnstileClientEnabled,
+  TurnstileWidget,
+} from "@/components/security/turnstile-widget";
 import { Button, ButtonLink, buttonClasses } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -39,6 +43,7 @@ import {
   HOME_TRADES_MARQUEE,
   ROUTES,
 } from "@/lib/constants";
+import { readHomePurposeSeed } from "@/lib/home-purpose";
 import {
   fundingTierForAmount,
   getProduct,
@@ -181,9 +186,14 @@ const PARTIAL_STORAGE_KEY = "btf_partial_lead_id";
 type ApplyFunnelProps = {
   /** Product page / calculator handoff (?product= slug). */
   initialProductSlug?: string;
+  /** Resume Stage B via booking token from email/SMS (?finish=). */
+  finishToken?: string;
 };
 
-export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
+export function ApplyFunnel({
+  initialProductSlug,
+  finishToken,
+}: ApplyFunnelProps) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   /** Soft result after Stage A contact; file not finished yet. */
@@ -196,7 +206,10 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
   const [uploadSession, setUploadSession] = useState("");
   const [partialLeadId, setPartialLeadId] = useState<string | null>(null);
   const [calcSnapshot, setCalcSnapshot] = useState<CalcSnapshot | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [resumeLoading, setResumeLoading] = useState(Boolean(finishToken));
   const applyStarted = useRef(false);
+  const finishHydrated = useRef(false);
   const stepContentRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -240,9 +253,15 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
   useEffect(() => {
     setUploadSession(createUploadSessionId());
 
-    // Seed priority: explicit ?product= link, then calculator snapshot.
+    // Seed: home purpose taps → ?product= → calculator snapshot.
     const linkedProduct = getProduct((initialProductSlug ?? "") as ProductSlug);
     const snapshot = readCalcSnapshotFromSession();
+    const homeUses = readHomePurposeSeed();
+
+    if (homeUses?.length && !finishToken) {
+      setValue("useOfFunds", homeUses, { shouldValidate: false });
+      setStep(1);
+    }
 
     if (linkedProduct) {
       setValue("productInterest", linkedProduct.interestKey, {
@@ -274,7 +293,86 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     } catch {
       /* private mode */
     }
-  }, [setValue, initialProductSlug]);
+  }, [setValue, initialProductSlug, finishToken]);
+
+  useEffect(() => {
+    if (!finishToken || finishHydrated.current) return;
+    finishHydrated.current = true;
+    let cancelled = false;
+
+    (async () => {
+      setResumeLoading(true);
+      try {
+        const res = await fetch(
+          `/api/apply/resume/?token=${encodeURIComponent(finishToken)}`,
+        );
+        const json: unknown = await res.json().catch(() => null);
+        const payload =
+          json && typeof json === "object"
+            ? (json as Record<string, unknown>)
+            : null;
+        if (!res.ok || payload?.ok !== true || cancelled) {
+          setSubmitError(
+            "That finish-file link is invalid or expired. Start a new pre-screen or contact us.",
+          );
+          return;
+        }
+
+        if (typeof payload.leadId === "string") {
+          setPartialLeadId(payload.leadId);
+          try {
+            sessionStorage.setItem(PARTIAL_STORAGE_KEY, payload.leadId);
+          } catch {
+            /* silent */
+          }
+        }
+        if (typeof payload.bookingToken === "string") {
+          setBookingToken(payload.bookingToken);
+        }
+
+        const setIfString = (
+          field: FieldPath<ApplyFunnelDraft>,
+          value: unknown,
+        ) => {
+          if (typeof value === "string" && value) {
+            setValue(field, value as never, { shouldValidate: false });
+          }
+        };
+        setIfString("firstName", payload.firstName);
+        setIfString("lastName", payload.lastName);
+        setIfString("email", payload.email);
+        setIfString("phone", payload.phone);
+        setIfString("productInterest", payload.productInterest);
+        setIfString("industry", payload.industry);
+        setIfString("timeInBusiness", payload.timeInBusiness);
+        setIfString("fundingAmount", payload.fundingAmount);
+        setIfString("monthlyRevenue", payload.monthlyRevenue);
+        if (Array.isArray(payload.useOfFunds) && payload.useOfFunds.length) {
+          setValue("useOfFunds", payload.useOfFunds as ApplyFormValues["useOfFunds"], {
+            shouldValidate: false,
+          });
+        }
+        setValue("emailConsent", payload.emailConsent === true, {
+          shouldValidate: false,
+        });
+        setValue("smsConsent", payload.smsConsent === true, {
+          shouldValidate: false,
+        });
+        setValue("statementsSkipped", true, { shouldValidate: false });
+        setStep(STAGE_B_FIRST_INDEX);
+      } catch {
+        if (!cancelled) {
+          setSubmitError("Could not open your secure file link. Please try again.");
+        }
+      } finally {
+        if (!cancelled) setResumeLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [finishToken, setValue]);
 
   useEffect(() => {
     if (resultTier) {
@@ -332,10 +430,16 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     smsConsent: values.smsConsent,
     partialLeadId: partialLeadId ?? undefined,
     calculator: calcSnapshot ?? undefined,
+    turnstileToken: turnstileToken ?? undefined,
     ...getTrackingPayloadForApply(),
   });
 
   const submitStageA = async (values: ApplyFunnelDraft) => {
+    if (isTurnstileClientEnabled() && !turnstileToken) {
+      setSubmitError("Please complete the security check before continuing.");
+      setNudge((v) => v + 1);
+      return;
+    }
     setLoading(true);
     setSubmitError(null);
     try {
@@ -390,7 +494,14 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
         setStageAResult(payload.status);
         return;
       }
-      setSubmitError(SUBMIT_FAIL_MESSAGE);
+      const failMsg =
+        payload &&
+        typeof payload === "object" &&
+        "message" in payload &&
+        typeof (payload as { message?: unknown }).message === "string"
+          ? (payload as { message: string }).message
+          : SUBMIT_FAIL_MESSAGE;
+      setSubmitError(failMsg);
     } catch {
       setSubmitError(SUBMIT_FAIL_MESSAGE);
     } finally {
@@ -459,11 +570,18 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
         /* silent */
       }
 
+      if (isTurnstileClientEnabled() && !turnstileToken) {
+        setSubmitError("Please complete the security check before submitting.");
+        setLoading(false);
+        return;
+      }
+
       const body = {
         ...parsed,
         ...getTrackingPayloadForApply(),
         partialLeadId: partialLeadId ?? undefined,
         calculator: calcSnapshot ?? undefined,
+        turnstileToken: turnstileToken ?? undefined,
       } satisfies ApplyApiBody;
 
       const res = await fetch("/api/apply/", {
@@ -524,6 +642,14 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     stepContentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  if (resumeLoading) {
+    return (
+      <div className="flex min-h-[12rem] items-center justify-center p-8">
+        <ApplyLoadingState />
+      </div>
+    );
+  }
+
   if (stageAResult) {
     return (
       <ApplyResult
@@ -552,7 +678,7 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
     );
   }
 
-  if (submitError) {
+  if (submitError && finishToken) {
     return (
       <Card className="border-red-500/30 bg-btf-card/80">
         <CardContent className="space-y-6 p-6 md:p-10">
@@ -891,22 +1017,29 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
                         <span className="font-medium text-btf-text">
                           Text me updates (optional).
                         </span>{" "}
-                        I may get texts about my review, including a secure
-                        upload link if I choose to send statements later. Reply
-                        STOP to opt out.
+                        I may get texts about my review, including secure links
+                        to upload statements and finish my file. Reply STOP to
+                        opt out.
                       </span>
                     </label>
                   )}
                 />
               </div>
+
+              {isTurnstileClientEnabled() ? (
+                <TurnstileWidget
+                  onToken={setTurnstileToken}
+                  className="min-h-[65px]"
+                />
+              ) : null}
             </div>
           </ApplyStep>
         ) : null}
 
         {step === 5 ? (
           <ApplyStep
-            title="Last 3 months of bank statements"
-            description="Optional now — upload if you have them handy, or send later with a secure link. Statements are how we review every file."
+            title="Last 3–6 months of bank statements"
+            description="Optional now — upload multiple files if you have them, or send later with a secure link. Statements are how we review every file."
           >
             <div className="space-y-4">
               {uploadSession ? (
@@ -1336,6 +1469,13 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
                 confirm the communication preferences you selected on the
                 contact step.
               </p>
+
+              {isTurnstileClientEnabled() ? (
+                <TurnstileWidget
+                  onToken={setTurnstileToken}
+                  className="min-h-[65px]"
+                />
+              ) : null}
             </div>
           </ApplyStep>
         ) : null}
@@ -1348,6 +1488,11 @@ export function ApplyFunnel({ initialProductSlug }: ApplyFunnelProps) {
           "sm:static sm:inset-auto sm:rounded-b-xl sm:-mx-4 sm:-mb-4 sm:border-t sm:pb-0",
         )}
       >
+        {submitError && !finishToken ? (
+          <p className="px-3 pt-2 text-center text-xs font-medium text-red-600 sm:px-4" role="alert">
+            {submitError}
+          </p>
+        ) : null}
         <div className="mx-auto flex max-w-2xl items-center justify-end gap-2 px-3 py-2.5 sm:px-4">
           {step > 0 ? (
             <Button

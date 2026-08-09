@@ -19,10 +19,12 @@ import {
 } from "@/lib/notifications";
 import { PRESUBMIT_PREFIX } from "@/lib/statements";
 import { DEV_BOOKING_TOKEN } from "@/lib/booking/dev";
+import { buildFinishFileUrl, buildUploadUrl } from "@/lib/site-url";
 import {
   createServiceRoleClient,
   isSupabaseServiceConfigured,
 } from "@/lib/supabase/server";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import type { LeadDbStatus, StatementsStatus } from "@/types/apply";
 
 export const runtime = "nodejs";
@@ -94,13 +96,6 @@ function buildLeadInsert(
   };
 }
 
-function buildUploadUrl(token: string | null): string | null {
-  if (!token) return null;
-  const base = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
-  if (!base) return null;
-  return `${base}/upload/${token}/`;
-}
-
 export function GET() {
   return new NextResponse(null, { status: 405 });
 }
@@ -120,6 +115,17 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, message: VALIDATION_FAIL },
+      { status: 400 },
+    );
+  }
+
+  const captcha = await verifyTurnstileToken(
+    parsed.data.turnstileToken,
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim(),
+  );
+  if (!captcha.ok) {
+    return NextResponse.json(
+      { ok: false, message: captcha.message ?? VALIDATION_FAIL },
       { status: 400 },
     );
   }
@@ -199,6 +205,7 @@ export async function POST(req: Request) {
 
   const wantsUploadLink =
     form.statementsSkipped && form.statementPaths.length === 0;
+  const fitForLinks = tier !== "not_fit_yet";
 
   await sendApplyNotifications({
     form,
@@ -206,7 +213,9 @@ export async function POST(req: Request) {
     leadScore,
     leadStatus,
     tier,
-    uploadUrl: wantsUploadLink ? buildUploadUrl(uploadToken) : null,
+    uploadUrl:
+      fitForLinks && wantsUploadLink ? buildUploadUrl(uploadToken) : null,
+    finishFileUrl: fitForLinks ? buildFinishFileUrl(bookingToken) : null,
     calculator,
   });
 

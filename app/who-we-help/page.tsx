@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CtaBlock } from "@/components/cta-block";
 import { ListCheck } from "@/components/list-check";
 import { MarketingPageHero } from "@/components/marketing/marketing-page-hero";
+import { MinimumRequirements } from "@/components/marketing/minimum-requirements";
 import { SectionShell } from "@/components/section-shell";
 import { SITE_NAME } from "@/lib/constants";
 
@@ -18,7 +19,7 @@ const IDEAL_FIT = [
 ] as const;
 
 const NOT_FIT = [
-  "Under ~6 months in business",
+  "Under ~1 year in business",
   "No clear pipeline of work",
   "Money to survive, not grow",
 ] as const;
@@ -31,6 +32,10 @@ export default function WhoWeHelpPage() {
         title="Who we fund"
         description="Operators already winning — who need more trucks, machines, crews, or inventory."
       />
+
+      <SectionShell className="border-b border-btf-border bg-btf-secondary/60 py-12 md:py-14">
+        <MinimumRequirements />
+      </SectionShell>
 
       <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
         <div className="grid items-stretch gap-8 lg:grid-cols-2">

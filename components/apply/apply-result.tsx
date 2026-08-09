@@ -97,9 +97,10 @@ export function ApplyResult({
             ))}
             {stageA && tier !== "not_fit_yet" ? (
               <p className="rounded-xl border border-btf-accent/25 bg-btf-accent/5 p-4 font-medium text-btf-text">
-                You don&apos;t need bank statements or tax IDs to talk with us.
-                Want to speed the review? You can finish your file anytime —
-                including after you book.
+                Check your email and texts (if you opted in) for secure links to
+                upload your last 3–6 months of bank statements (multiple files
+                OK) and finish the application. Doing both makes funding much
+                quicker — SSN and EIN come last.
               </p>
             ) : null}
             {showUploadNote && !bookedSlotLabel ? (

@@ -25,6 +25,7 @@ export function SiteFooter() {
     { href: ROUTES.calculator, label: "Calculator" },
     { href: ROUTES.howItWorks, label: "How it works" },
     { href: ROUTES.whoWeHelp, label: "Who we help" },
+    { href: ROUTES.resources, label: "Resources" },
     { href: ROUTES.contact, label: "Contact" },
     ...FOOTER_LINKS.filter((l) => l.href !== "/iso/"),
   ];

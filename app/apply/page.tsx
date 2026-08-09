@@ -16,23 +16,27 @@ export const metadata: Metadata = {
 export default async function ApplyPage({
   searchParams,
 }: {
-  searchParams: Promise<{ product?: string }>;
+  searchParams: Promise<{ product?: string; finish?: string }>;
 }) {
-  const { product } = await searchParams;
+  const { product, finish } = await searchParams;
   const linkedProduct = getProduct(product ?? "");
+  const finishToken = finish?.trim() || undefined;
 
   return (
     <section className="bg-btf-secondary px-3 py-4 pb-4 sm:px-4 sm:pb-8 md:py-8">
       <div className="mx-auto w-full max-w-2xl space-y-3">
         <header className="space-y-1">
           <h1 className="text-balance text-xl font-semibold tracking-tight text-btf-text sm:text-2xl">
-            {linkedProduct
-              ? `See your options — ${linkedProduct.shortName}`
-              : "See your options"}
+            {finishToken
+              ? "Finish your secure file"
+              : linkedProduct
+                ? `See your options — ${linkedProduct.shortName}`
+                : "See your options"}
           </h1>
           <p className="text-xs leading-snug text-btf-text-muted sm:text-sm">
-            {APPLY_TIME_ESTIMATE}. No SSN or statements until you choose to
-            finish the file.
+            {finishToken
+              ? "Upload statements and complete identity / business details. SSN and EIN stay on this secure step."
+              : `${APPLY_TIME_ESTIMATE}. No SSN or statements until you choose to finish the file.`}
           </p>
           <p className="text-xs leading-snug text-btf-text-muted">
             {DISCLAIMER_PREQUAL_LINE}
@@ -41,7 +45,10 @@ export default async function ApplyPage({
 
         <div className="relative rounded-xl border border-btf-border bg-btf-card p-3 shadow-btf-card sm:p-4">
           <ApplyDisclaimerGate>
-            <ApplyFunnel initialProductSlug={linkedProduct?.slug} />
+            <ApplyFunnel
+              initialProductSlug={linkedProduct?.slug}
+              finishToken={finishToken}
+            />
           </ApplyDisclaimerGate>
         </div>
       </div>

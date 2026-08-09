@@ -1,5 +1,10 @@
-import { DISCLAIMER_PREQUAL_LINE, SITE_NAME } from "@/lib/constants";
+import {
+  DISCLAIMER_PREQUAL_LINE,
+  SITE_NAME,
+  STATEMENTS_WINDOW_LINE,
+} from "@/lib/constants";
 import { REVIEW_DURATION_MINUTES } from "@/lib/booking/availability";
+import type { ReminderKind } from "@/lib/booking/et-time";
 import type {
   ApplyFormValues,
   ApplySubmissionMeta,
@@ -26,6 +31,8 @@ export type ApplyNotificationContext = {
   tier: ApplyResultTier;
   /** Secure statement-upload link; set when the applicant chose "send later". */
   uploadUrl?: string | null;
+  /** Secure Stage B finish-file link. */
+  finishFileUrl?: string | null;
   /** Calculator numbers the applicant modeled before applying, if any. */
   calculator?: CalcSnapshot | null;
 };
@@ -107,20 +114,44 @@ function applicantEmailSubject(tier: ApplyResultTier): string {
   }
 }
 
+function nextStepsBlock(
+  uploadUrl?: string | null,
+  finishFileUrl?: string | null,
+): string[] {
+  if (!uploadUrl && !finishFileUrl) return [];
+  const lines = [
+    "",
+    "Want this to move faster? Upload your bank statements and finish the secure application — SSN, EIN, and business details come last. You can upload multiple statement files at once.",
+  ];
+  if (uploadUrl) {
+    lines.push(
+      "",
+      `Upload ${STATEMENTS_WINDOW_LINE} (secure, multi-file):`,
+      uploadUrl,
+    );
+  }
+  if (finishFileUrl) {
+    lines.push(
+      "",
+      "Finish your secure application (optional, same lead):",
+      finishFileUrl,
+    );
+  }
+  lines.push(
+    "",
+    "Files with statements in hand get reviewed first — it makes the funding process much quicker and smoother.",
+  );
+  return lines;
+}
+
 function applicantConfirmationEmailBody(
   tier: ApplyResultTier,
   firstName: string,
   uploadUrl?: string | null,
+  finishFileUrl?: string | null,
 ): string {
   const greeting = `Hi ${firstName.trim() || "there"},`;
-  const uploadBlock = uploadUrl
-    ? [
-        "",
-        "Fastest next step: upload your last 3 months of bank statements with this secure link:",
-        uploadUrl,
-        "Your review moves to the front of the line once we have them.",
-      ]
-    : [];
+  const next = nextStepsBlock(uploadUrl, finishFileUrl);
 
   switch (tier) {
     case "prequalified":
@@ -130,7 +161,7 @@ function applicantConfirmationEmailBody(
         "Good news - based on your responses, your business may be a fit for a funding review.",
         "",
         "Here's what happens next: a real person on our team (not an algorithm) reviews your file, then reaches out to walk through your options together. No pressure, no obligation - just straight numbers so you can decide what's right for your business.",
-        ...uploadBlock,
+        ...next,
         "",
         "One honest note: this is not a funding approval. Final options depend on review, underwriting, and partner availability - we'd rather be upfront about that now than surprise you later.",
         "",
@@ -146,7 +177,7 @@ function applicantConfirmationEmailBody(
         "Thanks for completing your pre-screen - your information is in and a real person is taking a closer look before we map out next steps.",
         "",
         "If anything needs clarifying, we'll reach out with a quick question or two.",
-        ...uploadBlock,
+        ...next,
         "",
         "One honest note: this is not a funding approval. Final options depend on review, underwriting, and partner availability.",
         "",
@@ -175,17 +206,24 @@ function applicantConfirmationSmsBody(
   tier: ApplyResultTier,
   firstName: string,
   uploadUrl?: string | null,
+  finishFileUrl?: string | null,
 ): string {
   const stop = "Reply STOP to opt out.";
   const name = firstName.trim() ? `, ${firstName.trim()}` : "";
   const uploadPart = uploadUrl
-    ? ` Fastest next step: upload your bank statements securely here: ${uploadUrl}`
+    ? ` Upload ${STATEMENTS_WINDOW_LINE} (multi-file OK): ${uploadUrl}`
     : "";
+  const finishPart =
+    finishFileUrl && !uploadUrl
+      ? ` Finish secure app: ${finishFileUrl}`
+      : finishFileUrl
+        ? ` Finish app: ${finishFileUrl}`
+        : "";
   switch (tier) {
     case "prequalified":
-      return `${SITE_NAME}: Good news${name} - your business may be a fit for a funding review. A real person is on your file and we'll reach out soon to walk through your options.${uploadPart} Not a funding approval yet. ${stop}`;
+      return `${SITE_NAME}: Good news${name} - you may be a fit. Watch this text + your email for next steps.${uploadPart}${finishPart} Doing both speeds funding. Not an approval yet. ${stop}`;
     case "needs_review":
-      return `${SITE_NAME}: Thanks${name} - your pre-screen is in and a real person is taking a closer look. We may reach out with a quick question.${uploadPart} Not a funding approval yet. ${stop}`;
+      return `${SITE_NAME}: Thanks${name} - your pre-screen is in and a person is reviewing.${uploadPart}${finishPart} Not an approval yet. ${stop}`;
     case "not_fit_yet":
       return `${SITE_NAME}: Thanks for checking your fit${name}. It may not be the right timing yet, but things change fast - you're welcome back anytime. ${stop}`;
   }
@@ -237,7 +275,12 @@ async function sendApplicantEmail(ctx: ApplyNotificationContext): Promise<void> 
       from,
       to: [ctx.form.email.trim()],
       subject: applicantEmailSubject(ctx.tier),
-      text: applicantConfirmationEmailBody(ctx.tier, ctx.form.firstName, ctx.uploadUrl),
+      text: applicantConfirmationEmailBody(
+        ctx.tier,
+        ctx.form.firstName,
+        ctx.uploadUrl,
+        ctx.finishFileUrl,
+      ),
     }),
   );
   if (error && process.env.NODE_ENV === "development") {
@@ -272,7 +315,7 @@ async function sendInternalSms(ctx: ApplyNotificationContext): Promise<void> {
 }
 
 async function sendApplicantSms(ctx: ApplyNotificationContext): Promise<void> {
-  const { form, tier, uploadUrl } = ctx;
+  const { form, tier, uploadUrl, finishFileUrl } = ctx;
   if (!form.smsConsent || !isTwilioConfigured()) return;
   const client = createTwilioClient();
   const from = getTwilioFromNumber();
@@ -285,7 +328,12 @@ async function sendApplicantSms(ctx: ApplyNotificationContext): Promise<void> {
     await client.messages.create({
       from,
       to,
-      body: applicantConfirmationSmsBody(tier, form.firstName, uploadUrl),
+      body: applicantConfirmationSmsBody(
+        tier,
+        form.firstName,
+        uploadUrl,
+        finishFileUrl,
+      ),
     });
   } catch (err) {
     console.error("[apply] Twilio applicant SMS failed:", err);
@@ -324,6 +372,8 @@ export type StageANotificationContext = {
   smsConsent: boolean;
   meta: ApplySubmissionMeta;
   calculator?: CalcSnapshot | null;
+  uploadUrl?: string | null;
+  finishFileUrl?: string | null;
 };
 
 /** Stage A prequal — no SSN/EIN/business packet yet. */
@@ -390,7 +440,12 @@ export async function sendStageANotifications(
             from,
             to: [ctx.email.trim()],
             subject: applicantEmailSubject(ctx.tier),
-            text: applicantConfirmationEmailBody(ctx.tier, ctx.firstName, null),
+            text: applicantConfirmationEmailBody(
+              ctx.tier,
+              ctx.firstName,
+              ctx.uploadUrl,
+              ctx.finishFileUrl,
+            ),
           }),
         );
       } catch (e) {
@@ -424,13 +479,107 @@ export async function sendStageANotifications(
         await client.messages.create({
           from,
           to,
-          body: applicantConfirmationSmsBody(ctx.tier, ctx.firstName, null),
+          body: applicantConfirmationSmsBody(
+            ctx.tier,
+            ctx.firstName,
+            ctx.uploadUrl,
+            ctx.finishFileUrl,
+          ),
         });
       } catch (e) {
         console.error("[apply/stage-a] Applicant SMS failed:", e);
       }
     })(),
   ]);
+}
+
+export type BookingReminderContext = {
+  kind: ReminderKind;
+  firstName: string;
+  email: string;
+  phone: string;
+  slotLabel: string;
+  meetLink?: string | null;
+  smsConsent?: boolean;
+  uploadUrl?: string | null;
+};
+
+function reminderLeadCopy(kind: ReminderKind): string {
+  switch (kind) {
+    case "24h":
+      return "Reminder: your funding review call is in about 24 hours";
+    case "12h":
+      return "Reminder: your funding review call is in about 12 hours";
+    case "1h":
+      return "Reminder: your funding review call starts in about 1 hour";
+  }
+}
+
+/** Applicant email + optional SMS for 24h / 12h / 1h booking reminders. */
+export async function sendBookingReminderNotifications(
+  ctx: BookingReminderContext,
+): Promise<void> {
+  const name = ctx.firstName.trim() || "there";
+  const lead = reminderLeadCopy(ctx.kind);
+  const meetLines = ctx.meetLink
+    ? ["", "Join with Google Meet:", ctx.meetLink]
+    : [];
+  const uploadLines = ctx.uploadUrl
+    ? [
+        "",
+        `Still need statements? Upload ${STATEMENTS_WINDOW_LINE} here (multi-file OK):`,
+        ctx.uploadUrl,
+      ]
+    : [];
+
+  if (isResendConfigured()) {
+    const resend = createResendClient();
+    const from = getResendFromEmail();
+    if (resend && from) {
+      try {
+        await resend.emails.send(
+          withReplyTo({
+            from,
+            to: [ctx.email],
+            subject: `${lead} — ${SITE_NAME}`,
+            text: [
+              `Hi ${name},`,
+              "",
+              `${lead}:`,
+              "",
+              ctx.slotLabel,
+              ...meetLines,
+              ...uploadLines,
+              "",
+              `About ${REVIEW_DURATION_MINUTES} minutes with a real person. Bring any questions.`,
+              "",
+              "Talk soon,",
+              `The ${SITE_NAME} team`,
+              "",
+              DISCLAIMER_PREQUAL_LINE,
+            ].join("\n"),
+          }),
+        );
+      } catch (err) {
+        console.error("[booking/reminder] email failed:", err);
+      }
+    }
+  }
+
+  if (!ctx.smsConsent || !isTwilioConfigured()) return;
+  const client = createTwilioClient();
+  const from = getTwilioFromNumber();
+  const to = toE164Phone(ctx.phone);
+  if (!client || !from || !to) return;
+
+  const meetPart = ctx.meetLink ? ` Meet: ${ctx.meetLink}` : "";
+  const uploadPart = ctx.uploadUrl ? ` Statements: ${ctx.uploadUrl}` : "";
+  const body = `${SITE_NAME}: ${lead} — ${ctx.slotLabel}.${meetPart}${uploadPart} Reply STOP to opt out.`;
+  try {
+    await client.messages.create({ from, to, body });
+  } catch (err) {
+    console.error("[booking/reminder] SMS failed:", err);
+  }
 }
 
 export type BookingNotificationContext = {

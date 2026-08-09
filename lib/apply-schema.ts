@@ -304,6 +304,8 @@ export const applyApiBodySchema = applyFormObject
     partialLeadId: z.string().uuid().optional(),
     /** Calculator state carried into the funnel, when the visitor used it. */
     calculator: calcSnapshotSchema.optional(),
+    /** Cloudflare Turnstile token when captcha is enabled. */
+    turnstileToken: z.string().max(4000).optional(),
   })
   .superRefine(statementsChosen);
 
@@ -327,6 +329,7 @@ export function splitApplyApiPayload(data: ApplyApiBody): {
     source,
     partialLeadId,
     calculator,
+    turnstileToken: _turnstileToken,
     ...form
   } = data;
   return {
@@ -369,6 +372,8 @@ export const applyPartialBodySchema = z
     smsConsent: z.boolean().optional(),
     partialLeadId: z.string().uuid().optional(),
     calculator: calcSnapshotSchema.optional(),
+    /** Cloudflare Turnstile token when captcha is enabled. */
+    turnstileToken: z.string().max(4000).optional(),
   })
   .merge(applySubmissionMetaFields);
 
