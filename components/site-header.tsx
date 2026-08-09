@@ -131,13 +131,13 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             alt=""
             width={44}
             height={44}
-            className="h-9 w-9 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
+            className="h-8 w-8 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
           />
-          <span className="hidden min-w-0 flex-col leading-none sm:flex">
-            <span className="text-xs font-bold uppercase tracking-tight text-btf-text sm:text-sm md:text-base">
+          <span className="flex min-w-0 flex-col leading-none">
+            <span className="truncate text-[0.7rem] font-bold uppercase tracking-tight text-btf-text sm:text-sm md:text-base">
               Built Together
             </span>
-            <span className="text-xs font-bold uppercase tracking-tight text-btf-accent sm:text-sm md:text-base">
+            <span className="truncate text-[0.7rem] font-bold uppercase tracking-tight text-btf-accent sm:text-sm md:text-base">
               Funding
             </span>
           </span>
@@ -238,20 +238,20 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
               {phoneDisplay}
             </TrackedPhoneLink>
           ) : null}
-          {/* Mobile relies on the sticky bottom bar + menu CTA — one asker at a time. */}
           <TrackedButtonLink
             href={ROUTES.apply}
             variant="primary"
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="header"
-            className="hidden px-3 py-2 text-sm sm:inline-flex"
+            className="inline-flex shrink-0 px-2.5 py-2 text-xs sm:px-3 sm:text-sm"
             showArrow
           >
-            {CTA_PREQUAL_LABEL}
+            <span className="sm:hidden">See options</span>
+            <span className="hidden sm:inline">{CTA_PREQUAL_LABEL}</span>
           </TrackedButtonLink>
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-btf-border text-btf-text lg:hidden"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-btf-border text-btf-text lg:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((v) => !v)}

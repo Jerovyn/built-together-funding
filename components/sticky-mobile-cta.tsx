@@ -40,9 +40,10 @@ export function StickyMobileCta({
       setVisible(false);
       return;
     }
-    // Appear only after ~2 screens of value, not the moment scrolling starts —
-    // one persistent asker, and only once the site has given something first.
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 2);
+    // After header CTA + purpose taps have had the first screen — appear once
+    // the visitor has scrolled into deeper value (avoids competing asks).
+    const onScroll = () =>
+      setVisible(window.scrollY > window.innerHeight * 1.75);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);

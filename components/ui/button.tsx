@@ -7,7 +7,7 @@ const base =
 
 const variants = {
   primary:
-    "bg-btf-accent text-white shadow-btf-glow hover:bg-btf-accent-mid hover:shadow-[0_10px_28px_rgba(29,78,216,0.28)] active:bg-btf-accent-soft",
+    "bg-btf-accent text-white shadow-btf-glow hover:bg-btf-accent-mid hover:shadow-[0_10px_28px_rgba(2,132,199,0.28)] active:bg-btf-accent-soft",
   secondary:
     "border border-btf-border bg-white text-btf-text shadow-sm hover:border-btf-accent/40 hover:bg-btf-secondary hover:shadow-btf-card",
   ghost:

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { SectionShell } from "@/components/section-shell";
 import { TrackedButtonLink } from "@/components/tracking/tracked-link";
 import { TrackedPhoneLink } from "@/components/tracking/tracked-phone-link";
@@ -21,6 +22,7 @@ import {
   type HomePurposeOption,
 } from "@/lib/home-purpose";
 import { trackEvent } from "@/lib/tracking";
+import { cn } from "@/lib/utils";
 
 function CheckIcon({ className }: { className?: string }) {
   return (
@@ -46,16 +48,18 @@ const EASE_POINTS = [
   "Statements optional until you're ready",
 ] as const;
 
-/** Shorter marquee — less “we serve everyone” wallpaper. */
-const HOME_TRADES_SHORT = HOME_TRADES_MARQUEE.slice(0, 14);
+/** Desktop marquee — keep short. Mobile uses a static subset. */
+const HOME_TRADES_MARQUEE_LIST = HOME_TRADES_MARQUEE.slice(0, 14);
+const HOME_TRADES_MOBILE_STATIC = HOME_TRADES_MARQUEE.slice(0, 8);
 
 /**
- * Capacity pull + OnDeck-style purpose taps + friendly photo overlap + paths.
+ * Light, trusting home: capacity pull + purpose taps + photo overlap + paths.
  */
 export function HomeContent() {
   const router = useRouter();
   const phoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY?.trim();
   const phone = process.env.NEXT_PUBLIC_PHONE?.trim();
+  const [marqueePaused, setMarqueePaused] = useState(false);
 
   const startWithPurpose = (option: HomePurposeOption) => {
     writeHomePurposeSeed(option.useOfFunds);
@@ -73,36 +77,28 @@ export function HomeContent() {
 
   return (
     <>
-      {/* Instagram / mobile first screen: ink + purpose taps */}
-      <section className="relative overflow-hidden bg-btf-ink text-btf-on-ink">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          aria-hidden
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 20% 0%, rgba(56,189,248,0.22), transparent 55%), radial-gradient(ellipse 70% 50% at 90% 100%, rgba(2,132,199,0.18), transparent 50%)",
-          }}
-        />
-        <div className="container relative max-w-6xl px-4 py-10 sm:py-14 md:py-16">
+      {/* First viewport — light trust surface + purpose taps */}
+      <section className="relative border-b border-btf-border bg-white/70">
+        <div className="container max-w-6xl px-4 py-8 sm:py-12 md:py-16">
           <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
-            <div className="min-w-0 space-y-5">
-              <p className="text-sm font-semibold text-btf-accent-soft">
+            <div className="min-w-0 space-y-4 sm:space-y-5">
+              <p className="text-sm font-semibold text-btf-accent">
                 Financing for trades &amp; service businesses
               </p>
-              <h1 className="text-balance text-3xl font-extrabold leading-[1.08] tracking-tight text-btf-on-ink sm:text-4xl md:text-[2.6rem]">
+              <h1 className="text-balance text-[1.75rem] font-bold leading-[1.15] tracking-tight text-btf-text sm:text-4xl sm:font-extrabold md:text-[2.5rem]">
                 {HOME_PULL_LINE}
               </h1>
-              <p className="max-w-md text-base text-btf-on-ink-muted sm:text-lg">
+              <p className="max-w-md text-base leading-relaxed text-btf-text-muted sm:text-lg">
                 Apply in minutes. Underwritten on your bank statements. Straight
                 answer in 1 business day — from a person, not a portal.
               </p>
-              <p className="text-sm font-medium text-btf-on-ink-muted">
+              <p className="text-sm font-medium text-btf-text-muted">
                 {CTA_MICRO_LINE}
               </p>
               {phoneDisplay && phone ? (
                 <TrackedPhoneLink
                   href={`tel:${phone}`}
-                  className="inline-block text-sm font-semibold text-btf-accent-soft hover:underline"
+                  className="inline-block text-sm font-semibold text-btf-accent hover:underline"
                   trackLocation="home_hero"
                 >
                   Or call {phoneDisplay}
@@ -111,7 +107,7 @@ export function HomeContent() {
             </div>
 
             <div className="min-w-0 space-y-3">
-              <p className="text-base font-semibold text-btf-on-ink">
+              <p className="text-base font-semibold text-btf-text">
                 Why do you need funding?
               </p>
               <ul className="flex flex-col gap-2.5">
@@ -120,18 +116,22 @@ export function HomeContent() {
                     <button
                       type="button"
                       onClick={() => startWithPurpose(option)}
-                      className="flex w-full min-h-12 items-center justify-center rounded-full bg-white px-5 py-3.5 text-center text-base font-semibold text-btf-ink shadow-sm transition-transform duration-150 hover:bg-btf-secondary motion-safe:active:scale-[0.98]"
+                      className={cn(
+                        "flex w-full min-h-12 items-center justify-center rounded-xl border border-btf-border bg-btf-accent/[0.04] px-5 py-3.5 text-center text-base font-semibold text-btf-text shadow-sm",
+                        "transition-all duration-150 hover:border-btf-accent/35 hover:bg-btf-accent/[0.08]",
+                        "motion-safe:active:scale-[0.98]",
+                      )}
                     >
                       {option.label}
                     </button>
                   </li>
                 ))}
               </ul>
-              <p className="pt-1 text-center text-xs text-btf-on-ink-muted sm:text-left">
+              <p className="pt-1 text-center text-xs text-btf-text-muted sm:text-left">
                 Or{" "}
                 <Link
                   href={ROUTES.apply}
-                  className="font-semibold text-btf-accent-soft underline-offset-2 hover:underline"
+                  className="font-semibold text-btf-accent underline-offset-2 hover:underline"
                 >
                   {CTA_PREQUAL_LABEL.toLowerCase()}
                 </Link>{" "}
@@ -140,18 +140,12 @@ export function HomeContent() {
             </div>
           </div>
         </div>
-
-        {/* Soft curve into photo band */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-btf-ink/80 to-transparent sm:h-12"
-          aria-hidden
-        />
       </section>
 
-      {/* Friendly photo with overlapping white card — OnDeck-style scroll */}
-      <section className="relative bg-btf-ink pb-16 pt-2 sm:pb-20">
+      {/* Photo + overlapping trust card — soft secondary, no ink slab */}
+      <section className="relative bg-btf-secondary/80 pb-14 pt-10 sm:pb-16 sm:pt-12">
         <div className="container relative max-w-3xl px-4">
-          <div className="relative mx-auto aspect-[4/3] max-h-[22rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-ink-border shadow-[0_20px_50px_rgba(0,0,0,0.35)] sm:max-h-[26rem]">
+          <div className="relative mx-auto aspect-[4/3] max-h-[22rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border shadow-btf-card sm:max-h-[26rem]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
@@ -160,15 +154,15 @@ export function HomeContent() {
               sizes="(min-width: 768px) 48rem, 100vw"
               className="object-cover object-center"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-ink/80 via-btf-ink/20 to-transparent px-5 pb-5 pt-16">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-text/75 via-btf-text/25 to-transparent px-5 pb-5 pt-16">
               <p className="text-sm font-semibold uppercase tracking-wide text-btf-accent-soft">
                 Built Together Funding
               </p>
-              <p className="mt-1 text-lg font-bold text-btf-on-ink">{BRAND_LINE}</p>
+              <p className="mt-1 text-lg font-bold text-white">{BRAND_LINE}</p>
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto -mt-10 max-w-xl rounded-2xl border border-btf-border bg-white px-5 py-6 shadow-[0_16px_40px_rgba(15,23,42,0.12)] sm:-mt-14 sm:px-8 sm:py-7">
+          <div className="relative z-10 mx-auto -mt-10 max-w-xl rounded-2xl border border-btf-border bg-white px-5 py-6 shadow-btf-card sm:-mt-12 sm:px-8 sm:py-7">
             <ul className="space-y-3">
               {HOME_DESIRE_SIGNALS.map((item) => (
                 <li
@@ -184,33 +178,59 @@ export function HomeContent() {
         </div>
       </section>
 
+      {/* Trades — static wrap on mobile; pauseable marquee on md+ */}
       <section
-        className="group overflow-hidden border-b border-btf-border bg-btf-secondary py-3.5"
+        className="border-b border-btf-border bg-white py-3.5"
         aria-label="Industries we serve"
       >
+        <div className="container max-w-6xl px-4 md:hidden">
+          <ul className="flex flex-wrap justify-center gap-2">
+            {HOME_TRADES_MOBILE_STATIC.map((trade) => (
+              <li
+                key={trade}
+                className="rounded-full border border-btf-border bg-btf-secondary px-3.5 py-1.5 text-sm font-medium text-btf-text-muted"
+              >
+                {trade}
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div
-          className="flex w-max motion-reduce:animate-none motion-safe:animate-marquee-x group-hover:[animation-play-state:paused]"
-          aria-hidden="true"
+          className="group hidden overflow-hidden md:block"
+          onMouseEnter={() => setMarqueePaused(true)}
+          onMouseLeave={() => setMarqueePaused(false)}
+          onTouchStart={() => setMarqueePaused(true)}
+          onTouchEnd={() => setMarqueePaused(false)}
         >
-          {[0, 1].map((copy) => (
-            <div key={copy} className="flex shrink-0 items-center gap-3 pr-3">
-              {HOME_TRADES_SHORT.map((trade) => (
-                <span
-                  key={`${copy}-${trade}`}
-                  className="shrink-0 rounded-full border border-btf-border bg-white px-4 py-1.5 text-sm font-medium text-btf-text-muted"
-                >
-                  {trade}
-                </span>
-              ))}
-            </div>
-          ))}
+          <div
+            className={cn(
+              "flex w-max motion-reduce:animate-none motion-safe:animate-marquee-x",
+              marqueePaused && "[animation-play-state:paused]",
+            )}
+            aria-hidden="true"
+          >
+            {[0, 1].map((copy) => (
+              <div key={copy} className="flex shrink-0 items-center gap-3 pr-3">
+                {HOME_TRADES_MARQUEE_LIST.map((trade) => (
+                  <span
+                    key={`${copy}-${trade}`}
+                    className="shrink-0 rounded-full border border-btf-border bg-btf-secondary px-4 py-1.5 text-sm font-medium text-btf-text-muted"
+                  >
+                    {trade}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
         <p className="sr-only">
-          Industries we serve include {HOME_TRADES_SHORT.join(", ")}, and more.
+          Industries we serve include {HOME_TRADES_MARQUEE_LIST.join(", ")}, and
+          more.
         </p>
       </section>
 
-      <SectionShell className="border-b border-btf-border bg-white py-12 sm:py-14">
+      <SectionShell className="border-b border-btf-border bg-white/80 py-12 sm:py-14">
         <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
           We removed the hard parts on purpose.
         </h2>
@@ -250,7 +270,7 @@ export function HomeContent() {
           </TrackedButtonLink>
           <Link
             href={ROUTES.calculator}
-            className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-lg border border-btf-border bg-btf-card px-6 py-5 text-left transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:active:scale-[0.98]"
+            className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border bg-btf-card px-6 py-5 text-left transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:active:scale-[0.98]"
           >
             <span className="text-lg font-bold text-btf-text">
               Run your numbers first →

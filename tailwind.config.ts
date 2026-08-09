@@ -51,7 +51,7 @@ const config: Config = {
       boxShadow: {
         "btf-card":
           "0 1px 2px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.08)",
-        "btf-glow": "0 8px 22px rgba(29, 78, 216, 0.18)",
+        "btf-glow": "0 8px 22px rgba(2, 132, 199, 0.18)",
       },
       keyframes: {
         "fade-up": {
