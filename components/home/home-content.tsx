@@ -49,12 +49,11 @@ const EASE_POINTS = [
   "Bank statements optional until you're ready",
 ] as const;
 
-/** Desktop marquee — keep short. Mobile uses a static subset. */
 const HOME_TRADES_MARQUEE_LIST = HOME_TRADES_MARQUEE.slice(0, 14);
-const HOME_TRADES_MOBILE_STATIC = HOME_TRADES_MARQUEE.slice(0, 8);
 
 /**
- * Water-flow home: continuous soft blues + capacity photo + purpose taps.
+ * Mobile: H1 → purpose taps → scrolling trades (photo hidden).
+ * Desktop+: support copy + photo band kept for now.
  */
 export function HomeContent() {
   const router = useRouter();
@@ -78,7 +77,6 @@ export function HomeContent() {
 
   return (
     <>
-      {/* Hero — light water surface (no flat white middle) */}
       <section className="relative overflow-hidden bg-gradient-to-br from-btf-water via-btf-water-mid/80 to-btf-muted">
         <div
           aria-hidden
@@ -88,25 +86,26 @@ export function HomeContent() {
           aria-hidden
           className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-btf-ink-3/[0.08] blur-3xl"
         />
-        <div className="container relative max-w-6xl px-4 py-8 sm:py-12 md:py-16">
-          <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8 lg:items-center">
-            <div className="min-w-0 space-y-4 sm:space-y-5">
+        <div className="container relative max-w-6xl px-4 py-6 sm:py-12 md:py-16">
+          <div className="grid items-start gap-5 sm:gap-6 lg:grid-cols-2 lg:gap-8 lg:items-center">
+            <div className="min-w-0 space-y-3 sm:space-y-5">
               <p className="text-sm font-semibold text-btf-accent">
                 Small business funding · Trades &amp; service companies
               </p>
               <h1 className="text-balance text-[1.75rem] font-bold leading-[1.15] tracking-tight text-btf-text sm:text-4xl sm:font-extrabold md:text-[2.5rem]">
                 {HOME_PULL_LINE}
               </h1>
-              <p className="max-w-md text-base leading-relaxed text-btf-text-muted sm:text-lg">
+              {/* Long support copy — desktop/tablet only so mobile reaches taps faster */}
+              <p className="hidden max-w-md text-base leading-relaxed text-btf-text-muted sm:block sm:text-lg">
                 {HOME_SUPPORT_LINE}
               </p>
-              <p className="text-sm font-medium text-btf-text-muted">
+              <p className="hidden text-sm font-medium text-btf-text-muted sm:block">
                 {CTA_MICRO_LINE}
               </p>
               {phoneDisplay && phone ? (
                 <TrackedPhoneLink
                   href={`tel:${phone}`}
-                  className="inline-block text-sm font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
+                  className="hidden text-sm font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline sm:inline-block"
                   trackLocation="home_hero"
                 >
                   Or call {phoneDisplay}
@@ -157,15 +156,14 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Photo — checklist lives on the image (no floating white card) */}
-      <section className="relative bg-gradient-to-b from-btf-muted via-btf-water-mid to-btf-water pb-12 pt-10 sm:pb-14 sm:pt-12">
+      {/* Photo — desktop/tablet only until better event/video assets */}
+      <section className="relative hidden bg-gradient-to-b from-btf-muted via-btf-water-mid to-btf-water pb-14 pt-12 md:block">
         <div className="container relative max-w-3xl px-4">
           <div className="relative mx-auto aspect-[5/4] max-h-[30rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border/80 shadow-btf-card sm:max-h-[34rem]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
               fill
-              priority
               sizes="(min-width: 768px) 48rem, 100vw"
               className="object-cover object-[center_18%]"
             />
@@ -192,26 +190,13 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Trades — same water family, no hard white cut */}
+      {/* Trades — one-line animated marquee on all breakpoints */}
       <section
-        className="border-y border-btf-border/50 bg-gradient-to-b from-btf-water to-[#F0F7FC] py-3.5"
+        className="border-y border-btf-border/50 bg-gradient-to-b from-btf-water to-[#F0F7FC] py-3"
         aria-label="Industries we serve"
       >
-        <div className="container max-w-6xl px-4 md:hidden">
-          <ul className="flex flex-wrap justify-center gap-2">
-            {HOME_TRADES_MOBILE_STATIC.map((trade) => (
-              <li
-                key={trade}
-                className="rounded-full border border-btf-border/80 bg-white/70 px-3.5 py-1.5 text-sm font-medium text-btf-text-muted backdrop-blur-sm"
-              >
-                {trade}
-              </li>
-            ))}
-          </ul>
-        </div>
-
         <div
-          className="group hidden overflow-hidden md:block"
+          className="overflow-hidden"
           onMouseEnter={() => setMarqueePaused(true)}
           onMouseLeave={() => setMarqueePaused(false)}
           onTouchStart={() => setMarqueePaused(true)}
@@ -261,7 +246,6 @@ export function HomeContent() {
         </ul>
       </SectionShell>
 
-      {/* Soft ink breath into the CTA — still light, more contrast */}
       <SectionShell className="relative overflow-hidden bg-gradient-to-b from-btf-water-mid via-[#C5DFF0] to-[#A8C8E0] py-12 sm:py-14">
         <div
           aria-hidden

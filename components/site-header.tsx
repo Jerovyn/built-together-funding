@@ -133,15 +133,11 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             height={44}
             className="h-9 w-9 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
           />
-          {/* Mobile: one large wordmark. Stacked name from sm up. */}
-          <span className="truncate text-lg font-extrabold tracking-tight text-btf-text sm:hidden">
-            BTF
-          </span>
-          <span className="hidden min-w-0 flex-col leading-none sm:flex">
-            <span className="truncate text-sm font-bold uppercase tracking-tight text-btf-text md:text-base">
+          <span className="flex min-w-0 flex-col leading-none">
+            <span className="truncate text-[0.8125rem] font-bold uppercase tracking-tight text-btf-text sm:text-sm md:text-base">
               Built Together
             </span>
-            <span className="truncate text-sm font-bold uppercase tracking-tight text-btf-accent md:text-base">
+            <span className="truncate text-[0.8125rem] font-bold uppercase tracking-tight text-btf-accent sm:text-sm md:text-base">
               Funding
             </span>
           </span>
