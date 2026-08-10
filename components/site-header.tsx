@@ -243,11 +243,10 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             variant="primary"
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="header"
-            className="inline-flex shrink-0 px-3.5 py-2 text-sm sm:px-4"
+            className="inline-flex shrink-0 px-2.5 py-2 text-xs sm:px-4 sm:text-sm"
             showArrow
           >
-            <span className="sm:hidden">Options</span>
-            <span className="hidden sm:inline">{CTA_PREQUAL_LABEL}</span>
+            {CTA_PREQUAL_LABEL}
           </TrackedButtonLink>
           <button
             type="button"

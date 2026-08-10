@@ -22,7 +22,7 @@ export const HERO_BRAND_LINE =
 /**
  * Primary funding CTA — reads as getting information, not submitting to judgment.
  */
-export const CTA_PREQUAL_LABEL = "See your options";
+export const CTA_PREQUAL_LABEL = "Apply for funding";
 
 /** After the calculator — earned, specific ask. */
 export const CTA_CALC_LABEL = "Use these numbers";

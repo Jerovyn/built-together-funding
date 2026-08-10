@@ -37,11 +37,11 @@ export function SiteFooter() {
           <div className="space-y-3">
             <Link href={ROUTES.home} className="inline-flex items-center gap-2.5">
               <Image
-                src="/brand/btf-logo-tools.png"
+                src="/brand/btf-logo-bt-mark.png"
                 alt=""
-                width={540}
-                height={436}
-                className="h-10 w-auto"
+                width={44}
+                height={44}
+                className="h-10 w-10 rounded-full object-cover"
               />
               <span className="text-sm font-bold tracking-tight text-btf-text">
                 Built Together Funding
