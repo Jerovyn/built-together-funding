@@ -11,7 +11,6 @@ import {
   BRAND_LINE,
   CTA_MICRO_LINE,
   CTA_PREQUAL_LABEL,
-  HOME_DESIRE_SIGNALS,
   HOME_PULL_LINE,
   HOME_SUPPORT_LINE,
   HOME_TRADES_MARQUEE,
@@ -52,8 +51,7 @@ const EASE_POINTS = [
 const HOME_TRADES_MARQUEE_LIST = HOME_TRADES_MARQUEE.slice(0, 14);
 
 /**
- * Mobile: H1 → purpose taps → scrolling trades (photo hidden).
- * Desktop+: support copy + photo band kept for now.
+ * Flow: H1 + purpose taps → compact photo trust break → trades marquee.
  */
 export function HomeContent() {
   const router = useRouter();
@@ -156,43 +154,28 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Photo — desktop/tablet only until better event/video assets */}
-      <section className="relative hidden bg-gradient-to-b from-btf-muted via-btf-water-mid to-btf-water pb-14 pt-12 md:block">
-        <div className="container relative max-w-3xl px-4">
-          <div className="relative mx-auto aspect-[5/4] max-h-[30rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border/80 shadow-btf-card sm:max-h-[34rem]">
+      {/* Trust break — workbench frame (not OnDeck arch); kept short */}
+      <section className="relative bg-gradient-to-b from-btf-water-mid/60 via-btf-water to-[#F0F7FC] px-4 py-5 sm:py-7">
+        <div className="mx-auto max-w-xl">
+          <div className="relative mx-auto aspect-[16/10] max-h-[11.5rem] overflow-hidden rounded-t-[1.75rem] rounded-b-md border border-btf-border/80 shadow-btf-card sm:max-h-[15rem]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
               fill
-              sizes="(min-width: 768px) 48rem, 100vw"
-              className="object-cover object-[center_18%]"
+              sizes="(min-width: 640px) 36rem, 100vw"
+              className="object-cover object-[center_20%]"
+              priority
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-ink/90 via-btf-ink-3/55 to-transparent px-5 pb-5 pt-24 sm:px-7 sm:pb-6 sm:pt-28">
-              <p className="text-xs font-semibold uppercase tracking-wide text-btf-accent-soft sm:text-sm">
-                Built Together Funding
-              </p>
-              <p className="mt-1 text-base font-bold text-white sm:text-lg">
-                {BRAND_LINE}
-              </p>
-              <ul className="mt-4 space-y-2 border-t border-white/20 pt-4">
-                {HOME_DESIRE_SIGNALS.map((item) => (
-                  <li
-                    key={item}
-                    className="flex gap-2.5 text-sm font-medium text-white/95 sm:text-[0.95rem]"
-                  >
-                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-btf-accent-soft" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
+          <p className="mt-3 text-center text-sm font-medium text-btf-text-muted">
+            {BRAND_LINE}
+          </p>
         </div>
       </section>
 
       {/* Trades — one-line animated marquee on all breakpoints */}
       <section
-        className="border-y border-btf-border/50 bg-gradient-to-b from-btf-water to-[#F0F7FC] py-3"
+        className="border-y border-btf-border/50 bg-gradient-to-b from-[#F0F7FC] to-btf-water py-3"
         aria-label="Industries we serve"
       >
         <div
@@ -246,11 +229,7 @@ export function HomeContent() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="relative overflow-hidden bg-gradient-to-b from-btf-water-mid via-[#C5DFF0] to-[#A8C8E0] py-12 sm:py-14">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-btf-ink-3/20 to-transparent"
-        />
+      <SectionShell className="relative overflow-hidden bg-gradient-to-b from-btf-water-mid via-[#DCE8F2] to-[#EEF4F8] py-12 sm:py-14">
         <div className="relative">
           <p className="text-sm font-medium text-btf-text-muted">
             Tell us what you need → we review → you choose on a call.
