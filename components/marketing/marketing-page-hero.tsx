@@ -13,10 +13,14 @@ export function MarketingPageHero({
   description,
 }: MarketingPageHeroProps) {
   return (
-    <SectionShell className="relative overflow-hidden border-b border-btf-border bg-gradient-to-br from-[#F0F9FF] via-white to-[#F7F8FA] pb-10 pt-10 md:pb-14 md:pt-12">
+    <SectionShell className="relative overflow-hidden border-b border-btf-border/70 bg-gradient-to-br from-btf-water via-[#F5FAFE] to-btf-water-mid pb-10 pt-10 md:pb-14 md:pt-12">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-16 top-0 h-56 w-56 rounded-full bg-btf-accent/[0.06] blur-3xl"
+        className="pointer-events-none absolute -right-16 top-0 h-64 w-64 rounded-full bg-btf-accent/10 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-20 bottom-0 h-48 w-48 rounded-full bg-btf-ink-3/[0.06] blur-3xl"
       />
       <div className="relative max-w-2xl space-y-3">
         {badge ? <Badge>{badge}</Badge> : null}

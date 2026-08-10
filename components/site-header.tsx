@@ -94,7 +94,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
 
   if (compact) {
     return (
-      <header className="sticky top-0 z-50 border-b border-btf-border bg-white supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-50 border-b border-btf-border/70 bg-[#F5FAFE]/95 backdrop-blur-md supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
         <div className="container flex max-w-2xl items-center justify-between gap-3 py-2.5 sm:py-3">
           <Link href={ROUTES.home} className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -119,7 +119,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-btf-border bg-white/80 backdrop-blur-md supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
+    <header className="sticky top-0 z-50 border-b border-btf-border/70 bg-[#F5FAFE]/85 backdrop-blur-md supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]">
       <div className="container flex max-w-6xl items-center justify-between gap-2 py-2 sm:gap-4 sm:py-2.5 md:py-3">
         <Link
           href={ROUTES.home}

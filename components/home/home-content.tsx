@@ -54,7 +54,7 @@ const HOME_TRADES_MARQUEE_LIST = HOME_TRADES_MARQUEE.slice(0, 14);
 const HOME_TRADES_MOBILE_STATIC = HOME_TRADES_MARQUEE.slice(0, 8);
 
 /**
- * Light home: plain funding language + soft section washes + purpose taps.
+ * Water-flow home: continuous soft blues + capacity photo + purpose taps.
  */
 export function HomeContent() {
   const router = useRouter();
@@ -78,11 +78,15 @@ export function HomeContent() {
 
   return (
     <>
-      {/* First viewport — soft cyan wash + purpose taps */}
-      <section className="relative overflow-hidden border-b border-btf-border bg-gradient-to-br from-[#F0F9FF] via-white to-[#F7F8FA]">
+      {/* Hero — light water surface */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-btf-water via-[#F5FAFE] to-btf-water-mid">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full bg-btf-accent/[0.07] blur-3xl"
+          className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-btf-accent-soft/25 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-btf-ink-3/[0.07] blur-3xl"
         />
         <div className="container relative max-w-6xl px-4 py-8 sm:py-12 md:py-16">
           <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
@@ -121,9 +125,9 @@ export function HomeContent() {
                       type="button"
                       onClick={() => startWithPurpose(option)}
                       className={cn(
-                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border bg-white/80 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm backdrop-blur-sm",
+                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border/80 bg-white/90 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm backdrop-blur-sm",
                         "transition-all duration-150 ease-out",
-                        "hover:border-btf-accent/40 hover:bg-btf-accent/[0.06] hover:shadow-btf-glow",
+                        "hover:border-btf-accent/45 hover:bg-white hover:shadow-btf-glow",
                         "motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
                       )}
                     >
@@ -153,19 +157,23 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Photo + overlapping trust card — soft secondary wash */}
-      <section className="relative bg-gradient-to-b from-btf-secondary via-[#F0F9FF]/50 to-btf-secondary pb-14 pt-10 sm:pb-16 sm:pt-12">
+      {/* Photo — deeper water mid-tone; taller frame + top-biased crop */}
+      <section className="relative bg-gradient-to-b from-btf-water-mid via-btf-muted to-btf-water pb-14 pt-10 sm:pb-16 sm:pt-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-btf-water-mid/80 to-transparent"
+        />
         <div className="container relative max-w-3xl px-4">
-          <div className="relative mx-auto aspect-[4/3] max-h-[22rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border shadow-btf-card sm:max-h-[26rem]">
+          <div className="relative mx-auto aspect-[5/4] max-h-[28rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border/80 shadow-btf-card sm:max-h-[32rem]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
               fill
               priority
               sizes="(min-width: 768px) 48rem, 100vw"
-              className="object-cover object-center"
+              className="object-cover object-[center_18%]"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-text/75 via-btf-text/25 to-transparent px-5 pb-5 pt-16">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-ink/80 via-btf-ink-3/35 to-transparent px-5 pb-14 pt-20 sm:pb-16">
               <p className="text-sm font-semibold uppercase tracking-wide text-btf-accent-soft">
                 Built Together Funding
               </p>
@@ -173,7 +181,7 @@ export function HomeContent() {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto -mt-10 max-w-xl rounded-2xl border border-btf-border bg-white px-5 py-6 shadow-btf-card sm:-mt-12 sm:px-8 sm:py-7">
+          <div className="relative z-10 mx-auto -mt-8 max-w-xl rounded-2xl border border-btf-subtle/60 bg-white px-5 py-6 shadow-btf-card sm:-mt-10 sm:px-8 sm:py-7">
             <ul className="space-y-3">
               {HOME_DESIRE_SIGNALS.map((item) => (
                 <li
@@ -189,9 +197,9 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Trades — static wrap on mobile; pauseable marquee on md+ */}
+      {/* Trades — same water family, no hard white cut */}
       <section
-        className="border-b border-btf-border bg-white py-3.5"
+        className="border-y border-btf-border/50 bg-gradient-to-b from-btf-water to-[#F0F7FC] py-3.5"
         aria-label="Industries we serve"
       >
         <div className="container max-w-6xl px-4 md:hidden">
@@ -199,7 +207,7 @@ export function HomeContent() {
             {HOME_TRADES_MOBILE_STATIC.map((trade) => (
               <li
                 key={trade}
-                className="rounded-full border border-btf-border bg-btf-secondary px-3.5 py-1.5 text-sm font-medium text-btf-text-muted"
+                className="rounded-full border border-btf-border/80 bg-white/70 px-3.5 py-1.5 text-sm font-medium text-btf-text-muted backdrop-blur-sm"
               >
                 {trade}
               </li>
@@ -226,7 +234,7 @@ export function HomeContent() {
                 {HOME_TRADES_MARQUEE_LIST.map((trade) => (
                   <span
                     key={`${copy}-${trade}`}
-                    className="shrink-0 rounded-full border border-btf-border bg-btf-secondary px-4 py-1.5 text-sm font-medium text-btf-text-muted"
+                    className="shrink-0 rounded-full border border-btf-border/80 bg-white/70 px-4 py-1.5 text-sm font-medium text-btf-text-muted backdrop-blur-sm"
                   >
                     {trade}
                   </span>
@@ -241,7 +249,7 @@ export function HomeContent() {
         </p>
       </section>
 
-      <SectionShell className="border-b border-btf-border bg-gradient-to-b from-white to-[#F0F9FF]/60 py-12 sm:py-14">
+      <SectionShell className="bg-gradient-to-b from-[#F0F7FC] via-btf-water to-btf-water-mid py-12 sm:py-14">
         <h2 className="max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
           A simpler way to check small business funding options.
         </h2>
@@ -258,47 +266,54 @@ export function HomeContent() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary/70 py-12 sm:py-14">
-        <p className="text-sm font-medium text-btf-text-muted">
-          Tell us what you need → we review → you choose on a call.
-        </p>
-        <h2 className="mt-3 max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
-          Compare funding options when you&apos;re ready.
-        </h2>
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <TrackedButtonLink
-            href={ROUTES.apply}
-            variant="primary"
-            trackLabel={CTA_PREQUAL_LABEL}
-            trackLocation="home_path_apply"
-            className="group h-auto min-h-[5.5rem] flex-col items-start justify-center gap-1 px-6 py-5 text-left"
-            showArrow
-          >
-            <span className="text-lg font-bold">{CTA_PREQUAL_LABEL}</span>
-            <span className="text-sm font-medium text-white/85">
-              About 2 minutes. Won&apos;t hit your credit.
-            </span>
-          </TrackedButtonLink>
-          <Link
-            href={ROUTES.calculator}
-            className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border bg-white px-6 py-5 text-left shadow-sm transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
-          >
-            <span className="text-lg font-bold text-btf-text">
-              Estimate payments first →
-            </span>
-            <span className="text-sm font-medium text-btf-text-muted">
-              Payment ranges. No signup needed.
-            </span>
-          </Link>
+      {/* Soft ink breath into the CTA — still light, more contrast */}
+      <SectionShell className="relative overflow-hidden bg-gradient-to-b from-btf-water-mid via-[#C5DFF0] to-[#A8C8E0] py-12 sm:py-14">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-btf-ink-3/20 to-transparent"
+        />
+        <div className="relative">
+          <p className="text-sm font-medium text-btf-text-muted">
+            Tell us what you need → we review → you choose on a call.
+          </p>
+          <h2 className="mt-3 max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
+            Compare funding options when you&apos;re ready.
+          </h2>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <TrackedButtonLink
+              href={ROUTES.apply}
+              variant="primary"
+              trackLabel={CTA_PREQUAL_LABEL}
+              trackLocation="home_path_apply"
+              className="group h-auto min-h-[5.5rem] flex-col items-start justify-center gap-1 px-6 py-5 text-left"
+              showArrow
+            >
+              <span className="text-lg font-bold">{CTA_PREQUAL_LABEL}</span>
+              <span className="text-sm font-medium text-white/85">
+                About 2 minutes. Won&apos;t hit your credit.
+              </span>
+            </TrackedButtonLink>
+            <Link
+              href={ROUTES.calculator}
+              className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border/80 bg-white/95 px-6 py-5 text-left shadow-sm transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
+            >
+              <span className="text-lg font-bold text-btf-text">
+                Estimate payments first →
+              </span>
+              <span className="text-sm font-medium text-btf-text-muted">
+                Payment ranges. No signup needed.
+              </span>
+            </Link>
+          </div>
+          <p className="mt-6 text-sm text-btf-text-muted">
+            <Link
+              href={ROUTES.products}
+              className="font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
+            >
+              Compare financing products →
+            </Link>
+          </p>
         </div>
-        <p className="mt-6 text-sm text-btf-text-muted">
-          <Link
-            href={ROUTES.products}
-            className="font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
-          >
-            Compare financing products →
-          </Link>
-        </p>
       </SectionShell>
     </>
   );

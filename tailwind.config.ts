@@ -9,18 +9,22 @@ const config: Config = {
     extend: {
       colors: {
         btf: {
-          // Merch-adjacent: sky/cyan accent family + ink (backpack/card), light workspace
-          bg: "#FFFFFF",
-          secondary: "#F7F8FA",
+          // Merch-adjacent: sky/water blues + soft ink, light workspace
+          bg: "#F5FAFE",
+          secondary: "#EAF3F9",
           card: "#FFFFFF",
-          muted: "#EEF2F7",
-          border: "#E5E7EB",
-          subtle: "#CBD5E1",
+          muted: "#DCEFF8",
+          border: "#C5D9E8",
+          subtle: "#A8C4D8",
           accent: "#0284C7",
           "accent-mid": "#0EA5E9",
           "accent-soft": "#38BDF8",
           text: "#0F172A",
           "text-muted": "#475569",
+          // Soft water surface tokens (section washes)
+          water: "#E8F4FC",
+          "water-mid": "#D4EAF8",
+          "water-deep": "#B9DCF2",
           // Deep navy "ink" family for brand bands (matches merch black/navy)
           ink: "#081123",
           "ink-2": "#0C1A38",

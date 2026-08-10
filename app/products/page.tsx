@@ -19,10 +19,14 @@ export const metadata: Metadata = {
 export default function ProductsPage() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-btf-border bg-gradient-to-br from-[#F0F9FF] via-white to-[#F7F8FA]">
+      <section className="relative overflow-hidden border-b border-btf-border/70 bg-gradient-to-br from-btf-water via-[#F5FAFE] to-btf-water-mid">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-16 top-0 h-56 w-56 rounded-full bg-btf-accent/[0.06] blur-3xl"
+          className="pointer-events-none absolute -right-16 top-0 h-56 w-56 rounded-full bg-btf-accent/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-20 bottom-0 h-48 w-48 rounded-full bg-btf-ink-3/[0.06] blur-3xl"
         />
         <div className="container relative max-w-6xl py-10 sm:py-12">
           <h1 className="max-w-2xl text-balance text-3xl font-extrabold leading-[1.05] tracking-tight text-btf-text sm:text-4xl">
@@ -35,7 +39,7 @@ export default function ProductsPage() {
         </div>
       </section>
 
-      <section className="container max-w-6xl bg-white/50 py-10 sm:py-14">
+      <section className="container max-w-6xl bg-gradient-to-b from-transparent to-btf-water/40 py-10 sm:py-14">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PRODUCTS.map((p, i) => (
             <Reveal key={p.slug} delay={Math.min(i * 40, 160)}>

@@ -33,18 +33,18 @@ export default function WhoWeHelpPage() {
         description="Trades and service companies with real demand who need funding for trucks, equipment, crews, or working capital."
       />
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary/60 py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border/60 bg-gradient-to-b from-btf-water-mid/70 to-btf-water py-12 md:py-14">
         <MinimumRequirements />
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-white/40 backdrop-blur-[2px] py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border/60 bg-gradient-to-b from-btf-water to-[#F0F7FC] py-12 md:py-14">
         <div className="grid items-stretch gap-8 lg:grid-cols-2">
           <ul className="space-y-2">
             {IDEAL_FIT.map((item) => (
               <ListCheck key={item}>{item}</ListCheck>
             ))}
           </ul>
-          <div className="relative min-h-[200px] overflow-hidden rounded-2xl border border-btf-border shadow-btf-card">
+          <div className="relative min-h-[200px] overflow-hidden rounded-2xl border border-btf-border/80 shadow-btf-card">
             <Image
               src="/images/work-trucks.jpg"
               alt="Work trucks at sunrise"
@@ -56,7 +56,7 @@ export default function WhoWeHelpPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border/60 bg-gradient-to-b from-[#F0F7FC] to-btf-water-mid py-12 md:py-14">
         <h2 className="mb-4 text-lg font-bold text-btf-text">Not a fit yet</h2>
         <ul className="max-w-lg space-y-2">
           {NOT_FIT.map((item) => (
@@ -65,7 +65,7 @@ export default function WhoWeHelpPage() {
         </ul>
       </SectionShell>
 
-      <SectionShell className="bg-white/40 pb-24 backdrop-blur-[2px] md:pb-28">
+      <SectionShell className="bg-gradient-to-b from-btf-water-mid via-[#C5DFF0] to-[#A8C8E0] pb-24 md:pb-28">
         <CtaBlock trackLocation="who_we_help" primaryOnly />
       </SectionShell>
     </>

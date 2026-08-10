@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --btf-bg: #ffffff;
-  --btf-bg-secondary: #f7f8fa;
+  --btf-bg: #f5fafe;
+  --btf-bg-secondary: #eaf3f9;
   --btf-card: #ffffff;
-  --btf-muted: #eef2f7;
-  --btf-border: #e5e7eb;
-  --btf-subtle: #cbd5e1;
+  --btf-muted: #dceff8;
+  --btf-border: #c5d9e8;
+  --btf-subtle: #a8c4d8;
+  --btf-water: #e8f4fc;
+  --btf-water-mid: #d4eaf8;
+  --btf-water-deep: #b9dcf2;
   --btf-accent: #0284c7;
   --btf-accent-mid: #0ea5e9;
   --btf-accent-soft: #38bdf8;

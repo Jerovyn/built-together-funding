@@ -32,12 +32,12 @@ export default function HowItWorksPage() {
         description="Apply online, we review your bank statements, then you choose funding options on a call with a person."
       />
 
-      <SectionShell className="border-b border-btf-border bg-white/70 py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border/60 bg-gradient-to-b from-btf-water-mid/80 to-btf-water py-12 md:py-14">
         <ol className="grid gap-4 sm:grid-cols-3">
           {STEPS.map((step, i) => (
             <li
               key={step.title}
-              className="flex flex-col rounded-xl border border-btf-border bg-btf-card p-5 transition-all duration-150 hover:border-btf-accent/30 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5"
+              className="flex flex-col rounded-xl border border-btf-border/80 bg-white/90 p-5 shadow-sm transition-all duration-150 hover:border-btf-accent/30 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-btf-accent/10 text-sm font-bold text-btf-accent">
                 {i + 1}
@@ -51,7 +51,7 @@ export default function HowItWorksPage() {
         </ol>
       </SectionShell>
 
-      <SectionShell className="border-b border-btf-border bg-btf-secondary py-12 md:py-14">
+      <SectionShell className="border-b border-btf-border/60 bg-gradient-to-b from-btf-water to-btf-muted/70 py-12 md:py-14">
         <h2 className="text-xl font-bold text-btf-text md:text-2xl">
           Quick answers
         </h2>
@@ -59,7 +59,7 @@ export default function HowItWorksPage() {
           {HOME_FAQS.slice(0, 4).map((faq) => (
             <details
               key={faq.q}
-              className="group rounded-xl border border-btf-border bg-btf-card open:border-btf-accent/30"
+              className="group rounded-xl border border-btf-border/80 bg-white/90 open:border-btf-accent/30"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 text-sm font-semibold text-btf-text [&::-webkit-details-marker]:hidden">
                 {faq.q}
@@ -78,7 +78,7 @@ export default function HowItWorksPage() {
         </div>
       </SectionShell>
 
-      <SectionShell className="pb-16 md:pb-20">
+      <SectionShell className="bg-gradient-to-b from-btf-muted/60 via-[#C5DFF0] to-[#A8C8E0] pb-16 md:pb-20">
         <CtaBlock trackLocation="how_it_works" primaryOnly />
       </SectionShell>
     </>
