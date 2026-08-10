@@ -78,18 +78,18 @@ export function HomeContent() {
 
   return (
     <>
-      {/* Hero — light water surface */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-btf-water via-[#F5FAFE] to-btf-water-mid">
+      {/* Hero — light water surface (no flat white middle) */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-btf-water via-btf-water-mid/80 to-btf-muted">
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-btf-accent-soft/25 blur-3xl"
+          className="pointer-events-none absolute -right-24 top-0 h-80 w-80 rounded-full bg-btf-accent-soft/30 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-btf-ink-3/[0.07] blur-3xl"
+          className="pointer-events-none absolute -left-16 bottom-0 h-64 w-64 rounded-full bg-btf-ink-3/[0.08] blur-3xl"
         />
         <div className="container relative max-w-6xl px-4 py-8 sm:py-12 md:py-16">
-          <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 lg:items-center">
+          <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8 lg:items-center">
             <div className="min-w-0 space-y-4 sm:space-y-5">
               <p className="text-sm font-semibold text-btf-accent">
                 Small business funding · Trades &amp; service companies
@@ -114,7 +114,7 @@ export function HomeContent() {
               ) : null}
             </div>
 
-            <div className="min-w-0 space-y-3">
+            <div className="min-w-0 space-y-3 rounded-2xl border border-btf-border/70 bg-white/55 p-4 shadow-sm backdrop-blur-sm sm:p-5">
               <p className="text-base font-semibold text-btf-text">
                 What do you need funding for?
               </p>
@@ -125,7 +125,7 @@ export function HomeContent() {
                       type="button"
                       onClick={() => startWithPurpose(option)}
                       className={cn(
-                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border/80 bg-white/90 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm backdrop-blur-sm",
+                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border/80 bg-white/95 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm",
                         "transition-all duration-150 ease-out",
                         "hover:border-btf-accent/45 hover:bg-white hover:shadow-btf-glow",
                         "motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
@@ -157,14 +157,10 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Photo — deeper water mid-tone; taller frame + top-biased crop */}
-      <section className="relative bg-gradient-to-b from-btf-water-mid via-btf-muted to-btf-water pb-14 pt-10 sm:pb-16 sm:pt-12">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-btf-water-mid/80 to-transparent"
-        />
+      {/* Photo — checklist lives on the image (no floating white card) */}
+      <section className="relative bg-gradient-to-b from-btf-muted via-btf-water-mid to-btf-water pb-12 pt-10 sm:pb-14 sm:pt-12">
         <div className="container relative max-w-3xl px-4">
-          <div className="relative mx-auto aspect-[5/4] max-h-[28rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border/80 shadow-btf-card sm:max-h-[32rem]">
+          <div className="relative mx-auto aspect-[5/4] max-h-[30rem] overflow-hidden rounded-t-[999px] rounded-b-3xl border border-btf-border/80 shadow-btf-card sm:max-h-[34rem]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
@@ -173,26 +169,25 @@ export function HomeContent() {
               sizes="(min-width: 768px) 48rem, 100vw"
               className="object-cover object-[center_18%]"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-ink/80 via-btf-ink-3/35 to-transparent px-5 pb-14 pt-20 sm:pb-16">
-              <p className="text-sm font-semibold uppercase tracking-wide text-btf-accent-soft">
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-btf-ink/90 via-btf-ink-3/55 to-transparent px-5 pb-5 pt-24 sm:px-7 sm:pb-6 sm:pt-28">
+              <p className="text-xs font-semibold uppercase tracking-wide text-btf-accent-soft sm:text-sm">
                 Built Together Funding
               </p>
-              <p className="mt-1 text-lg font-bold text-white">{BRAND_LINE}</p>
+              <p className="mt-1 text-base font-bold text-white sm:text-lg">
+                {BRAND_LINE}
+              </p>
+              <ul className="mt-4 space-y-2 border-t border-white/20 pt-4">
+                {HOME_DESIRE_SIGNALS.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-2.5 text-sm font-medium text-white/95 sm:text-[0.95rem]"
+                  >
+                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-btf-accent-soft" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-
-          <div className="relative z-10 mx-auto -mt-8 max-w-xl rounded-2xl border border-btf-subtle/60 bg-white px-5 py-6 shadow-btf-card sm:-mt-10 sm:px-8 sm:py-7">
-            <ul className="space-y-3">
-              {HOME_DESIRE_SIGNALS.map((item) => (
-                <li
-                  key={item}
-                  className="flex gap-2.5 text-sm font-medium text-btf-text sm:text-base"
-                >
-                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-btf-accent" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </section>

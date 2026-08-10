@@ -123,7 +123,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
       <div className="container flex max-w-6xl items-center justify-between gap-2 py-2 sm:gap-4 sm:py-2.5 md:py-3">
         <Link
           href={ROUTES.home}
-          className="flex min-w-0 shrink items-center gap-2 sm:gap-3"
+          className="flex min-w-0 shrink items-center gap-2.5 sm:gap-3"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -131,13 +131,17 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             alt=""
             width={44}
             height={44}
-            className="h-8 w-8 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
+            className="h-9 w-9 shrink-0 rounded-full object-cover sm:h-10 sm:w-10 md:h-11 md:w-11"
           />
-          <span className="flex min-w-0 flex-col leading-none">
-            <span className="truncate text-[0.7rem] font-bold uppercase tracking-tight text-btf-text sm:text-sm md:text-base">
+          {/* Mobile: one large wordmark. Stacked name from sm up. */}
+          <span className="truncate text-lg font-extrabold tracking-tight text-btf-text sm:hidden">
+            BTF
+          </span>
+          <span className="hidden min-w-0 flex-col leading-none sm:flex">
+            <span className="truncate text-sm font-bold uppercase tracking-tight text-btf-text md:text-base">
               Built Together
             </span>
-            <span className="truncate text-[0.7rem] font-bold uppercase tracking-tight text-btf-accent sm:text-sm md:text-base">
+            <span className="truncate text-sm font-bold uppercase tracking-tight text-btf-accent md:text-base">
               Funding
             </span>
           </span>
@@ -228,7 +232,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           {phoneDisplay && phone ? (
             <TrackedPhoneLink
               href={`tel:${phone}`}
@@ -243,15 +247,15 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             variant="primary"
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="header"
-            className="inline-flex shrink-0 px-2.5 py-2 text-xs sm:px-3 sm:text-sm"
+            className="inline-flex shrink-0 px-3.5 py-2 text-sm sm:px-4"
             showArrow
           >
-            <span className="sm:hidden">See options</span>
+            <span className="sm:hidden">Options</span>
             <span className="hidden sm:inline">{CTA_PREQUAL_LABEL}</span>
           </TrackedButtonLink>
           <button
             type="button"
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-btf-border text-btf-text lg:hidden"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-btf-border text-btf-text sm:h-11 sm:w-11 lg:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             onClick={() => setMenuOpen((v) => !v)}

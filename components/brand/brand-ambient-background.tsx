@@ -24,7 +24,7 @@ export function BrandAmbientBackground() {
       aria-hidden
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-[#E8F4FC] via-[#F5FAFE] to-[#DCEFF8]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#E8F4FC] via-[#DCEFF8] to-[#C5DFF0]" />
       <div
         className="absolute -left-[20%] top-[-10%] h-[42rem] w-[42rem] rounded-full opacity-70"
         style={{

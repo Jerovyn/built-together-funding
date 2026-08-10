@@ -12,7 +12,7 @@ import { TrackedPhoneLink } from "@/components/tracking/tracked-phone-link";
 
 /**
  * Short footer (Krug): phone/email, a handful of links, one disclosure line.
- * Full broker language lives on /disclosures — not here.
+ * Soft water-blue band — continues the page wash instead of a hard ink slab.
  */
 export function SiteFooter() {
   const phoneDisplay = process.env.NEXT_PUBLIC_PHONE_DISPLAY;
@@ -31,8 +31,12 @@ export function SiteFooter() {
   ];
 
   return (
-    <footer className="border-t border-btf-ink-border bg-btf-ink text-btf-on-ink">
-      <div className="container max-w-6xl py-8 sm:py-10">
+    <footer className="relative overflow-hidden border-t border-btf-border/70 bg-gradient-to-b from-[#A8C8E0] via-[#8FB8D4] to-[#6FA3C4] text-btf-text">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-btf-ink-3/10 to-transparent"
+      />
+      <div className="container relative max-w-6xl py-8 sm:py-10">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-3">
             <Link href={ROUTES.home} className="inline-flex items-center gap-2.5">
@@ -43,17 +47,17 @@ export function SiteFooter() {
                 height={436}
                 className="h-10 w-auto"
               />
-              <span className="text-sm font-bold tracking-tight text-btf-on-ink">
+              <span className="text-sm font-bold tracking-tight text-btf-text">
                 Built Together Funding
               </span>
             </Link>
-            <p className="max-w-xs text-sm text-btf-on-ink-muted">{BRAND_LINE}</p>
-            <ul className="space-y-1 text-sm text-btf-on-ink-muted">
+            <p className="max-w-xs text-sm text-btf-text/80">{BRAND_LINE}</p>
+            <ul className="space-y-1 text-sm text-btf-text/75">
               {phoneDisplay && phone ? (
                 <li>
                   <TrackedPhoneLink
                     href={`tel:${phone}`}
-                    className="hover:text-btf-on-ink"
+                    className="hover:text-btf-text"
                     trackLocation="footer"
                   >
                     {phoneDisplay}
@@ -62,7 +66,7 @@ export function SiteFooter() {
               ) : null}
               {email ? (
                 <li>
-                  <a href={`mailto:${email}`} className="hover:text-btf-on-ink">
+                  <a href={`mailto:${email}`} className="hover:text-btf-text">
                     {email}
                   </a>
                 </li>
@@ -76,7 +80,7 @@ export function SiteFooter() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-btf-on-ink-muted hover:text-btf-on-ink"
+                    className="text-sm font-medium text-btf-text/75 transition-colors hover:text-btf-text"
                   >
                     {item.label}
                   </Link>
@@ -86,17 +90,17 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-8 space-y-2 border-t border-btf-ink-border pt-6">
-          <p className="max-w-3xl text-xs leading-relaxed text-btf-on-ink-muted">
+        <div className="mt-8 space-y-2 border-t border-btf-ink-3/15 pt-6">
+          <p className="max-w-3xl text-xs leading-relaxed text-btf-text/70">
             {DISCLAIMER_PREQUAL_LINE}{" "}
             <Link
               href="/disclosures/"
-              className="underline underline-offset-2 hover:text-btf-on-ink"
+              className="underline underline-offset-2 hover:text-btf-text"
             >
               Full disclosures
             </Link>
           </p>
-          <p className="text-xs text-btf-on-ink-muted">
+          <p className="text-xs text-btf-text/65">
             &copy; {year} Built Together Funding Corp.
           </p>
         </div>
