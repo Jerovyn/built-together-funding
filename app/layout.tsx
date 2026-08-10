@@ -34,8 +34,9 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
   icons: {
-    icon: "/brand/btf-logo-icon-mark.png",
-    apple: "/brand/btf-logo-icon-mark.png",
+    icon: [{ url: "/brand/btf-logo-bt-mark.png?v=2", type: "image/png" }],
+    apple: [{ url: "/brand/btf-logo-bt-mark.png?v=2", type: "image/png" }],
+    shortcut: "/brand/btf-logo-bt-mark.png?v=2",
   },
   openGraph: {
     title: `${SITE_NAME} | ${SITE_TAGLINE}`,
@@ -75,7 +76,7 @@ export default function RootLayout({
         name: "Built Together Funding Corp",
         alternateName: SITE_NAME,
         url: `${siteUrl}/`,
-        logo: `${siteUrl}/brand/btf-logo-icon-mark.png`,
+        logo: `${siteUrl}/brand/btf-logo-bt-mark.png`,
         slogan: BRAND_LINE,
         description: SITE_DESCRIPTION,
         ...(phone ? { telephone: phone } : {}),

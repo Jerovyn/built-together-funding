@@ -154,23 +154,23 @@ export function HomeContent() {
         </div>
       </section>
 
-      {/* Trust break — workbench frame (not OnDeck arch); kept short */}
-      <section className="relative bg-gradient-to-b from-btf-water-mid/60 via-btf-water to-[#F0F7FC] px-4 py-5 sm:py-7">
-        <div className="mx-auto max-w-xl">
-          <div className="relative mx-auto aspect-[16/10] max-h-[11.5rem] overflow-hidden rounded-t-[1.75rem] rounded-b-md border border-btf-border/80 shadow-btf-card sm:max-h-[15rem]">
+      {/* Trust break — full-bleed workbench band (no side gutters / no letterbox) */}
+      <section className="relative bg-gradient-to-b from-btf-water-mid/60 via-btf-water to-[#F0F7FC]">
+        <div className="relative w-full overflow-hidden border-y border-btf-border/60 shadow-btf-card sm:rounded-none">
+          <div className="relative aspect-[2/1] w-full sm:aspect-[2.4/1] lg:aspect-[2.8/1]">
             <Image
               src="/images/home-friendly-trade.jpg"
               alt="Trade business owner with a work truck at a job site"
               fill
-              sizes="(min-width: 640px) 36rem, 100vw"
-              className="object-cover object-[center_20%]"
+              sizes="100vw"
+              className="object-cover object-[center_22%]"
               priority
             />
           </div>
-          <p className="mt-3 text-center text-sm font-medium text-btf-text-muted">
-            {BRAND_LINE}
-          </p>
         </div>
+        <p className="px-4 py-3 text-center text-sm font-medium text-btf-text-muted sm:py-3.5">
+          {BRAND_LINE}
+        </p>
       </section>
 
       {/* Trades — one-line animated marquee on all breakpoints */}
