@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
+  CTA_HEADER_LABEL,
   CTA_PREQUAL_LABEL,
   NAV_LINKS,
   ROUTES,
@@ -241,12 +242,12 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
           <TrackedButtonLink
             href={ROUTES.apply}
             variant="primary"
-            trackLabel={CTA_PREQUAL_LABEL}
+            trackLabel={CTA_HEADER_LABEL}
             trackLocation="header"
             className="inline-flex shrink-0 px-2.5 py-2 text-xs sm:px-4 sm:text-sm"
             showArrow
           >
-            {CTA_PREQUAL_LABEL}
+            {CTA_HEADER_LABEL}
           </TrackedButtonLink>
           <button
             type="button"
