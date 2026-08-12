@@ -195,11 +195,10 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
                 </div>
                 <Link
                   href={ROUTES.products}
-                  className="mt-2 flex items-center justify-between rounded-xl border border-btf-border bg-btf-secondary px-3.5 py-2.5 text-sm font-semibold text-btf-text transition-colors hover:border-btf-accent/40 hover:text-btf-accent"
+                  className="mt-2 flex items-center rounded-xl border border-btf-border bg-btf-secondary px-3.5 py-2.5 text-sm font-semibold text-btf-text transition-colors hover:border-btf-accent/40 hover:text-btf-accent"
                   onClick={() => setProductsOpen(false)}
                 >
                   Compare all products
-                  <span aria-hidden>→</span>
                 </Link>
               </div>
             ) : null}
@@ -245,7 +244,6 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
             trackLabel={CTA_HEADER_LABEL}
             trackLocation="header"
             className="inline-flex shrink-0 px-2.5 py-2 text-xs sm:px-4 sm:text-sm"
-            showArrow
           >
             {CTA_HEADER_LABEL}
           </TrackedButtonLink>
@@ -285,7 +283,7 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
                   className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-btf-accent hover:bg-btf-secondary"
                   onClick={() => setMenuOpen(false)}
                 >
-                  Compare all products →
+                  Compare all products
                 </Link>
               </li>
             </ul>
@@ -328,7 +326,6 @@ export function SiteHeader({ compact = false }: { compact?: boolean }) {
                 trackLabel={CTA_PREQUAL_LABEL}
                 trackLocation="header_menu"
                 className="w-full justify-center"
-                showArrow
               >
                 {CTA_PREQUAL_LABEL}
               </TrackedButtonLink>

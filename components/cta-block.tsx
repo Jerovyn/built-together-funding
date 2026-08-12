@@ -33,7 +33,6 @@ export function CtaBlock({
         trackLabel={label}
         trackLocation={trackLocation}
         className={primaryOnly ? "w-full justify-center sm:w-auto" : undefined}
-        showArrow
       >
         {label}
       </TrackedButtonLink>

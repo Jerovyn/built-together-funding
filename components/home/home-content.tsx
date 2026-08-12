@@ -122,19 +122,13 @@ export function HomeContent() {
                       type="button"
                       onClick={() => startWithPurpose(option)}
                       className={cn(
-                        "group flex w-full min-h-12 items-center justify-between gap-3 rounded-xl border border-btf-border/80 bg-white/95 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm",
+                        "flex w-full min-h-12 items-center rounded-xl border border-btf-border/80 bg-white/95 px-5 py-3.5 text-left text-base font-semibold text-btf-text shadow-sm",
                         "transition-all duration-150 ease-out",
                         "hover:border-btf-accent/45 hover:bg-white hover:shadow-btf-glow",
                         "motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]",
                       )}
                     >
-                      <span>{option.label}</span>
-                      <span
-                        aria-hidden
-                        className="text-btf-accent transition-transform duration-150 group-hover:translate-x-0.5"
-                      >
-                        →
-                      </span>
+                      {option.label}
                     </button>
                   </li>
                 ))}
@@ -237,7 +231,7 @@ export function HomeContent() {
       <SectionShell className="relative overflow-hidden bg-gradient-to-b from-btf-water-mid via-[#DCE8F2] to-[#EEF4F8] py-12 sm:py-14">
         <div className="relative">
           <p className="text-sm font-medium text-btf-text-muted">
-            Tell us what you need → we review → you choose on a call.
+            Tell us what you need, we review, then you choose on a call.
           </p>
           <h2 className="mt-3 max-w-xl text-balance text-2xl font-bold tracking-tight text-btf-text md:text-3xl">
             Compare funding options when you&apos;re ready.
@@ -249,7 +243,6 @@ export function HomeContent() {
               trackLabel={CTA_PREQUAL_LABEL}
               trackLocation="home_path_apply"
               className="group h-auto min-h-[5.5rem] flex-col items-start justify-center gap-1 px-6 py-5 text-left"
-              showArrow
             >
               <span className="text-lg font-bold">{CTA_PREQUAL_LABEL}</span>
               <span className="text-sm font-medium text-white/85">
@@ -261,7 +254,7 @@ export function HomeContent() {
               className="flex min-h-[5.5rem] flex-col items-start justify-center gap-1 rounded-xl border border-btf-border/80 bg-white/95 px-6 py-5 text-left shadow-sm transition-all duration-150 hover:border-btf-accent/40 hover:shadow-btf-card motion-safe:hover:-translate-y-0.5 motion-safe:active:scale-[0.98]"
             >
               <span className="text-lg font-bold text-btf-text">
-                Estimate payments first →
+                Estimate payments first
               </span>
               <span className="text-sm font-medium text-btf-text-muted">
                 Payment ranges. No signup needed.
@@ -273,7 +266,7 @@ export function HomeContent() {
               href={ROUTES.products}
               className="font-semibold text-btf-accent transition-colors duration-150 hover:text-btf-accent-mid hover:underline"
             >
-              Compare financing products →
+              Compare financing products
             </Link>
           </p>
         </div>

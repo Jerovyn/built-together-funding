@@ -47,7 +47,7 @@ export default async function AdminContentPage() {
       <div>
         <h1 className="text-2xl font-semibold text-btf-text">Content</h1>
         <p className="text-sm text-btf-text-muted">
-          Pick an infographic → AI drafts the article → you proofread → Post.
+          Pick an infographic, AI drafts the article, you proofread, then Post.
         </p>
       </div>
 

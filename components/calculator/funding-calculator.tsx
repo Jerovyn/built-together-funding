@@ -541,7 +541,6 @@ export function FundingCalculator({
           trackLabel={CTA_CALC_LABEL}
           trackLocation="funding_calculator"
           className="w-full justify-center"
-          showArrow
           onClick={() => {
             markInteracted();
             saveCalcSnapshotToSession(snapshot);

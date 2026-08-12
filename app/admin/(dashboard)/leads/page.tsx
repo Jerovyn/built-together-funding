@@ -151,7 +151,7 @@ export default async function AdminLeadsPage() {
       <p className="text-xs text-btf-text-muted">
         Open a lead to view statements and download the underwriting package.{" "}
         <Link href="/admin/appointments/" className="text-btf-accent hover:underline">
-          View scheduled calls →
+          View scheduled calls
         </Link>
       </p>
     </div>

@@ -32,7 +32,6 @@ export default function ContactPage() {
               variant="primary"
               trackLabel={CTA_PREQUAL_LABEL}
               trackLocation="contact"
-              showArrow
             >
               {CTA_PREQUAL_LABEL}
             </TrackedButtonLink>

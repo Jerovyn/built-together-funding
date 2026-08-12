@@ -60,10 +60,7 @@ export default function ProductsPage() {
                   {p.tagline}
                 </p>
                 <p className="mt-4 text-sm font-semibold text-btf-accent">
-                  Learn more{" "}
-                  <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
+                  Learn more
                 </p>
               </Link>
             </Reveal>
@@ -86,7 +83,6 @@ export default function ProductsPage() {
             trackLabel={CTA_PREQUAL_LABEL}
             trackLocation="products_index"
             className="shrink-0"
-            showArrow
           >
             {CTA_PREQUAL_LABEL}
           </TrackedButtonLink>

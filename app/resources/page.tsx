@@ -52,7 +52,7 @@ export default async function ResourcesPage() {
                       {article.description}
                     </p>
                     <p className="mt-auto pt-2 text-sm font-semibold text-btf-accent">
-                      Read →
+                      Read
                     </p>
                   </CardContent>
                 </Card>

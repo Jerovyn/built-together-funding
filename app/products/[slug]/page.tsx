@@ -143,7 +143,6 @@ export default async function ProductPage({
                   variant="primary"
                   trackLabel={CTA_PREQUAL_LABEL}
                   trackLocation={`product_${product.slug}`}
-                  showArrow
                 >
                   {CTA_PREQUAL_LABEL}
                 </TrackedButtonLink>
@@ -151,7 +150,7 @@ export default async function ProductPage({
                   href={calcHref}
                   className="text-sm font-semibold text-btf-accent hover:underline"
                 >
-                  Estimate a payment →
+                  Estimate a payment
                 </Link>
               </div>
               <p className="mt-4 text-xs text-btf-text-muted">
@@ -288,7 +287,6 @@ export default async function ProductPage({
               trackLabel={CTA_PREQUAL_LABEL}
               trackLocation={`product_${product.slug}_footer`}
               className="px-7 py-3.5"
-              showArrow
             >
               {CTA_PREQUAL_LABEL}
             </TrackedButtonLink>

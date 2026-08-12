@@ -65,7 +65,6 @@ export function StickyMobileCta({
         trackLabel={label}
         trackLocation={trackLocation}
         className="w-full justify-center gap-2 text-base"
-        showArrow
       >
         {label}
       </TrackedButtonLink>

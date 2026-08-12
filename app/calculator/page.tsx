@@ -55,7 +55,6 @@ export default async function CalculatorPage({
               variant="primary"
               trackLabel={CTA_CALC_LABEL}
               trackLocation="calculator_page_footer"
-              showArrow
             >
               {CTA_CALC_LABEL}
             </TrackedButtonLink>
@@ -63,7 +62,7 @@ export default async function CalculatorPage({
               href={ROUTES.products}
               className="text-sm font-semibold text-btf-accent hover:underline"
             >
-              Compare products →
+              Compare products
             </Link>
           </div>
         </div>
