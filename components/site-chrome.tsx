@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { BrandAmbientBackground } from "@/components/brand/brand-ambient-background";
+import { FloatingCallButton } from "@/components/floating-call-button";
 import { BoltAssistant } from "@/components/mascot/bolt-assistant";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -40,6 +41,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
         {!task ? <SiteFooter /> : null}
         {showBolt(pathname) ? <BoltAssistant /> : null}
         {!task ? <StickyMobileCta /> : null}
+        {!task ? <FloatingCallButton /> : null}
       </div>
     </>
   );
